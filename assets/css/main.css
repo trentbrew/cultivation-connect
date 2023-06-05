@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+/* ------------ custom ------------ */
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+.pressable {
+  transition: transform 0.2s ease;
+}
+
+.pressable:active {
+  transform: scale(0.9);
+}
+
+.center-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+main {
+  @apply w-full;
+}
+
+.ease-circ {
+  transition-timing-function: cubic-bezier(0.85, 0, 0.15, 1);
+}
+
+.ease-expo {
+  transition-timing-function: cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.gradient-blur {
+  mask: linear-gradient(black, transparent);
+  backdrop-filter: blur(24px);
+}
+
+/* ------------ animations ------------ */
+
+.nudge-up {
+  animation: nudge-up 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite both;
+}
+
+.nudge-down {
+  animation: nudge-down 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite both;
+}
+
+@keyframes nudge-down {
+  0% {
+    transform: translate(0, 0);
+    transition-timing-function: linear;
+  }
+  50% {
+    transform: translate(0.1rem, -0.1rem);
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  100% {
+    transform: translate(0, 0);
+    transition-timing-function: linear;
+  }
+}
+
+@keyframes nudge-up {
+  0% {
+    transform: translate(0.1rem, -0.1rem);
+    transition-timing-function: linear;
+  }
+  50% {
+    transform: translate(-0.1rem, 0.1rem);
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  100% {
+    transform: translate(0.1rem, -0.1rem);
+    transition-timing-function: linear;
+  }
+}
+
+/* ------------ tailwind ------------ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

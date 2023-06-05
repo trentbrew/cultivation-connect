@@ -1,0 +1,242 @@
+<script setup>
+  import utils from '@/helpers/utils';
+
+  const pb = usePocketbase();
+  const global = useGlobalStore();
+  const router = useRouter();
+  const route = useRoute();
+
+  const state = reactive({
+    wizard: {
+      step: 0,
+    },
+    cycle: {
+      id: '',
+      name: '',
+      overview: {
+        plants: 0,
+        day: 0,
+        growthPhase: '',
+        startDate: '',
+        estHarvestDate: '',
+      },
+      conditions: [
+        {
+          title: 'Air Temperature',
+          name: 'air_temp',
+          value: 72,
+        },
+        {
+          title: 'Soil Temperature',
+          name: 'grow_medium_temp',
+          value: 69,
+        },
+        {
+          title: 'Air Humidity',
+          name: 'air_humidity',
+          value: 0.211,
+        },
+        {
+          title: 'Solar',
+          name: 'solar',
+          value: 270,
+        },
+        {
+          title: 'Vapor Pressure Deficit',
+          name: 'vpd',
+          value: 0.62,
+        },
+        {
+          title: 'Daylight Integral',
+          name: 'dli',
+          value: 32.77,
+        },
+        {
+          title: 'CO2',
+          name: 'co2',
+          value: 1205,
+        },
+        {
+          title: 'Pore EC',
+          name: 'pore_ec',
+          value: 0.161,
+        },
+        {
+          title: 'Pore EC (Day)',
+          name: 'day_time_pore_ec',
+          value: 0.112,
+        },
+        {
+          title: 'Pore EC (Night)',
+          name: 'night_time_pore_ec',
+          value: 0.29,
+        },
+        {
+          title: 'Soil Moisture (Day)',
+          name: 'day_time_soil_moisture',
+          value: 0.443,
+        },
+        {
+          title: 'Soil Moisture (Night)',
+          name: 'night_time_soil_moisture',
+          value: 0.298,
+        },
+        {
+          title: 'Dry Back (Day)',
+          name: 'day_time_dry_back',
+          value: 0.045,
+        },
+        {
+          title: 'Dry Back (Night)',
+          name: 'night_time_dry_back',
+          value: 0.164,
+        },
+        {
+          title: 'Soil pH',
+          name: 'ph',
+          value: 5.97,
+        },
+        {
+          title: 'Yield',
+          name: 'yield',
+          value: 60,
+        },
+      ],
+    },
+  });
+
+  function updateHash(hash) {
+    router.push({
+      hash: `#${hash}`,
+    });
+  }
+
+  onMounted(async () => {
+    router.push({ hash: '' });
+    const cycle = await pb.get('cycles', {
+      id: route.params.cycle,
+    });
+    state.cycle.id = cycle.id;
+    state.cycle.name = cycle.name;
+    state.cycle.overview.plants = cycle.plants;
+    state.cycle.overview.day = Math.floor(
+      utils.timeDifference(Date.now(), Date.parse(cycle.start_date), 'd')
+    );
+    state.cycle.overview.growthPhase = utils.capitalize(cycle.growth_stage);
+    state.cycle.overview.startDate = utils.dateString(
+      cycle.start_date,
+      'short'
+    );
+    // TODO: calculate est harvest date based on grow conditions
+    state.cycle.overview.estHarvestDate = utils.dateString(
+      Date.parse(cycle.start_date) + 112 * 24 * 60 * 60 * 1000,
+      'short'
+    );
+    if (!cycle.records) {
+      state.wizard.step = 0;
+    }
+  });
+</script>
+
+<template>
+  <AuthRouteGuard>
+    <div class="w-full h-screen flex flex-col">
+      <div class="w-full h-20 flex justify-between items-center p-4">
+        <Path class="ml-4" page="Cycles" :cycle="state.cycle" />
+        <div class="flex gap-2">
+          <ModalTrigger
+            @click="updateHash('records')"
+            class="btn btn-ghost gap-2"
+            target="cycle-records"
+          >
+            <Icon name="table" size="24" />
+            <span class="text-base">View records</span>
+          </ModalTrigger>
+        </div>
+      </div>
+
+      <div id="content" class="flex flex-col flex-grow">
+        <header class="p-4 pt-0">
+          <div
+            class="stats stats-horizontal rounded w-full border border-base-300"
+          >
+            <div class="stat">
+              <div class="stat-title">Day</div>
+              <div class="stat-value">
+                {{ state.cycle.overview.day }}
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-title">Plants</div>
+              <div class="stat-value">
+                {{ state.cycle.overview.plants }}
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-title">Growth Phase</div>
+              <div class="stat-value">
+                {{ state.cycle.overview.growthPhase }}
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-title">Start date</div>
+              <div class="stat-value">
+                {{ state.cycle.overview.startDate }}
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-title">Est. Harvest date</div>
+              <div class="stat-value">
+                {{ state.cycle.overview.estHarvestDate }}
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div
+          class="w-full h-full"
+          :class="
+            state.wizard.step < 1 && 'flex flex-col justify-center items-center'
+          "
+        >
+          <ul
+            v-if="state.wizard.step > 0"
+            class="w-full min-h-full grid grid-cols-4 overflow-scroll gap-4 p-4 pt-0"
+          >
+            <!-- TODO: Clamp the grid -->
+            <li v-for="(item, index) in state.cycle.conditions" :key="index">
+              <ModalTrigger @click="updateHash(item.name)" target="details">
+                <Stat :id="item.name" :title="item.title" :value="item.value" />
+              </ModalTrigger>
+            </li>
+          </ul>
+          <WIP class="-mt-16 mb-12 -translate-x-10" />
+          <h1 class="text-center opacity-50">
+            You haven't imported any data yet. Get started by uploading
+            <br />
+            a
+            <b>CSV File</b>
+            of your grow data.
+          </h1>
+          <DrawerToggle
+            @click="router.push({ hash: '#upload-csv' })"
+            label="Upload grow data"
+            class="btn-primary mt-12"
+            icon="upload"
+            for="csv-upload"
+            target="csv-upload"
+          />
+        </div>
+      </div>
+    </div>
+  </AuthRouteGuard>
+</template>
+
+<style>
+  .stat-title {
+    @apply text-sm;
+  }
+  .stat-value {
+    @apply text-xl font-bold;
+  }
+</style>
