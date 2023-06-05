@@ -2,8 +2,6 @@
 
 # Installation
 
----
-
 1. Clone the repository
 
 - `git clone <https://github.com/trentbrew/cultivation-connect>`
@@ -18,8 +16,6 @@
 
 # Supporting Files
 
----
-
 [Crop Steering Framework](https://docs.google.com/spreadsheets/d/1UrczPzwDfpn8adnigQRyj91C---KBomb/edit#gid=1646154042)
 
 - This file is a table that outlines a cultivation framework for growing crops. It is designed to steer the growth of crops through different stages of growth. The framework is divided into growth stages, and each stage has a set of metrics, sensors, ranges, and scores that are used to monitor and adjust the environment for the crops.
@@ -33,8 +29,6 @@
 - The onboarding intake form can be found in ~/pages/intake.vue.
 
 # Resources
-
----
 
 - *[Official Website](https://cultivationconnect.com/)*
 - [Vue 3 Docs](https://v3.vuejs.org/)
