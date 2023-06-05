@@ -30,7 +30,7 @@
 
 # Resources
 
-- *[Official Website](https://cultivationconnect.com/)*
+- ***[Official Website](https://cultivationconnect.com/)***
 - [Vue 3 Docs](https://v3.vuejs.org/)
 - [Nuxt 3 Docs](https://v3.nuxtjs.org/)
 - [Tailwind CSS Docs](https://tailwindcss.com/docs)
