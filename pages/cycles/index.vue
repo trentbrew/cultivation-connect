@@ -1,8 +1,6 @@
 <script setup>
   const pb = usePocketbase();
-  const global = useGlobalStore();
   const router = useRouter();
-  const route = useRoute();
 
   const facilityID = pb.api.authStore.model.facility;
 
@@ -23,7 +21,6 @@
     state.data.cycles = data;
     if (data.length > 0) {
       const path = `/cycles/${state.data.cycles[0].id}`;
-      console.log('routing to', path);
       router.push(path);
     }
   }

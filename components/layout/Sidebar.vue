@@ -3,6 +3,14 @@
   const global = useGlobalStore();
   const route = useRoute();
 
+  const state = reactive({
+    avatarUrl: '',
+    ui: {
+      collections: false,
+      context: '',
+    },
+  });
+
   const pages = [
     {
       name: 'Facility',
@@ -14,11 +22,6 @@
       path: '/cycles',
       icon: 'calendar',
     },
-    // {
-    //   name: 'Plants',
-    //   path: '/plants',
-    //   icon: 'flower',
-    // },
     {
       name: 'Settings',
       path: '/settings',
@@ -35,13 +38,6 @@
     'auth-login',
     'auth-signup',
   ];
-
-  const state = reactive({
-    avatarUrl: '',
-    ui: {
-      collections: false,
-    },
-  });
 
   const loggedIn = computed(() => {
     const user = pb.api.authStore;
@@ -64,10 +60,18 @@
   });
 
   onMounted(() => {
+    state.ui.context = route.name;
     pb.getAvatarUrl().then(url => {
       state.avatarUrl = url;
     });
   });
+
+  watch(
+    () => route.name,
+    val => {
+      state.ui.context = val;
+    }
+  );
 
   watch(
     () => collectionsActive.value,
@@ -108,17 +112,24 @@
         </svg>
       </div> -->
       <ul
-        id="nav-items"
         v-if="loggedIn"
+        id="nav-items"
         tabindex="0"
         class="flex flex-col justify-start items-center p-4"
       >
         <nuxt-link
           v-for="(page, index) in pages"
           :key="index"
-          class="btn btn-ghost hover:text-base-content active:scale-90 duration-150 flex justify-center items-center hover:tooltip-open tooltip tooltip-right"
           :data-tip="page.name"
           :to="page.path"
+          :class="
+            (state.ui.context == 'cycles' ||
+              state.ui.context == 'cycles-cycle') &&
+            index == 1
+              ? 'router-link-active router-link-exact-active'
+              : ''
+          "
+          class="btn btn-ghost hover:text-base-content active:scale-90 duration-150 flex justify-center items-center hover:tooltip-open tooltip tooltip-right"
         >
           <li>
             <Icon :name="page.icon" />
@@ -152,15 +163,6 @@
           class="dropdown-content menu w-fit border bg-base-100 border-base-300 rounded mb-3"
           :class="collectionless && 'translate-y-16'"
         >
-          <!-- <li>
-            <nuxt-link
-              :to="`/account/${pb.api.authStore.model.username}`"
-              class="pr-8"
-            >
-              <Icon name="user" size="18" />
-              <span>Profile</span>
-            </nuxt-link>
-          </li> -->
           <li id="logout">
             <ModalTrigger
               target="confirmation"
