@@ -34,12 +34,11 @@
 - <a href="https://cultivationconnect.vercel.app/" target="_blank">Live App (Staging)</a>
 - <a href="https://app.cultivationconnect.com/" target="_blank">Live App (Production)</a>
 
-### Frontend
-
-Framework Docs
-- <a href="https://vuejs.org/guide/introduction.html" target="_blank">Vue 3</a>
-- <a href="https://nuxt.com/docs/getting-started/introduction" target="_blank">Nuxt 3</a>
-- <a href="https://tailwindcss.com/docs" target="_blank">Tailwind CSS</a>
+Frontend
+- Framework Docs
+  - <a href="https://vuejs.org/guide/introduction.html" target="_blank">Vue 3</a>
+  - <a href="https://nuxt.com/docs/getting-started/introduction" target="_blank">Nuxt 3</a>
+  - <a href="https://tailwindcss.com/docs" target="_blank">Tailwind CSS</a>
 
 Libraries & APIs
 - <a href="https://echarts.apache.org/examples/en/index.html" target="_blank">Apache ECharts</a>
