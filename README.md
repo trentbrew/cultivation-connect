@@ -4,7 +4,7 @@
 
 1. Clone the repository
 
-- `git clone <https://github.com/trentbrew/cultivation-connect>`
+- `git clone <https://github.com/cultivationconnect/cc-frontend>`
 
 2. Install dependencies
 
@@ -30,9 +30,33 @@
 
 # Resources
 
-- <b><a href="https://cultivationconnect.com/" target="_blank">Official Website</a></b>
-- <a href="https://vuejs.org/guide/introduction.html" target="_blank">Vue Docs</a>
-- <a href="https://nuxt.com/docs/getting-started/introduction" target="_blank">Nuxt Docs</a>
-- <a href="https://tailwindcss.com/docs" target="_blank">TailwindCSS Docs</a>
-- <a href="https://pocketbase.io/docs/" target="_blank">PocketBase Docs</a>
+- <a href="https://cultivationconnect.com/" target="_blank">Official Website</a>
+- <a href="https://cultivationconnect.vercel.app/" target="_blank">Live App (Staging)</a>
+- <a href="https://app.cultivationconnect.com/" target="_blank">Live App (Production)</a>
+
+### Frontend
+
+Framework Docs
+- <a href="https://vuejs.org/guide/introduction.html" target="_blank">Vue 3</a>
+- <a href="https://nuxt.com/docs/getting-started/introduction" target="_blank">Nuxt 3</a>
+- <a href="https://tailwindcss.com/docs" target="_blank">Tailwind CSS</a>
+
+Libraries & APIs
+- <a href="https://echarts.apache.org/examples/en/index.html" target="_blank">Apache ECharts</a>
 - <a href="https://iconic.rest/" target="_blank">Iconic API</a>
+
+### Backend
+
+Database
+- <a href="https://cultivationconnect.fly.io/_/" target="blank">PocketBase (DB Instance)</a>
+- <a href="https://pocketbase.io/docs/" target="_blank">PocketBase (Docs)</a>
+
+File Storage
+- <a href="https://s3.console.aws.amazon.com/s3/buckets/cultivation-connect-temp?region=us-east-1&tab=objects" target="_blank">AWS S3</a>
+
+Email Server
+- <a href="https://app.brevo.com/" target="_blank">Brevo</a>
+
+Hosting
+- <a href="https://vercel.com/trent-brew/cultivation-connect" target="_blank">Vercel</a>
+- <a href="https://fly.io/apps/cultivationconnect" target="_blank">Fly.io</a>
