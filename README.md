@@ -1,6 +1,6 @@
 <b>Cultivation Connect</b> is a framework for monitoring and managing crop growth through predictive insights, data visualization, and tools for controlling various environmental factors that impact your crops.
 
-# Installation
+# 💾 Installation
 
 1. Clone the repository
 
@@ -14,7 +14,7 @@
 
 - `npm run dev`
 
-# Supporting Files
+# 📂 Supporting Files
 
 [Crop Steering Framework](https://docs.google.com/spreadsheets/d/1UrczPzwDfpn8adnigQRyj91C---KBomb/edit#gid=1646154042)
 
@@ -28,7 +28,7 @@
 - This file outlines the onboarding process for new users. The data collected during this step is integral for providing accurate insights for the user’s specific situation.
 - The onboarding intake form can be found in ~/pages/intake.vue.
 
-# Resources
+# 📃 Resources
 
 <a href="https://cultivationconnect.com/" target="_blank">Official Website</a><br/>
 <a href="https://cultivationconnect.vercel.app/" target="_blank">Live App (Staging)</a><br/>
