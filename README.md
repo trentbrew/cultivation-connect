@@ -31,8 +31,8 @@
 # Resources
 
 - <b><a href="https://cultivationconnect.com/" target="_blank">Official Website</a></b>
-- <a href="https://v3.vuejs.org/" target="_blank">Vue 3 Docs</a>
-- <a href="https://v3.nuxtjs.org/" target="_blank">Nuxt 3 Docs</a>
-- <a href="https://tailwindcss.com/docs" target="_blank">Tailwind CSS Docs</a>
-- <a href="https://docs.pocketbase.io/" target="_blank">PocketBase Docs</a>
+- <a href="https://vuejs.org/guide/introduction.html" target="_blank">Vue Docs</a>
+- <a href="https://nuxt.com/docs/getting-started/introduction" target="_blank">Nuxt Docs</a>
+- <a href="https://tailwindcss.com/docs" target="_blank">TailwindCSS Docs</a>
+- <a href="https://pocketbase.io/docs/" target="_blank">PocketBase Docs</a>
 - <a href="https://iconic.rest/" target="_blank">Iconic API</a>
