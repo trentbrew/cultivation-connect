@@ -30,9 +30,9 @@
 
 # Resources
 
-<a href="https://cultivationconnect.com/" target="_blank">Official Website</a>
-<a href="https://cultivationconnect.vercel.app/" target="_blank">Live App (Staging)</a>
-<a href="https://app.cultivationconnect.com/" target="_blank">Live App (Production)</a>
+<a href="https://cultivationconnect.com/" target="_blank">Official Website</a><br/>
+<a href="https://cultivationconnect.vercel.app/" target="_blank">Live App (Staging)</a><br/>
+<a href="https://app.cultivationconnect.com/" target="_blank">Live App (Production)</a><br/>
 
 ### Frontend
 - Framework Docs
