@@ -39,7 +39,7 @@
 ## Live App
 
 - <a href="https://cultivationconnect.vercel.app/" target="_blank">Staging</a><br/>
-- <a href="https://app.cultivationconnect.com/" target="_blank">Production 🚧</a><br/>
+- <a href="https://app.cultivationconnect.com/" target="_blank">Production</a><br/>
 
 ## Frontend
 
