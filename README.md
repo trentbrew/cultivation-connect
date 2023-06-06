@@ -1,7 +1,6 @@
 <b>Cultivation Connect</b> is a framework for monitoring and managing crop growth through predictive insights, data visualization, and tools for controlling various environmental factors that impact your crops.
 
 # 💾 Installation
----
 
 1. Clone the repository
 
@@ -16,7 +15,6 @@
 - `npm run dev`
 
 # 📂 Supporting Files
----
 
 [Crop Steering Framework](https://docs.google.com/spreadsheets/d/1UrczPzwDfpn8adnigQRyj91C---KBomb/edit#gid=1646154042)
 
@@ -31,30 +29,30 @@
 - The onboarding intake form can be found in ~/pages/intake.vue.
 
 # 🌐 Resources
----
 
 - <a href="https://cultivationconnect.com/" target="_blank">Official Website</a><br/>
 - <a href="https://cultivationconnect.vercel.app/" target="_blank">Live App (Staging)</a><br/>
 - <a href="https://app.cultivationconnect.com/" target="_blank">Live App (Production)</a><br/>
 
-### Frontend
-Framework Docs
+## Frontend
+
+### Framework Docs
   - <a href="https://vuejs.org/guide/introduction.html" target="_blank">Vue 3</a>
   - <a href="https://nuxt.com/docs/getting-started/introduction" target="_blank">Nuxt 3</a>
   - <a href="https://tailwindcss.com/docs" target="_blank">Tailwind CSS</a>
-Libraries & APIs
+### Libraries & APIs
   - <a href="https://echarts.apache.org/examples/en/index.html" target="_blank">Apache ECharts</a>
   - <a href="https://iconic.rest/" target="_blank">Iconic API</a>
 
-### Backend
+## Backend
 
-Database
+### Database
   - <a href="https://cultivationconnect.fly.io/_/" target="blank">PocketBase (DB Instance)</a>
   - <a href="https://pocketbase.io/docs/" target="_blank">PocketBase (Docs)</a>
-File Storage
+### File Storage
   - <a href="https://s3.console.aws.amazon.com/s3/buckets/cultivation-connect-temp?region=us-east-1&tab=objects" target="_blank">AWS S3</a>
-Email Server
+### Email Server
   - <a href="https://app.brevo.com/" target="_blank">Brevo</a>
-Hosting
+### Hosting
   - <a href="https://vercel.com/trent-brew/cultivation-connect" target="_blank">Vercel</a>
   - <a href="https://fly.io/apps/cultivationconnect" target="_blank">Fly.io</a>
