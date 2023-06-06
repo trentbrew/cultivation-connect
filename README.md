@@ -42,12 +42,13 @@
 
 ## Frontend
 
-### Framework Docs
+### Frameworks
   - <a href="https://vuejs.org/guide/introduction.html" target="_blank">Vue 3</a>
   - <a href="https://nuxt.com/docs/getting-started/introduction" target="_blank">Nuxt 3</a>
   - <a href="https://tailwindcss.com/docs" target="_blank">Tailwind CSS</a>
-### Libraries & APIs
+### Data Visualization
   - <a href="https://echarts.apache.org/examples/en/index.html" target="_blank">Apache ECharts</a>
+### 3rd Party APIs
   - <a href="https://iconic.rest/" target="_blank">Iconic API</a>
 
 ## Backend
