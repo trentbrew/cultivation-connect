@@ -1,4 +1,4 @@
-<b>Cultivation Connect</b> is a framework for monitoring and managing crop growth through predictive insights, data visualization, and tools for controlling various environmental factors that impact your crops.
+<b><a href="https://cultivationconnect.com/" target="blank">Cultivation Connect</a></b> is a framework for monitoring and managing crop growth through predictive insights, data visualization, and tools for controlling various environmental factors that impact your crops.
 
 <br/>
 
@@ -36,11 +36,10 @@
 
 # 🌐 Resources
 
-## Links
+## Live App
 
-- <a href="https://cultivationconnect.com/" target="_blank">Official Website</a><br/>
-- <a href="https://cultivationconnect.vercel.app/" target="_blank">Live App (Staging)</a><br/>
-- <a href="https://app.cultivationconnect.com/" target="_blank">Live App (Production)</a><br/>
+- <a href="https://cultivationconnect.vercel.app/" target="_blank">Staging</a><br/>
+- <a href="https://app.cultivationconnect.com/" target="_blank">Production 🚧</a><br/>
 
 ## Frontend
 
