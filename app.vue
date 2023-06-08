@@ -19,10 +19,7 @@
   const debug = {
     authCheck: () => {
       if (loggedIn.value) {
-        global.toast(
-          'success',
-          `Logged in as ${pb.api.authStore.model.email} (${pb.api.authStore.model.id})`
-        );
+        global.toast('success', `Logged in as ${pb.api.authStore.model.email} (${pb.api.authStore.model.id})`);
       } else {
         global.toast('error', "You're not logged in");
       }
@@ -80,13 +77,15 @@
 <template>
   <Html :data-theme="global.getTheme">
     <Head>
-      <Title>{{ global.geTtitle }}</Title>
+      <Title>{{ global.getTitle }}</Title>
     </Head>
     <div>
       <NuxtLayout :name="state.layout" />
     </div>
+    <!-- <ModalTest /> -->
     <ModalConfirmation />
     <ModalHelp />
+    <ModalCsv />
     <ModalRecords />
     <ModalDetails />
     <Toast />

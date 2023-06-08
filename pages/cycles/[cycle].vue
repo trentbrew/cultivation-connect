@@ -2,13 +2,29 @@
   import utils from '@/helpers/utils';
 
   const pb = usePocketbase();
-  const global = useGlobalStore();
   const router = useRouter();
   const route = useRoute();
 
   const state = reactive({
     wizard: {
       step: 0,
+      steps: [
+        {
+          title: 'Upload data',
+          name: 'upload-data',
+          status: 'incomplete',
+        },
+        {
+          title: 'Review data',
+          name: 'review-data',
+          status: 'incomplete',
+        },
+        {
+          title: 'Create cycle',
+          name: 'finish',
+          status: 'incomplete',
+        },
+      ],
     },
     cycle: {
       id: '',
@@ -105,12 +121,6 @@
     },
   });
 
-  function updateHash(hash) {
-    router.push({
-      hash: `#${hash}`,
-    });
-  }
-
   onMounted(async () => {
     router.push({ hash: '' });
     const cycle = await pb.get('cycles', {
@@ -119,14 +129,9 @@
     state.cycle.id = cycle.id;
     state.cycle.name = cycle.name;
     state.cycle.overview.plants = cycle.plants;
-    state.cycle.overview.day = Math.floor(
-      utils.timeDifference(Date.now(), Date.parse(cycle.start_date), 'd')
-    );
+    state.cycle.overview.day = Math.floor(utils.timeDifference(Date.now(), Date.parse(cycle.start_date), 'd'));
     state.cycle.overview.growthPhase = utils.capitalize(cycle.growth_stage);
-    state.cycle.overview.startDate = utils.dateString(
-      cycle.start_date,
-      'short'
-    );
+    state.cycle.overview.startDate = utils.dateString(cycle.start_date, 'short');
     // TODO: calculate est harvest date based on grow conditions
     state.cycle.overview.estHarvestDate = utils.dateString(
       Date.parse(cycle.start_date) + 112 * 24 * 60 * 60 * 1000,
@@ -136,6 +141,12 @@
       state.wizard.step = 0;
     }
   });
+
+  function updateHash(hash) {
+    router.push({
+      hash: `#${hash}`,
+    });
+  }
 </script>
 
 <template>
@@ -144,22 +155,15 @@
       <div class="w-full h-20 flex justify-between items-center p-4">
         <Path class="ml-4" page="Cycles" :cycle="state.cycle" />
         <div class="flex gap-2">
-          <ModalTrigger
-            @click="updateHash('records')"
-            class="btn btn-ghost gap-2"
-            target="cycle-records"
-          >
+          <ModalTrigger @click="updateHash('records')" class="btn btn-ghost gap-2" target="cycle-records">
             <Icon name="table" size="24" />
             <span class="text-base">View records</span>
           </ModalTrigger>
         </div>
       </div>
-
       <div id="content" class="flex flex-col flex-grow">
         <header class="p-4 pt-0">
-          <div
-            class="stats stats-horizontal rounded w-full border border-base-300"
-          >
+          <div class="stats stats-horizontal rounded w-full border border-base-300">
             <div class="stat">
               <div class="stat-title">Day</div>
               <div class="stat-value">
@@ -193,16 +197,8 @@
           </div>
         </header>
 
-        <div
-          class="w-full h-full"
-          :class="
-            state.wizard.step < 1 && 'flex flex-col justify-center items-center'
-          "
-        >
-          <ul
-            v-if="state.wizard.step > 0"
-            class="w-full min-h-full grid grid-cols-4 overflow-scroll gap-4 p-4 pt-0"
-          >
+        <div class="w-full h-full" :class="state.wizard.step < 1 && 'flex flex-col justify-center items-center'">
+          <ul v-if="state.wizard.step == -1" class="w-full min-h-full grid grid-cols-4 overflow-scroll gap-4 p-4 pt-0">
             <!-- TODO: Clamp the grid -->
             <li v-for="(item, index) in state.cycle.conditions" :key="index">
               <ModalTrigger @click="updateHash(item.name)" target="details">
@@ -210,22 +206,27 @@
               </ModalTrigger>
             </li>
           </ul>
-          <WIP class="-mt-16 mb-12 -translate-x-10" />
-          <h1 class="text-center opacity-50">
-            You haven't imported any data yet. Get started by uploading
-            <br />
-            a
-            <b>CSV File</b>
-            of your grow data.
-          </h1>
-          <DrawerToggle
-            @click="router.push({ hash: '#upload-csv' })"
-            label="Upload grow data"
-            class="btn-primary mt-12"
-            icon="upload"
-            for="csv-upload"
-            target="csv-upload"
-          />
+          <div v-if="state.wizard.step == 0" class="flex flex-col justify-center items-center">
+            <WIP class="-mt-16 mb-12 -translate-x-10" />
+            <h1 class="text-center opacity-50">
+              You haven't imported any data yet. Get started by uploading
+              <br />
+              a
+              <b>CSV File</b>
+              of your grow data.
+            </h1>
+            <DrawerToggle
+              @click="router.push({ hash: '#upload-csv' })"
+              label="Upload grow data"
+              class="btn-primary mt-12 w-fit"
+              icon="upload"
+              for="csv-upload"
+              target="csv-upload"
+            />
+          </div>
+        </div>
+        <div v-if="state.wizard.step > 0">
+          <Stepper :steps="state.wizard.steps" class="mb-8" />
         </div>
       </div>
     </div>
