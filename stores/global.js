@@ -1,10 +1,3 @@
-/*
-  Name: global.js
-  Author: Trent Brew (https://github.com/trentbrew)
-  Last edited: 05/17/2023
-  Description: This file is responsible for managing global state. It is used to store data that is used across multiple components such as the window title, cache, constants, and UI state.
-*/
-
 import ranges from '@/data/ranges';
 
 export const useGlobalStore = defineStore('global', {
@@ -29,6 +22,25 @@ export const useGlobalStore = defineStore('global', {
     },
     ui: {
       currentItem: null,
+      csvWizard: {
+        steps: [
+          {
+            title: 'Upload data',
+            name: 'upload-data',
+            status: 'incomplete',
+          },
+          {
+            title: 'Review data',
+            name: 'review-data',
+            status: 'incomplete',
+          },
+          {
+            title: 'Create cycle',
+            name: 'finish',
+            status: 'incomplete',
+          },
+        ],
+      },
       details: {
         context: '',
         active: false,
@@ -68,6 +80,7 @@ export const useGlobalStore = defineStore('global', {
     },
   }),
   getters: {
+    wizard: state => state.ui.csvWizard,
     getCache: state => key => state.cache[key],
     getDetailsContext: state => state.ui.details.context,
     getCurrentItem: state => state.ui.currentItem,
@@ -84,6 +97,10 @@ export const useGlobalStore = defineStore('global', {
     },
   },
   actions: {
+    activateWizard() {
+      console.log('activateWizard()');
+      this.ui.csvWizard.step = 1;
+    },
     updateCache(key, data) {
       this.cache[key] = data;
     },

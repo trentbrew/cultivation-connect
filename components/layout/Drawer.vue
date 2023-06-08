@@ -120,7 +120,6 @@
         },
       },
     },
-    // This is the data that is fetched from the database. It is used to populate the select inputs.
     data: {
       cultivars: [],
       sensors: [],
@@ -159,10 +158,16 @@
     async newHash => {
       if (drawerContext.value == 'csv-upload') {
         state.cycle.csv.init = 'csv';
-      } else if (drawerContext.value == 'new-cycle' || newHash == '#new-cycle') {
+      } else if (
+        drawerContext.value == 'new-cycle' ||
+        newHash == '#new-cycle'
+      ) {
         state.cycle.csv.init = 'manual';
       }
-      if (newHash && ['edit-cultivar', 'edit-sensor'].includes(drawerContext.value)) {
+      if (
+        newHash &&
+        ['edit-cultivar', 'edit-sensor'].includes(drawerContext.value)
+      ) {
         const cycle_id = newHash.substring(1).split('–')[1];
         console.log('auto-populating patch data');
         if (drawerContext.value == 'edit-cultivar') {
@@ -170,7 +175,9 @@
             return cycles.id == cycle_id;
           })[0];
           const cultivar_id = cycle?.cultivar[0];
-          const cultivar = await state.data?.cultivars.filter(cultivar => cultivar.id == cultivar_id)[0];
+          const cultivar = await state.data?.cultivars.filter(
+            cultivar => cultivar.id == cultivar_id
+          )[0];
           console.log('state.data.cultivars: ', state.data.cultivars);
           console.log('cultivar_id: ', cultivar_id);
           console.log('cultivar: ', cultivar);
@@ -178,7 +185,8 @@
             state.context.cultivar = cultivar;
             state.patch.cultivar.name = state.context.cultivar.name;
             state.patch.cultivar.phenotype = state.context.cultivar.phenotype;
-            state.patch.cultivar.acquisition = state.context.cultivar.acquisition;
+            state.patch.cultivar.acquisition =
+              state.context.cultivar.acquisition;
             state.patch.cultivar.notes = state.context.cultivar.notes;
             console.log('state.patch: ', state.patch.cultivar);
           }
@@ -216,7 +224,9 @@
   }
 
   function handleValidation(e) {
-    const groupValidity = Object.values(state['payload'][e.group]).map(item => item.valid);
+    const groupValidity = Object.values(state['payload'][e.group]).map(
+      item => item.valid
+    );
     state['payload'][e.group][e.id].valid = e.valid;
     state['payload'].valid = !groupValidity.includes(false);
     // console.log('group validity: ', groupValidity);
@@ -228,7 +238,9 @@
       const rooms = state.data.rooms?.map(room => room.id);
       if (rooms.includes(state.payload.cycle.room.value)) {
         return pb.get(collection, {
-          filter: `room.id = "${state.payload.cycle.room.value}" && facility.id = "${pb.api.authStore.model.facility}"${
+          filter: `room.id = "${
+            state.payload.cycle.room.value
+          }" && facility.id = "${pb.api.authStore.model.facility}"${
             options?.filter ? ` && ${options.filter}` : ''
           }`,
           ...options,
@@ -238,7 +250,9 @@
       }
     }
     return pb.get(collection, {
-      filter: `facility.id = "${pb.api.authStore.model.facility}"${options?.filter ? ` && ${options.filter}` : ''}`,
+      filter: `facility.id = "${pb.api.authStore.model.facility}"${
+        options?.filter ? ` && ${options.filter}` : ''
+      }`,
       ...options,
     });
   }
@@ -276,12 +290,17 @@
     console.log('raw csv: ', csv);
     const json = await utils.csvToJson(csv);
     console.log('csv to json: ', json);
-    // TODO: validate csv
+    validateCsv(json);
     triggerDataReview();
+  }
+
+  function validateCsv(json) {
+    console.log('validating json...');
   }
 
   function triggerDataReview() {
     console.log('triggering data review process');
+    global.activateWizard();
   }
 
   function submitSensor() {
@@ -367,7 +386,9 @@
 
   async function submitCycle() {
     let payload = {
-      name: convertDateString(`${await getCultivarName()} (${formatDate(Date.now())})`),
+      name: convertDateString(
+        `${await getCultivarName()} (${formatDate(Date.now())})`
+      ),
       growth_stage: 'Propogation',
       facility: pb.api.authStore.model.facility,
     };
@@ -423,10 +444,15 @@
       {{ title }}
     </h1>
 
-    <div class="max-h-[calc(100vh-160px)] border-t border-base-300 w-full overflow-auto pb-4">
+    <div
+      class="max-h-[calc(100vh-160px)] border-t border-base-300 w-full overflow-auto pb-4"
+    >
       <!-- NEW SENSOR -->
 
-      <form v-if="drawerContext == 'new-sensor'" class="flex flex-col p-8 w-full">
+      <form
+        v-if="drawerContext == 'new-sensor'"
+        class="flex flex-col p-8 w-full"
+      >
         <div class="form-control flex flex-col justify-start gap-4 mt-4 mb-8">
           <Input
             group="sensor"
@@ -466,7 +492,9 @@
           <option value="ph_sensor">PH Sensor</option>
           <option value="soil_moisture_sensor">Soil moisture sensor</option>
           <option value="ec_ppm_sensor">EC/PPM sensor</option>
-          <option value="feed_irrigation_thermometer">Feed/Irrigation thermometer</option>
+          <option value="feed_irrigation_thermometer">
+            Feed/Irrigation thermometer
+          </option>
         </Input>
 
         <Input
@@ -661,7 +689,9 @@
 
       <!-- NEW CYCLE -->
 
-      <form v-if="drawerContext == 'new-cycle' || drawerContext == 'csv-upload'">
+      <form
+        v-if="drawerContext == 'new-cycle' || drawerContext == 'csv-upload'"
+      >
         <!-- <div
           class="form-control flex flex-col justify-start gap-4 mt-4 p-8 pb-0"
         >
@@ -685,7 +715,10 @@
             v-model="state.cycle.csv.init"
           />
         </div> -->
-        <div v-if="state.cycle.csv.init == 'csv'" class="form-control flex flex-col p-8 gap-4">
+        <div
+          v-if="state.cycle.csv.init == 'csv'"
+          class="form-control flex flex-col p-8 gap-4"
+        >
           <Input
             group="cycle"
             v-model="state.cycle.csv.origin"
@@ -705,7 +738,9 @@
             @input="handleFileInput"
             group="cycle"
             v-model="state.cycle.csv.files"
-            :label="`Upload your ${state.cycle.csv.origin == 'aroya' ? 'Aroya data' : 'grow data'} (CSV)`"
+            :label="`Upload your ${
+              state.cycle.csv.origin == 'aroya' ? 'Aroya data' : 'grow data'
+            } (CSV)`"
             type="file"
             id="csv_file"
             name="csv_file"
@@ -738,7 +773,11 @@
             @validation="handleValidation"
             class="w-full"
           >
-            <option v-for="(option, index) in state.data.cultivars" :key="index" :value="option?.id">
+            <option
+              v-for="(option, index) in state.data.cultivars"
+              :key="index"
+              :value="option?.id"
+            >
               {{ `${option?.name}` }}
             </option>
           </Input>
@@ -756,7 +795,11 @@
             @change="handleRoomChange"
             class="w-full"
           >
-            <option v-for="(option, index) in state.data.rooms" :key="index" :value="option?.id">
+            <option
+              v-for="(option, index) in state.data.rooms"
+              :key="index"
+              :value="option?.id"
+            >
               {{ `${option?.name}` }}
             </option>
           </Input>
@@ -771,12 +814,24 @@
             rules="required"
             @validation="handleValidation"
             @addItem="handleAddItem"
-            :disabled="state.payload.cycle.room.value == '' || !state.payload.cycle.room.value"
-            :class="state.payload.cycle.room.value == '' || !state.payload.cycle.room.value ? 'opacity-50' : ''"
+            :disabled="
+              state.payload.cycle.room.value == '' ||
+              !state.payload.cycle.room.value
+            "
+            :class="
+              state.payload.cycle.room.value == '' ||
+              !state.payload.cycle.room.value
+                ? 'opacity-50'
+                : ''
+            "
             class="w-full"
           >
             <!-- TODO: only display zones that belong to the selected room -->
-            <option v-for="(option, index) in state.data.zones" :key="index" :value="option?.id">
+            <option
+              v-for="(option, index) in state.data.zones"
+              :key="index"
+              :value="option?.id"
+            >
               {{ `${option?.name}` }}
             </option>
           </Input>
@@ -848,12 +903,22 @@
 
       <!-- DRAWER FOOTER -->
 
-      <div class="absolute bottom-0 h-[80px] w-full border-t border-base-300 flex justify-end items-center px-4 gap-2">
-        <label @click="router.push({ hash: '' })" for="drawer" class="btn btn-ghost px-6">Cancel</label>
+      <div
+        class="absolute bottom-0 h-[80px] w-full border-t border-base-300 flex justify-end items-center px-4 gap-2"
+      >
+        <label
+          @click="router.push({ hash: '' })"
+          for="drawer"
+          class="btn btn-ghost px-6"
+        >
+          Cancel
+        </label>
         <DrawerToggle
           class="btn-primary"
           @click="handleSubmit"
-          :disabled="route.hash.substring(1).split('–')[0] == 'edit' ? false : !valid"
+          :disabled="
+            route.hash.substring(1).split('–')[0] == 'edit' ? false : !valid
+          "
           :for="drawerContext"
           label="Submit"
         />
