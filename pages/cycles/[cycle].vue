@@ -229,7 +229,7 @@
           <div v-else class="flex flex-col justify-center items-center">
             <WIP
               img="data"
-              class="mb-24 w-[300px] -mt-12 brightness-[0.915] opacity-75"
+              class="mb-8 w-[300px] -mt-12 brightness-[0.915] opacity-75"
             />
             <h1 class="text-center opacity-50 w-full">
               You haven't imported any data for this cycle yet. Get started by

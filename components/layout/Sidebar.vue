@@ -185,7 +185,7 @@
           <Icon
             name="arrow_alt_left"
             class="duration-300"
-            :class="state.ui.collections ? 'rotate-[180deg]' : 'rotate-[0deg]'"
+            :class="state.ui.collections ? 'rotate-[0deg]' : 'rotate-[180deg]'"
           />
         </button>
       </li>
