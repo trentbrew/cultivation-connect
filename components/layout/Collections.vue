@@ -21,6 +21,13 @@
     });
   }
 
+  const filteredData = computed(() => {
+    if (state.search == '') return state.data;
+    return state.data.filter(record => {
+      return record.name.toLowerCase().includes(state.search.toLowerCase());
+    });
+  });
+
   function handleNewCycle() {
     router.push({ hash: '#new-cycle' });
   }
@@ -44,6 +51,7 @@
         class="absolute opacity-40 translate-x-[22px] translate-y-[18px]"
       />
       <input
+        v-model="state.search"
         type="text"
         :placeholder="`Search ${context.split('-')[0]}...`"
         class="input w-full h-full rounded-none !outline-none pl-16"
@@ -51,19 +59,19 @@
     </div>
 
     <div
-      v-if="state.data.length == 0"
-      class="flex-grow w-full mt-64"
+      v-if="filteredData.length == 0"
+      class="flex-grow w-full translate-y-[40vh]"
       :class="'flex justify-center items-center px-6'"
     >
       <!-- TODO: Only display this is there are no search results -->
-      <p class="text-base-300 text-center text-sm">
+      <p class="text-base-300 text-center text-lg">
         {{ `No ${context.split('-')[0]} found` }}
       </p>
     </div>
 
     <div class="h-full flex flex-col justify-between items-start">
       <ul class="w-full">
-        <li v-for="(record, index) in state.data" :key="index">
+        <li v-for="(record, index) in filteredData" :key="index">
           <router-link
             :to="`/cycles/${record.id}`"
             class="font-medium h-16 w-full p-8 flex justify-start items-center cursor-pointer hover:bg-base-200 active:scale-[0.96] active:rounded-[4px] duration-150"
