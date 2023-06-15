@@ -363,28 +363,15 @@
   }
 
   function convertDateString(str) {
-    // Extracting the date from the input string
-    const dateRegex = /\((.*?)\)/;
-    const dateMatch = dateRegex.exec(str);
-    const dateString = dateMatch ? dateMatch[1] : '';
-
-    // Parsing the date string into a JavaScript Date object
-    const date = new Date(dateString);
-
-    // Extracting the year, month, and day from the Date object
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    // Extracting the cultivar name from the input string
-    const cultivarRegex = /^(.*?)\s/;
-    const cultivarMatch = cultivarRegex.exec(str);
-    const cultivarName = cultivarMatch ? cultivarMatch[1] : '';
-
-    // Generating the desired output string
-    const outputString = `${year}_${month}_${day}-${cultivarName}`;
-
-    return outputString;
+    const regex = /(.*?)\s\(.*?(\d{1,2}), (\d{4})\)/;
+    const match = str.match(regex);
+    if (match) {
+      const cultivar = match[1].replace(/\s/g, '-');
+      const day = match[2].padStart(2, '0');
+      const year = match[3];
+      return `${year}_${day}_${cultivar}`;
+    }
+    return '';
   }
 
   async function submitCycle() {
