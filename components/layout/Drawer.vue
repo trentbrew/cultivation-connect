@@ -235,7 +235,16 @@
     if (drawerContext.value == 'new-sensor') return 'Add a new sensor';
     if (drawerContext.value == 'edit-sensor') return 'Edit sensor';
     if (drawerContext.value == 'new-cycle') return 'Create a new cycle';
-    if (drawerContext.value == 'new-record') return 'New record';
+    if (drawerContext.value == 'new-record')
+      return `New record (${new Date()
+        .toLocaleString('en-US', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+        .replace(',', '')})`;
   });
 
   watch(

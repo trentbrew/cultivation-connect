@@ -190,12 +190,19 @@
         <div class="flex gap-2">
           <ModalTrigger
             @click="updateHash('records')"
-            class="btn btn-ghost gap-2"
+            class="btn btn-outline gap-2 hover:bg-base-200 hover:text-base-content"
             target="cycle-records"
           >
             <Icon name="table" size="24" />
             <span class="text-base">View records</span>
           </ModalTrigger>
+          <DrawerToggle
+            v-if="state.cycle.active"
+            class="bg-black"
+            label="New record"
+            icon="plus"
+            for="new-record"
+          />
         </div>
       </div>
       <div id="content" class="flex flex-col flex-grow">
@@ -278,7 +285,6 @@
                 class="btn-primary mt-12 w-fit"
                 icon="upload"
                 for="csv-upload"
-                target="csv-upload"
               />
               <DrawerToggle
                 @click="router.push({ hash: '#new-record' })"
@@ -286,7 +292,6 @@
                 class="bg-black mt-12 w-fit"
                 icon="plus"
                 for="new-record"
-                target="new-record"
               />
             </div>
           </div>
