@@ -30,7 +30,8 @@
 </script>
 
 <template>
-  <div style="transition: 300ms cubic-bezier(0.16, 1, 0.3, 1)" :style="`width: ${props.size}px`" :class="state.loading ? 'opacity-0 scale-[0.8]' : 'opacity-1 scale-1'">
+  <div v-if="state.loading" :style="`width: ${props.size}px; height: ${props.size}px`" class="bg-transparent"></div>
+  <div v-else style="transition: 300ms cubic-bezier(0.16, 1, 0.3, 1)" :style="`width: ${props.size}px`" :class="state.loading ? 'opacity-0 scale-[0.8]' : 'opacity-1 scale-1'">
     <div v-html="svg"></div>
   </div>
 </template>
