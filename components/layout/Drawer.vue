@@ -233,16 +233,19 @@
     // console.log('payload is valid: ', state['payload'].valid);
   }
 
-  function fetch(collection) {
+  async function fetch(collection) {
     if (collection == 'zones') {
       console.log('fetching zones...');
-      return pb.get(collection, {
+      const zones = await pb.get(collection, {
         filter: `room = "${state.payload.cycle.room.value}" && facility.id = "${pb.api.authStore.model.facility}"`,
       });
+      console.log('fetched zones:', zones);
+      return zones;
     }
-    return pb.get(collection, {
+    const data = await pb.get(collection, {
       filter: `facility.id = "${pb.api.authStore.model.facility}"`,
     });
+    return data;
   }
 
   async function handleAddItem(e) {
@@ -251,9 +254,8 @@
       submitRoom(e.value);
     }
     if (e.id == 'zone') {
-      console.log('handling zone addition', e.value);
-      console.log('this zone belong to', state.payload.cycle.room.value);
-      submitZone(e.value, state.payload.cycle.room.value);
+      console.log(`adding zone "${e.value}" to room "${e.room}"`);
+      submitZone(e.value);
     }
   }
 
@@ -402,10 +404,10 @@
     });
   }
 
-  function submitZone(name, room) {
+  function submitZone(name) {
     let payload = {
       name,
-      room,
+      room: state.payload.cycle.room.value,
       facility: pb.api.authStore.model.facility,
     };
     console.log('posting zone...', payload);

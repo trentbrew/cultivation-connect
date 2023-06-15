@@ -269,11 +269,16 @@
     v-if="props.type == 'select'"
     class="flex flex-col items-start gap-2 mt-3"
   >
-    <label :class="props.disabled ? 'opacity-50' : ''">
-      {{
-        `${props.label} ${state.rules.includes('required') ? '*' : ''}` +
-        `${state.loading ? ' (loading...)' : ''}`
-      }}
+    <label
+      class="w-full flex justify-between"
+      :class="props.disabled ? 'opacity-50' : ''"
+    >
+      <span>
+        {{ `${props.label} ${state.rules.includes('required') ? '*' : ''}` }}
+      </span>
+      <span>
+        {{ `${state.loading ? ' loading...' : ''}` }}
+      </span>
     </label>
     <div class="w-full flex">
       <select
