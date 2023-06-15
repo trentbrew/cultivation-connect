@@ -23,7 +23,7 @@
       status: 'incomplete',
     },
     {
-      title: 'Activate cycle',
+      title: 'Initiate cycle',
       name: 'activate_cycle',
       status: 'incomplete',
     },
