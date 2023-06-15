@@ -8,6 +8,13 @@
 
   const state = reactive({
     cycle: {
+      id: null,
+      name: null,
+      room: null,
+      zone: null,
+      cultivar: null,
+      growth_stage: null,
+      start_date: null,
       csv: {
         valid: false,
         init: {
@@ -290,11 +297,24 @@
   );
 
   async function fetchData() {
+    state.cycle;
     state.data.cultivars = await fetch('cultivars');
     state.data.sensors = await fetch('sensors');
-    state.data.cycles = await fetch('cycles');
     state.data.rooms = await fetch('rooms');
     state.data.zones = await fetch('zones');
+    state.data.cycles = await fetch('cycles');
+    const cycle_id = route.params.cycle;
+    const cycle = await state.data.cycles.filter(cycles => {
+      return cycles.id == cycle_id;
+    })[0];
+    state.cycle.id = cycle_id;
+    state.cycle.name = cycle.name;
+    state.cycle.room = cycle.room;
+    state.cycle.zone = cycle.zone;
+    state.cycle.cultivar = cycle.cultivar[0];
+    state.cycle.growth_stage = cycle.growth_stage;
+    state.cycle.start_date = cycle.start_date;
+    console.log(state.cycle);
   }
 
   function handleCsvValidation(e) {
@@ -324,10 +344,10 @@
     return data;
   }
 
-  function clearForm(group) {
+  function clearForm(group, validity) {
     Object.entries(state.payload[group]).forEach(([key, value]) => {
       state.payload[group][key].value = null;
-      state.payload[group][key].valid = false;
+      state.payload[group][key].valid = validity ?? false;
     });
   }
 
@@ -353,7 +373,80 @@
     if (drawerContext.value == 'edit-cultivar') updateCultivar();
     if (drawerContext.value == 'new-cycle') submitCycle();
     if (drawerContext.value == 'csv-upload') submitCsv();
+    if (drawerContext.value == 'new-record') submitRecord();
   }
+
+  async function submitRecord() {
+    const getCycleDay = () => {
+      const start = new Date(state.cycle.start_date);
+      const today = new Date();
+      const diff = today - start;
+      const day = Math.floor(diff / (1000 * 60 * 60 * 24));
+      return day;
+    };
+    const getCycleWeek = () => {
+      const start = new Date(state.cycle.start_date);
+      const today = new Date();
+      const diff = today - start;
+      const week = Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
+      return week;
+    };
+    const data = {
+      air_temp: state.payload.record[0].value,
+      grow_medium_temp: state.payload.record[1].value,
+      air_humidity: state.payload.record[2].value,
+      solar: state.payload.record[3].value,
+      vpd: state.payload.record[4].value,
+      dli: state.payload.record[5].value,
+      co2: state.payload.record[6].value,
+      pore_ec: state.payload.record[7].value,
+      day_pore_ec: state.payload.record[8].value,
+      night_pore_ec: state.payload.record[9].value,
+      day_soil_moisture: state.payload.record[10].value,
+      night_soil_moisture: state.payload.record[11].value,
+      day_dry_back: state.payload.record[12].value,
+      night_dry_back: state.payload.record[13].value,
+      ph: state.payload.record[14].value,
+      yield_per_watt: null, // TODO: calulate this?
+      yield_per_sqft: null, // TODO: calulate this?
+      thc: null, // TODO: get this from the cultivar?
+      tac: null, // TODO: get this from the cultivar?
+      terp: null, // TODO: get this from the cultivar?
+    };
+    const payload = {
+      date_recorded: new Date().toISOString(),
+      recorded_by: pb.api.authStore.model.id,
+      facility: pb.api.authStore.model.facility,
+      room: state.cycle.room,
+      zone: state.cycle.zone,
+      cycle: state.cycle.id,
+      cultivar: state.cycle.cultivar,
+      growth_stage: state.cycle.growth_stage,
+      cycle_day: getCycleDay(),
+      cycle_week: getCycleWeek(),
+      data: JSON.stringify(data),
+    };
+    clearForm('record', true);
+    pb.post('records', payload)
+      .then(res => {
+        pb.update('cycles', state.cycle.id, {
+          active: true,
+        });
+        global.toast('default', 'Successfully submitted record');
+      })
+      .catch(err => {
+        global.toast('error', 'Error submitting record');
+        console.log('error submitting record: ', err);
+      });
+  }
+
+  watch(
+    () => state.payload.record,
+    val => {
+      // console.log('record payload changed: ', val);
+    },
+    { deep: true }
+  );
 
   async function submitCsv() {
     console.log('handling csv submission...', state.cycle.csv.files[0]);
@@ -419,13 +512,14 @@
     });
   }
 
+  async function getCultivarName() {
+    let name = await pb.get('cultivars', {
+      filter: `id = "${state.payload.cycle.cultivar.value}"`,
+    });
+    return name[0].name;
+  }
+
   async function submitCycle() {
-    const getCultivarName = async () => {
-      let name = await pb.get('cultivars', {
-        filter: `id = "${state.payload.cycle.cultivar.value}"`,
-      });
-      return name[0].name;
-    };
     let payload = {
       name: `${state.payload.cycle.start_date.value}_${(
         await getCultivarName()
