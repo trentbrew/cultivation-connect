@@ -13,7 +13,7 @@
       status: 'complete',
     },
     {
-      title: 'Import data',
+      title: 'Add data',
       name: 'import_data',
       status: 'active',
     },

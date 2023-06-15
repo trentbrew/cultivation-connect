@@ -466,10 +466,10 @@
     // console.log('raw csv: ', csv);
     const parsedCsv = await utils.parseCsv(csv);
     console.log('parsed csv: ', parsedCsv);
-    const json = await utils.csvToJson(formattedCsv);
-    console.log('csv to json: ', json);
-    validateCsv(json);
-    triggerDataReview();
+    // const json = await utils.csvToJson(parsedCsv);
+    // console.log('csv to json: ', json);
+    // validateCsv(json);
+    // triggerDataReview();
   }
 
   function validateCsv(json) {

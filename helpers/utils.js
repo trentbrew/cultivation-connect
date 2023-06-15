@@ -72,6 +72,7 @@ const utils = {
   // This function takes a CSV file from user input and returns it's contents as a string
 
   readCsv: file => {
+    console.log('reading csv...');
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result);
@@ -80,68 +81,46 @@ const utils = {
     });
   },
 
-  parseCsv: async data => {
-    // Split the data into lines
-    const lines = data.split('\n');
+  // This function takes an ugly CSV and makes it pretty
 
-    // Extract the headers
-    const headers = lines[1].split(',').slice(1);
-
-    // Initialize the result object
-    const result = {
-      Flower: {},
-      Veg: {},
-    };
-
-    // Iterate over the lines starting from the third line
-    for (let i = 2; i < lines.length; i++) {
-      const line = lines[i].split(',');
-      const timestamp = line[0];
-
-      // Iterate over the headers and populate the result object
-      for (let j = 0; j < headers.length; j++) {
-        const header = headers[j];
-        const value = line[j + 1];
-
-        // Determine the category based on the header name
-        const category = header.includes('Flower') ? 'Flower' : 'Veg';
-
-        // Initialize the category in the result object if not already present
-        if (!result[category][header]) {
-          result[category][header] = {};
-          result[category][header].Zone1 = {};
-          result[category][header].Zone2 = {};
-          result[category][header].Zone3 = {};
-          result[category][header].Zone4 = {};
-        }
-
-        // Assign the value to the corresponding timestamp and zone
-        result[category][header].Zone1[timestamp] = value;
-        result[category][header].Zone2[timestamp] = value;
-        result[category][header].Zone3[timestamp] = value;
-        result[category][header].Zone4[timestamp] = value;
-      }
-    }
-
-    return result;
-  },
-
-  // This function parses a CSV as JSON and returns an array of objects
-
-  csvToJson: csv => {
-    const lines = csv.split('\n');
-    const result = [];
+  parseCsv: async csv => {
+    console.clear();
+    console.log('parsing CSV...');
+    const lines = csv.split('\n').map(line => line.trim());
     const headers = lines[0].split(',');
+    const data = [];
+
     for (let i = 1; i < lines.length; i++) {
-      const obj = {};
-      const currentline = lines[i].split(',');
-      for (let j = 0; j < headers.length; j++) {
-        obj[headers[j]] = currentline[j];
-      }
-      result.push(obj);
+      const values = lines[i].split(',');
+      const entry = {
+        zone: headers[0], // Assuming the zone information is constant for all entries
+        port: headers[1], // Assuming the port information is constant for all entries
+        timestamp: values[0],
+        soil_moist: values[4],
+        soil_temp: values[2],
+        pore_ec: values[3],
+      };
+      data.push(entry);
     }
-    return result;
+
+    return data;
   },
+
+  // csvToJson: csv => {
+  //   console.log('converting csv to json...');
+  //   const lines = csv.split('\n');
+  //   const result = [];
+  //   const headers = lines[0].split(',');
+  //   for (let i = 1; i < lines.length; i++) {
+  //     const obj = {};
+  //     const currentline = lines[i].split(',');
+  //     for (let j = 0; j < headers.length; j++) {
+  //       obj[headers[j]] = currentline[j];
+  //     }
+  //     result.push(obj);
+  //   }
+  //   return result;
+  // },
 };
 
 export default utils;
