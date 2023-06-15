@@ -30,6 +30,7 @@
   <AuthRouteGuard>
     <div class="h-screen w-full p-4 -mt-12">
       <div
+        v-if="state.data.cycles.length == 0"
         class="flex flex-col justify-center items-center rounded w-full h-full gap-10"
       >
         <WIP
