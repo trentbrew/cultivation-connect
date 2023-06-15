@@ -30,6 +30,7 @@
   ];
 
   const state = reactive({
+    loading: false,
     cycle: {
       active: false,
       id: '',
@@ -127,23 +128,30 @@
     },
   });
 
+  watch(
+    () => route,
+    val => {
+      console.log('the route changed', val);
+    },
+    { deep: true }
+  );
+
   onMounted(async () => {
     router.push({ hash: '' });
     const cycle = await pb.get('cycles', {
       id: route.params.cycle,
     });
     initCycle(cycle);
-    const { data: latest_record } = await pb.get('records', {
-      id: cycle.latest_record,
-    });
-    state.cycle.conditions.forEach((item, index) => {
-      if (latest_record[item.name]) {
-        state.cycle.conditions[index].value = latest_record[item.name];
-      }
-    });
-    console.clear();
-    console.log(latest_record);
-    console.log('state.cycle.conditions', state.cycle.conditions);
+    if (cycle.active) {
+      const { data: latest_record } = await pb.get('records', {
+        id: cycle.latest_record,
+      });
+      state.cycle.conditions.forEach((item, index) => {
+        if (latest_record[item.name]) {
+          state.cycle.conditions[index].value = latest_record[item.name];
+        }
+      });
+    }
   });
 
   function initCycle(cycle) {
@@ -247,7 +255,10 @@
               </ModalTrigger>
             </li>
           </ul>
-          <div v-else class="flex flex-col justify-center items-center">
+          <div
+            v-if="!state.cycle.active"
+            class="flex flex-col justify-center items-center"
+          >
             <WIP
               img="data"
               class="mb-8 w-[300px] -mt-12 brightness-[0.915] opacity-75"
