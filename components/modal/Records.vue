@@ -53,7 +53,7 @@
               <!-- <WIP img="records" class="invert scale-[1.6] mb-8" /> -->
               <WIP
                 img="records"
-                class="brightness-[0.915] w-[150px] mb-12 invert"
+                class="brightness-[0.915] w-[100px] mb-12 invert"
               />
               <span
                 class="mt-12 max-w-2xl text-center"
