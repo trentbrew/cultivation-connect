@@ -389,6 +389,7 @@
     pb.post('cycles', payload).then(res => {
       console.log('✅ Added cycle', res);
       global.toast('primary', 'Your new cycle has been created! 🙌');
+      router.push(`/cycles/${res.id}`);
     });
   }
 
