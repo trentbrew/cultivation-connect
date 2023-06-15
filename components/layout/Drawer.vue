@@ -119,6 +119,104 @@
           valid: false,
         },
       },
+      record: [
+        {
+          label: 'Air Temperature',
+          name: 'air_temp',
+          value: null,
+          valid: true,
+        },
+        {
+          label: 'Soil Temperature',
+          name: 'grow_medium_temp',
+          value: null,
+          valid: true,
+        },
+        {
+          label: 'Air Humidity',
+          name: 'air_humidity',
+          value: null,
+          valid: true,
+        },
+        {
+          label: 'Solar',
+          name: 'solar',
+          value: null,
+          valid: true,
+        },
+        {
+          label: 'Vapor Pressure Deficit',
+          name: 'vpd',
+          value: null,
+          valid: true,
+        },
+        {
+          label: 'Daylight Integral',
+          name: 'dli',
+          value: null,
+          valid: true,
+        },
+        {
+          label: 'CO2',
+          name: 'co2',
+          value: null,
+          valid: true,
+        },
+        {
+          label: 'Pore EC',
+          name: 'pore_ec',
+          value: null,
+          valid: true,
+        },
+        {
+          label: 'Pore EC (Day)',
+          name: 'day_time_pore_ec',
+          value: null,
+          valid: true,
+        },
+        {
+          label: 'Pore EC (Night)',
+          name: 'night_time_pore_ec',
+          value: null,
+          valid: true,
+        },
+        {
+          label: 'Soil Moisture (Day)',
+          name: 'day_time_soil_moisture',
+          value: null,
+          valid: true,
+        },
+        {
+          label: 'Soil Moisture (Night)',
+          name: 'night_time_soil_moisture',
+          value: null,
+          valid: true,
+        },
+        {
+          label: 'Dry Back (Day)',
+          name: 'day_time_dry_back',
+          value: null,
+          valid: true,
+        },
+        {
+          label: 'Dry Back (Night)',
+          name: 'night_time_dry_back',
+          value: null,
+          valid: true,
+        },
+        {
+          label: 'Soil pH',
+          name: 'ph',
+          value: null,
+          valid: true,
+        },
+        {
+          label: 'Yield',
+          name: 'yield',
+          value: null,
+          valid: true,
+        },
+      ],
     },
     data: {
       cultivars: [],
@@ -151,6 +249,7 @@
     if (drawerContext.value == 'new-sensor') return 'Add a new sensor';
     if (drawerContext.value == 'edit-sensor') return 'Edit sensor';
     if (drawerContext.value == 'new-cycle') return 'Create a new cycle';
+    if (drawerContext.value == 'new-record') return 'New record';
   });
 
   watch(
@@ -295,7 +394,6 @@
 
   function triggerDataReview() {
     console.log('triggering data review process');
-    global.activateWizard();
   }
 
   function submitSensor() {
@@ -861,6 +959,22 @@
             <option value="inorganic">Custom blend</option>
           </Input>
         </div>
+      </form>
+
+      <!-- NEW RECORD -->
+
+      <form v-if="drawerContext == 'new-record'" class="flex flex-col p-8">
+        <Input
+          v-for="(input, index) in state.payload.record"
+          :key="index"
+          group="record"
+          type="text"
+          v-model="state.payload.record[input.name].value"
+          :id="input.name"
+          :name="input.name"
+          :label="input.label"
+          class="w-full"
+        />
       </form>
 
       <!-- DRAWER FOOTER -->

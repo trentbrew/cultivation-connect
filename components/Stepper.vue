@@ -27,9 +27,19 @@
     },
   });
 
+  const step = ref(null);
+
+  onMounted(() => {
+    console.log(step.value[currentStep.value]);
+  });
+
+  const currentStep = computed(() => {
+    return props.steps.findIndex(step => step.status === 'active');
+  });
+
   const styles = {
     complete: 'step step-primary',
-    active: 'step step-primary font-bold',
+    active: 'step step-primary font-bold active-step',
     incomplete: 'step text-base-content/50',
   };
 </script>
@@ -38,6 +48,7 @@
   <div>
     <ul class="steps w-full">
       <li
+        ref="step"
         v-for="(step, index) in props.steps"
         :key="index"
         :class="styles[step.status]"

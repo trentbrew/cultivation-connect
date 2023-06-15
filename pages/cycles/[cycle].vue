@@ -6,8 +6,32 @@
   const route = useRoute();
   const global = useGlobalStore();
 
+  const steps = [
+    {
+      title: 'Create cycle',
+      name: 'create_cycle',
+      status: 'complete',
+    },
+    {
+      title: 'Import data',
+      name: 'import_data',
+      status: 'active',
+    },
+    {
+      title: 'Review data',
+      name: 'review_data',
+      status: 'incomplete',
+    },
+    {
+      title: 'Activate cycle',
+      name: 'activate_cycle',
+      status: 'incomplete',
+    },
+  ];
+
   const state = reactive({
     cycle: {
+      active: false,
       id: '',
       name: '',
       overview: {
@@ -21,82 +45,82 @@
         {
           title: 'Air Temperature',
           name: 'air_temp',
-          value: 72,
+          value: 0, // placeholder: 72
         },
         {
           title: 'Soil Temperature',
           name: 'grow_medium_temp',
-          value: 69,
+          value: 0, // placeholder: 69
         },
         {
           title: 'Air Humidity',
           name: 'air_humidity',
-          value: 0.211,
+          value: 0, // placeholder: 0.211
         },
         {
           title: 'Solar',
           name: 'solar',
-          value: 270,
+          value: 0, // placeholder: 270
         },
         {
           title: 'Vapor Pressure Deficit',
           name: 'vpd',
-          value: 0.62,
+          value: 0, // placeholder: 0.62
         },
         {
           title: 'Daylight Integral',
           name: 'dli',
-          value: 32.77,
+          value: 0, // placeholder: 32.77
         },
         {
           title: 'CO2',
           name: 'co2',
-          value: 1205,
+          value: 0, // placeholder: 1205
         },
         {
           title: 'Pore EC',
           name: 'pore_ec',
-          value: 0.161,
+          value: 0, // placeholder: 0.161
         },
         {
           title: 'Pore EC (Day)',
           name: 'day_time_pore_ec',
-          value: 0.112,
+          value: 0, // placeholder: 0.112
         },
         {
           title: 'Pore EC (Night)',
           name: 'night_time_pore_ec',
-          value: 0.29,
+          value: 0, // placeholder: 0.29
         },
         {
           title: 'Soil Moisture (Day)',
           name: 'day_time_soil_moisture',
-          value: 0.443,
+          value: 0, // placeholder: 0.443
         },
         {
           title: 'Soil Moisture (Night)',
           name: 'night_time_soil_moisture',
-          value: 0.298,
+          value: 0, // placeholder: 0.298
         },
         {
           title: 'Dry Back (Day)',
           name: 'day_time_dry_back',
-          value: 0.045,
+          value: 0, // placeholder: 0.045
         },
         {
           title: 'Dry Back (Night)',
           name: 'night_time_dry_back',
-          value: 0.164,
+          value: 0, // placeholder: 0.164
         },
         {
           title: 'Soil pH',
           name: 'ph',
-          value: 5.97,
+          value: 0, // placeholder: 5.97
         },
         {
           title: 'Yield',
           name: 'yield',
-          value: 60,
+          value: 0, // placeholder: 60
         },
       ],
     },
@@ -123,23 +147,8 @@
       Date.parse(cycle.start_date) + 112 * 24 * 60 * 60 * 1000,
       'short'
     );
+    state.cycle.active = cycle.active;
   });
-
-  const wizard = computed(() => global.wizard);
-
-  const currentStep = computed(() => {
-    return wizard.value.steps.findIndex(step => step.status === 'active') ?? 0;
-  });
-
-  console.log('wizard: ', wizard.value);
-
-  watch(
-    () => wizard.value,
-    val => {
-      console.log('the wizard state has been changed. current step: ', val);
-    },
-    { deep: true }
-  );
 
   function updateHash(hash) {
     router.push({
@@ -204,12 +213,10 @@
 
         <div
           class="w-full h-full"
-          :class="
-            currentStep < 1 && 'flex flex-col justify-center items-center'
-          "
+          :class="'flex flex-col justify-center items-center'"
         >
           <ul
-            v-if="currentStep == -1"
+            v-if="state.cycle.active"
             class="w-full min-h-full grid grid-cols-4 overflow-scroll gap-4 p-4 pt-0"
           >
             <!-- TODO: Clamp the grid -->
@@ -219,10 +226,7 @@
               </ModalTrigger>
             </li>
           </ul>
-          <div
-            v-if="currentStep == 0"
-            class="flex flex-col justify-center items-center"
-          >
+          <div v-else class="flex flex-col justify-center items-center">
             <WIP class="-mt-16 mb-12 -translate-x-10" />
             <h1 class="text-center opacity-50">
               You haven't imported any data yet. Get started by uploading
@@ -231,18 +235,28 @@
               <b>CSV File</b>
               of your grow data.
             </h1>
-            <DrawerToggle
-              @click="router.push({ hash: '#upload-csv' })"
-              label="Upload grow data"
-              class="btn-primary mt-12 w-fit"
-              icon="upload"
-              for="csv-upload"
-              target="csv-upload"
-            />
+            <div class="flex gap-2">
+              <DrawerToggle
+                @click="router.push({ hash: '#upload-csv' })"
+                label="Upload grow data"
+                class="btn-primary mt-12 w-fit"
+                icon="upload"
+                for="csv-upload"
+                target="csv-upload"
+              />
+              <DrawerToggle
+                @click="router.push({ hash: '#new-record' })"
+                label="Start from scratch"
+                class="bg-black mt-12 w-fit"
+                icon="plus"
+                for="new-record"
+                target="new-record"
+              />
+            </div>
           </div>
         </div>
-        <div v-if="currentStep > 0">
-          <Stepper :steps="currentSteps" class="mb-8" />
+        <div v-if="!state.cycle.active">
+          <Stepper :steps="steps" class="mb-8" />
         </div>
       </div>
     </div>

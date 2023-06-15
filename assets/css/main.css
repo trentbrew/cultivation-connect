@@ -37,6 +37,13 @@ main {
   backdrop-filter: blur(24px);
 }
 
+.steps .step-primary + .step-primary:before,
+.steps li.active-step:after {
+  background: hsl(var(--b1));
+  color: hsl(var(--p));
+  border: 4px solid hsl(var(--p));
+}
+
 /* ------------ animations ------------ */
 
 .nudge-up {
