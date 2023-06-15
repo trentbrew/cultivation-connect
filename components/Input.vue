@@ -222,13 +222,22 @@
       });
       state.add = false;
       var opts = select.value?.getElementsByTagName('option');
-      opts[0].selected = 'selected';
+      opts[0].selected = true;
       state.loading = true;
       setTimeout(() => {
         state.loading = false;
         let names = Array.from(opts).map(el => el.innerHTML);
-        opts[names.indexOf(state.dynamicValue)].selected = 'selected';
-      }, 4000);
+        console.log('names', names);
+        console.log(
+          'opts[names.indexOf(state.dynamicValue)]',
+          opts[names.indexOf(state.dynamicValue)]
+        );
+        console.log(
+          'selecting the new option...',
+          opts[names.indexOf(state.dynamicValue)]
+        );
+        opts[names.indexOf(state.dynamicValue)].selected = true;
+      }, 2500);
     }
   }
 
@@ -277,7 +286,7 @@
         {{ `${props.label} ${state.rules.includes('required') ? '*' : ''}` }}
       </span>
       <span>
-        {{ `${state.loading ? ' loading...' : ''}` }}
+        {{ `${state.loading ? '' : ''}` }}
       </span>
     </label>
     <div class="w-full flex">

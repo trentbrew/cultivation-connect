@@ -94,16 +94,16 @@
           value: '',
           valid: false,
         },
-        plants: {
-          value: 0,
-          valid: false,
-        },
         room: {
           value: '',
           valid: false,
         },
         zone: {
           value: '',
+          valid: false,
+        },
+        plants: {
+          value: 0,
           valid: false,
         },
         substrate: {
@@ -224,22 +224,20 @@
   }
 
   function handleValidation(e) {
+    console.log('handleValidation: ', e);
+    state['payload'][e.group][e.id].valid = e.valid;
     const groupValidity = Object.values(state['payload'][e.group]).map(
       item => item.valid
     );
-    state['payload'][e.group][e.id].valid = e.valid;
+    console.log('group validity: ', groupValidity);
     state['payload'].valid = !groupValidity.includes(false);
-    // console.log('group validity: ', groupValidity);
-    // console.log('payload is valid: ', state['payload'].valid);
   }
 
   async function fetch(collection) {
     if (collection == 'zones') {
-      console.log('fetching zones...');
       const zones = await pb.get(collection, {
         filter: `room = "${state.payload.cycle.room.value}" && facility.id = "${pb.api.authStore.model.facility}"`,
       });
-      console.log('fetched zones:', zones);
       return zones;
     }
     const data = await pb.get(collection, {
@@ -368,6 +366,7 @@
     const dateString = input.match(/\((.*?)\)/)[1];
     const date = new Date(dateString);
     const formattedDate = date.toISOString().split('T')[0];
+    console.log(input);
     const name = input.match(/"(.*?)"/)[1];
     const formattedName = name.replace(/\s/g, '-');
     const result = `${formattedDate}_${formattedName}`;
@@ -832,7 +831,7 @@
             name="plants"
             type="number"
             label="Number of plants"
-            rules="required"
+            rules="required|min:1"
             :min="1"
             @validation="handleValidation"
             class="w-full"
