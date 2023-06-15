@@ -362,23 +362,11 @@
     return name[0].name;
   }
 
-  function convertDateString(str) {
-    const regex = /(.*?)\s\(.*?(\d{1,2}), (\d{4})\)/;
-    const match = str.match(regex);
-    if (match) {
-      const cultivar = match[1].replace(/\s/g, '-');
-      const day = match[2].padStart(2, '0');
-      const year = match[3];
-      return `${year}_${day}_${cultivar}`;
-    }
-    return '';
-  }
-
   async function submitCycle() {
     let payload = {
-      name: convertDateString(
-        `${await getCultivarName()} (${formatDate(Date.now())})`
-      ),
+      name: `${state.payload.cycle.start_date.value}_${(
+        await getCultivarName()
+      ).replaceAll(' ', '-')}`,
       growth_stage: 'Propogation',
       facility: pb.api.authStore.model.facility,
     };

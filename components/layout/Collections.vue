@@ -24,6 +24,13 @@
   function handleNewCycle() {
     router.push({ hash: '#new-cycle' });
   }
+
+  watch(
+    () => route.path,
+    () => {
+      fetchData();
+    }
+  );
 </script>
 
 <template>
