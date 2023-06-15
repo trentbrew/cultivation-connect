@@ -43,79 +43,79 @@
           valid: true,
         },
         type: {
-          value: '',
+          value: null,
           valid: false,
         },
         brand: {
-          value: '',
+          value: null,
           valid: false,
         },
         name: {
-          value: '',
+          value: null,
           valid: false,
         },
         condition: {
-          value: '',
+          value: null,
           valid: false,
         },
         calibration_date: {
-          value: '',
+          value: null,
           valid: false,
         },
         data_logging_frequency: {
-          value: '',
+          value: null,
           valid: false,
         },
       },
       cultivar: {
         name: {
-          value: '',
+          value: null,
           valid: false,
         },
         phenotype: {
-          value: '',
+          value: null,
           valid: false,
         },
         acquisition: {
-          value: '',
+          value: null,
           valid: false,
         },
         notes: {
-          value: '',
+          value: null,
           valid: true,
         },
       },
       cycle: {
         start_date: {
-          value: '',
+          value: null,
           valid: true,
         },
         cultivar: {
-          value: '',
+          value: null,
           valid: false,
         },
         room: {
-          value: '',
+          value: null,
           valid: false,
         },
         zone: {
-          value: '',
+          value: null,
           valid: false,
         },
         plants: {
-          value: 0,
+          value: null,
           valid: false,
         },
         substrate: {
-          value: '',
+          value: null,
           valid: false,
         },
         root_zone_style: {
-          value: '',
+          value: null,
           valid: false,
         },
         nutrients_type: {
-          value: '',
+          value: null,
           valid: false,
         },
       },
@@ -246,6 +246,13 @@
     return data;
   }
 
+  function clearForm(group) {
+    Object.entries(state.payload[group]).forEach(([key, value]) => {
+      state.payload[group][key].value = null;
+      state.payload[group][key].valid = false;
+    });
+  }
+
   async function handleAddItem(e) {
     if (e.id == 'room') {
       console.log('handling room addition', e);
@@ -298,15 +305,11 @@
     Object.keys(state.payload.sensor).forEach(key => {
       if (key != 'valid') payload[key] = state.payload.sensor[key].value;
     });
-    console.log('submitting sensor...', payload);
+    clearForm('sensor');
     pb.post('sensors', payload).then(res => {
       console.log('✅ Added sensor', res);
-      global.toast('primary', 'Successfully added sensor');
+      global.toast('default', 'Successfully added sensor');
       global.updateCache('sensors', res);
-      Object.entries(state.payload.sensor).forEach(([key, value]) => {
-        state.payload.sensor[key].value = '';
-        state.payload.sensor[key].valid = false;
-      });
     });
   }
 
@@ -317,27 +320,10 @@
     Object.keys(state.payload.cultivar).forEach(key => {
       if (key != 'valid') payload[key] = state.payload.cultivar[key].value;
     });
+    clearForm('cultivar');
     pb.post('cultivars', payload).then(res => {
-      global.toast('primary', 'Successfully added cultivar');
+      global.toast('default', 'Successfully added cultivar');
       global.updateCache('cultivars', res);
-      state.playload.cultivar = {
-        name: {
-          value: '',
-          valid: false,
-        },
-        phenotype: {
-          value: '',
-          valid: false,
-        },
-        acquisition: {
-          value: '',
-          valid: false,
-        },
-        notes: {
-          value: '',
-          valid: true,
-        },
-      };
     });
   }
 
@@ -349,20 +335,20 @@
         payload[key] = state.patch.cultivar[key];
       }
     });
+    clearForm('cultivar');
     pb.update('cultivars', state.context.cultivar.id, payload).then(res => {
-      global.toast('primary', 'Successfully updated cultivar');
+      global.toast('default', 'Successfully updated cultivar');
       fetchData();
     });
   }
 
-  async function getCultivarName() {
-    let name = await pb.get('cultivars', {
-      filter: `id = "${state.payload.cycle.cultivar.value}"`,
-    });
-    return name[0].name;
-  }
-
   async function submitCycle() {
+    const getCultivarName = async () => {
+      let name = await pb.get('cultivars', {
+        filter: `id = "${state.payload.cycle.cultivar.value}"`,
+      });
+      return name[0].name;
+    };
     let payload = {
       name: `${state.payload.cycle.start_date.value}_${(
         await getCultivarName()
@@ -373,12 +359,18 @@
     Object.keys(state.payload.cycle).forEach(key => {
       if (key != 'valid') payload[key] = state.payload.cycle[key].value;
     });
+    clearForm('cycle');
     console.log('submitting cycle...', payload);
-    pb.post('cycles', payload).then(res => {
-      console.log('✅ Added cycle', res);
-      global.toast('primary', 'Your new cycle has been created! 🙌');
-      router.push(`/cycles/${res.id}`);
-    });
+    pb.post('cycles', payload)
+      .then(res => {
+        console.log('✅ Added cycle', res);
+        global.toast('default', 'Your new cycle has been created! 🙌');
+        router.push(`/cycles/${res.id}`);
+      })
+      .catch(err => {
+        console.log('something went wrong...', err);
+        global.toast('error', 'Something went wrong. Please try again.');
+      });
   }
 
   function submitRoom(name) {
@@ -404,15 +396,6 @@
       console.log('✅ Added zone', res);
       global.toast('primary', 'New zone was successfully added!');
       fetchData();
-    });
-  }
-
-  function formatDate(datetime) {
-    let date = new Date(datetime);
-    return date.toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
     });
   }
 </script>
