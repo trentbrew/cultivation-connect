@@ -80,6 +80,52 @@ const utils = {
     });
   },
 
+  parseCsv: async data => {
+    // Split the data into lines
+    const lines = data.split('\n');
+
+    // Extract the headers
+    const headers = lines[1].split(',').slice(1);
+
+    // Initialize the result object
+    const result = {
+      Flower: {},
+      Veg: {},
+    };
+
+    // Iterate over the lines starting from the third line
+    for (let i = 2; i < lines.length; i++) {
+      const line = lines[i].split(',');
+      const timestamp = line[0];
+
+      // Iterate over the headers and populate the result object
+      for (let j = 0; j < headers.length; j++) {
+        const header = headers[j];
+        const value = line[j + 1];
+
+        // Determine the category based on the header name
+        const category = header.includes('Flower') ? 'Flower' : 'Veg';
+
+        // Initialize the category in the result object if not already present
+        if (!result[category][header]) {
+          result[category][header] = {};
+          result[category][header].Zone1 = {};
+          result[category][header].Zone2 = {};
+          result[category][header].Zone3 = {};
+          result[category][header].Zone4 = {};
+        }
+
+        // Assign the value to the corresponding timestamp and zone
+        result[category][header].Zone1[timestamp] = value;
+        result[category][header].Zone2[timestamp] = value;
+        result[category][header].Zone3[timestamp] = value;
+        result[category][header].Zone4[timestamp] = value;
+      }
+    }
+
+    return result;
+  },
+
   // This function parses a CSV as JSON and returns an array of objects
 
   csvToJson: csv => {

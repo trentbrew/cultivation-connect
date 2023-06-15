@@ -132,16 +132,25 @@
     () => route,
     val => {
       console.log('the route changed', val);
+      setTimeout(() => {
+        console.log('OK. initiating cycle...');
+        initCycle();
+      }, 2000);
     },
     { deep: true }
   );
 
   onMounted(async () => {
+    state.loading = true;
     router.push({ hash: '' });
+    initCycle();
+  });
+
+  async function initCycle() {
+    console.log('initiating cycle');
     const cycle = await pb.get('cycles', {
       id: route.params.cycle,
     });
-    initCycle(cycle);
     if (cycle.active) {
       const { data: latest_record } = await pb.get('records', {
         id: cycle.latest_record,
@@ -152,9 +161,6 @@
         }
       });
     }
-  });
-
-  function initCycle(cycle) {
     state.cycle.id = cycle.id;
     state.cycle.name = cycle.name;
     state.cycle.latest_record = cycle.latest_record;
@@ -173,6 +179,8 @@
       'short'
     );
     state.cycle.active = cycle.active;
+    state.loading = false;
+    console.log('cycle', state.cycle);
   }
 
   function updateHash(hash) {
@@ -247,6 +255,12 @@
           class="w-full h-full"
           :class="'flex flex-col justify-center items-center'"
         >
+          <div
+            v-show="state.loading"
+            class="w-full h-full flex justify-center items-center"
+          >
+            <Loading size="80" />
+          </div>
           <ul
             v-if="state.cycle.active"
             class="w-full min-h-full grid grid-cols-4 overflow-scroll gap-4 p-4 pt-0"
@@ -263,7 +277,7 @@
             </li>
           </ul>
           <div
-            v-if="!state.cycle.active"
+            v-show="!state.cycle.active && !state.loading"
             class="flex flex-col justify-center items-center"
           >
             <WIP
@@ -296,7 +310,7 @@
             </div>
           </div>
         </div>
-        <div v-if="!state.cycle.active">
+        <div v-show="!state.cycle.active && !state.loading">
           <Stepper :steps="steps" class="mb-8" />
         </div>
       </div>

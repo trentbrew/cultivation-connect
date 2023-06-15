@@ -8,13 +8,13 @@
       type: [String, Number],
       default: 24,
     },
-  })
+  });
 
   const size = computed(() => {
-    const s = props.size
-    if (props.type == 4) return `${s >= 24 ? s - 10 : s}px`
-    return `${s}px`
-  })
+    const s = props.size;
+    if (props.type == 4) return `${s >= 24 ? s - 10 : s}px`;
+    return `${s}px`;
+  });
 </script>
 
 <template>

@@ -331,12 +331,10 @@
   }
 
   function handleValidation(e) {
-    console.log('handleValidation: ', e);
     state['payload'][e.group][e.id].valid = e.valid;
     const groupValidity = Object.values(state['payload'][e.group]).map(
       item => item.valid
     );
-    console.log('group validity: ', groupValidity);
     state['payload'].valid = !groupValidity.includes(false);
   }
 
@@ -383,6 +381,7 @@
     if (drawerContext.value == 'new-cycle') submitCycle();
     if (drawerContext.value == 'csv-upload') submitCsv();
     if (drawerContext.value == 'new-record') submitRecord();
+    router.push({ hash: '' });
   }
 
   async function submitRecord() {
@@ -437,13 +436,13 @@
     clearForm('record', true);
     pb.post('records', payload)
       .then(res => {
-        const latest_record = res.id; // TODO: make sure this shouldnt be res.collectionId
+        const latest_record = res.id;
         pb.update('cycles', state.cycle.id, {
           active: true,
           latest_record,
+        }).then(() => {
+          global.toast('default', 'Successfully submitted record');
         });
-        global.toast('default', 'Successfully submitted record');
-        router.push({ name: 'cycle', params: { cycle: state.cycle.id } });
       })
       .catch(err => {
         global.toast('error', 'Error submitting record');
@@ -464,8 +463,10 @@
     const file = state.cycle.csv.files[0];
     const blob = new Blob([file], { type: 'text/csv' });
     const csv = await utils.readCsv(blob);
-    console.log('raw csv: ', csv);
-    const json = await utils.csvToJson(csv);
+    // console.log('raw csv: ', csv);
+    const parsedCsv = await utils.parseCsv(csv);
+    console.log('parsed csv: ', parsedCsv);
+    const json = await utils.csvToJson(formattedCsv);
     console.log('csv to json: ', json);
     validateCsv(json);
     triggerDataReview();
