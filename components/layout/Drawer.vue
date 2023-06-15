@@ -124,97 +124,76 @@
           label: 'Air Temperature',
           name: 'air_temp',
           value: null,
-          valid: true,
         },
         {
           label: 'Soil Temperature',
           name: 'grow_medium_temp',
           value: null,
-          valid: true,
         },
         {
           label: 'Air Humidity',
           name: 'air_humidity',
           value: null,
-          valid: true,
         },
         {
           label: 'Solar',
           name: 'solar',
           value: null,
-          valid: true,
         },
         {
           label: 'Vapor Pressure Deficit',
           name: 'vpd',
           value: null,
-          valid: true,
         },
         {
           label: 'Daylight Integral',
           name: 'dli',
           value: null,
-          valid: true,
         },
         {
           label: 'CO2',
           name: 'co2',
           value: null,
-          valid: true,
         },
         {
           label: 'Pore EC',
           name: 'pore_ec',
           value: null,
-          valid: true,
         },
         {
           label: 'Pore EC (Day)',
           name: 'day_time_pore_ec',
           value: null,
-          valid: true,
         },
         {
           label: 'Pore EC (Night)',
           name: 'night_time_pore_ec',
           value: null,
-          valid: true,
         },
         {
           label: 'Soil Moisture (Day)',
           name: 'day_time_soil_moisture',
           value: null,
-          valid: true,
         },
         {
           label: 'Soil Moisture (Night)',
           name: 'night_time_soil_moisture',
           value: null,
-          valid: true,
         },
         {
           label: 'Dry Back (Day)',
           name: 'day_time_dry_back',
           value: null,
-          valid: true,
         },
         {
           label: 'Dry Back (Night)',
           name: 'night_time_dry_back',
           value: null,
-          valid: true,
         },
         {
           label: 'Soil pH',
           name: 'ph',
           value: null,
-          valid: true,
-        },
-        {
-          label: 'Yield',
-          name: 'yield',
-          value: null,
-          valid: true,
         },
       ],
     },
@@ -968,8 +947,8 @@
           v-for="(input, index) in state.payload.record"
           :key="index"
           group="record"
-          type="text"
-          v-model="state.payload.record[input.name].value"
+          type="number"
+          v-model="state.payload.record[index].value"
           :id="input.name"
           :name="input.name"
           :label="input.label"
@@ -993,7 +972,10 @@
           class="btn-primary"
           @click="handleSubmit"
           :disabled="
-            route.hash.substring(1).split('–')[0] == 'edit' ? false : !valid
+            route.hash.substring(1).split('–')[0] == 'edit' ||
+            drawerContext == 'new-record'
+              ? false
+              : !valid
           "
           :for="drawerContext"
           label="Submit"

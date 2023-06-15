@@ -227,13 +227,17 @@
             </li>
           </ul>
           <div v-else class="flex flex-col justify-center items-center">
-            <WIP class="-mt-16 mb-12 -translate-x-10" />
-            <h1 class="text-center opacity-50">
-              You haven't imported any data yet. Get started by uploading
+            <WIP
+              img="data"
+              class="mb-24 w-[300px] -mt-12 brightness-[0.915] opacity-75"
+            />
+            <h1 class="text-center opacity-50 w-full">
+              You haven't imported any data for this cycle yet. Get started by
+              uploading
               <br />
               a
               <b>CSV File</b>
-              of your grow data.
+              , or filling in your data manually.
             </h1>
             <div class="flex gap-2">
               <DrawerToggle
@@ -246,7 +250,7 @@
               />
               <DrawerToggle
                 @click="router.push({ hash: '#new-record' })"
-                label="Start from scratch"
+                label="Manually enter data"
                 class="bg-black mt-12 w-fit"
                 icon="plus"
                 for="new-record"

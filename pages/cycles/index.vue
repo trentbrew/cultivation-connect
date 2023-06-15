@@ -29,16 +29,27 @@
 <template>
   <AuthRouteGuard>
     <div class="h-screen w-full p-4 -mt-12">
-      <div class="flex flex-col justify-center items-center rounded w-full h-full gap-10">
-        <WIP img="cycles" class="invert w-[320px] -mb-8 translate-x-16" />
+      <div
+        class="flex flex-col justify-center items-center rounded w-full h-full gap-10"
+      >
+        <WIP
+          img="growth"
+          class="-translate-x-10 w-[250px] brightness-[0.91] mb-2"
+        />
         <h1 class="text-center max-w-lg">
           <strong>Cycles</strong>
           <span class="text-base-content/50">
-            allow you to track the health of your crops by visualizing your grow conditions over time and providing
-            predictive insights that help you make better decisions.
+            allow you to track the health of your crops by visualizing your grow
+            conditions over time and providing predictive insights that help you
+            make better decisions.
           </span>
         </h1>
-        <DrawerToggle for="new-cycle" label="Create your first cycle" icon="plus" class="btn-primary mt-8" />
+        <DrawerToggle
+          for="new-cycle"
+          label="Create your first cycle"
+          icon="plus"
+          class="btn-primary mt-8"
+        />
       </div>
     </div>
   </AuthRouteGuard>

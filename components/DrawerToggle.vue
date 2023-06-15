@@ -25,6 +25,7 @@
   });
 
   function handleDrawerToggle() {
+    console.log('setting drawer context: ', props.for);
     global.setDrawerContext(props.for);
     global.setCurrentItem(props.item); // for editing
   }
