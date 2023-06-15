@@ -77,7 +77,10 @@
 
     const innerRange = {
       ok: () => {
-        return (r.min[p] - r.margin[p] < v && v < r.min[p]) || (r.max[p] < v && v < r.max[p] + r.margin[p]);
+        return (
+          (r.min[p] - r.margin[p] < v && v < r.min[p]) ||
+          (r.max[p] < v && v < r.max[p] + r.margin[p])
+        );
       },
       good: () => {
         return r.min[p] <= v && v <= r.max[p];
@@ -128,7 +131,11 @@
           <span class="text font-medium">{{ props.title }}</span>
         </div>
         <div class="cursor-move" @click="handleMove">
-          <Icon class="text-transparent group-hover:text-base-content" name="grip" size="24" />
+          <Icon
+            class="text-transparent group-hover:text-base-content"
+            name="grip"
+            size="24"
+          />
         </div>
       </div>
       <div>

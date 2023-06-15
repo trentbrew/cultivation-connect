@@ -34,6 +34,7 @@
       active: false,
       id: '',
       name: '',
+      latest_record: null,
       overview: {
         plants: 0,
         day: 0,
@@ -131,8 +132,24 @@
     const cycle = await pb.get('cycles', {
       id: route.params.cycle,
     });
+    initCycle(cycle);
+    const { data: latest_record } = await pb.get('records', {
+      id: cycle.latest_record,
+    });
+    state.cycle.conditions.forEach((item, index) => {
+      if (latest_record[item.name]) {
+        state.cycle.conditions[index].value = latest_record[item.name];
+      }
+    });
+    console.clear();
+    console.log(latest_record);
+    console.log('state.cycle.conditions', state.cycle.conditions);
+  });
+
+  function initCycle(cycle) {
     state.cycle.id = cycle.id;
     state.cycle.name = cycle.name;
+    state.cycle.latest_record = cycle.latest_record;
     state.cycle.overview.plants = cycle.plants;
     state.cycle.overview.day = Math.floor(
       utils.timeDifference(Date.now(), Date.parse(cycle.start_date), 'd')
@@ -148,7 +165,7 @@
       'short'
     );
     state.cycle.active = cycle.active;
-  });
+  }
 
   function updateHash(hash) {
     router.push({
@@ -222,7 +239,11 @@
             <!-- TODO: Clamp the grid -->
             <li v-for="(item, index) in state.cycle.conditions" :key="index">
               <ModalTrigger @click="updateHash(item.name)" target="details">
-                <Stat :id="item.name" :title="item.title" :value="item.value" />
+                <Stat
+                  :id="item.name"
+                  :title="item.title"
+                  :value="Number(item.value)"
+                />
               </ModalTrigger>
             </li>
           </ul>

@@ -400,15 +400,14 @@
       dli: state.payload.record[5].value,
       co2: state.payload.record[6].value,
       pore_ec: state.payload.record[7].value,
-      day_pore_ec: state.payload.record[8].value,
-      night_pore_ec: state.payload.record[9].value,
-      day_soil_moisture: state.payload.record[10].value,
-      night_soil_moisture: state.payload.record[11].value,
-      day_dry_back: state.payload.record[12].value,
-      night_dry_back: state.payload.record[13].value,
+      day_time_pore_ec: state.payload.record[8].value,
+      night_time_pore_ec: state.payload.record[9].value,
+      day_time_soil_moisture: state.payload.record[10].value,
+      night_time_soil_moisture: state.payload.record[11].value,
+      day_time_dry_back: state.payload.record[12].value,
+      night_time_dry_back: state.payload.record[13].value,
       ph: state.payload.record[14].value,
-      yield_per_watt: null, // TODO: calulate this?
-      yield_per_sqft: null, // TODO: calulate this?
+      yield: null, // TODO: calulate this?
       thc: null, // TODO: get this from the cultivar?
       tac: null, // TODO: get this from the cultivar?
       terp: null, // TODO: get this from the cultivar?
@@ -429,10 +428,13 @@
     clearForm('record', true);
     pb.post('records', payload)
       .then(res => {
+        const latest_record = res.id; // TODO: make sure this shouldnt be res.collectionId
         pb.update('cycles', state.cycle.id, {
           active: true,
+          latest_record,
         });
         global.toast('default', 'Successfully submitted record');
+        router.push({ name: 'cycle', params: { cycle: state.cycle.id } });
       })
       .catch(err => {
         global.toast('error', 'Error submitting record');
