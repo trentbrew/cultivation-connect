@@ -6,7 +6,7 @@
   const state = reactive({
     avatarUrl: '',
     ui: {
-      collections: false,
+      collections: true,
       context: '',
     },
   });
@@ -183,7 +183,7 @@
       >
         <button class="btn btn-ghost m-4" @click="global.toggleCollections">
           <Icon
-            name="arrow_alt_right"
+            name="arrow_alt_left"
             class="duration-300"
             :class="state.ui.collections ? 'rotate-[180deg]' : 'rotate-[0deg]'"
           />

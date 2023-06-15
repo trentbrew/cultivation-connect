@@ -27,9 +27,16 @@
 
   const select = ref(null);
 
-  const emit = defineEmits(['update:modelValue', 'validation', 'input', 'change', 'addItem']);
+  const emit = defineEmits([
+    'update:modelValue',
+    'validation',
+    'input',
+    'change',
+    'addItem',
+  ]);
 
   const state = reactive({
+    loading: false,
     add: false,
     dynamicValue: '',
     class: {
@@ -47,7 +54,12 @@
 
   const validators = {
     required: () => {
-      if (props.modelValue && props.modelValue != '' && props.modelValue.length > 0) return true;
+      if (
+        props.modelValue &&
+        props.modelValue != '' &&
+        props.modelValue.length > 0
+      )
+        return true;
       return false;
     },
     email: () => {
@@ -96,10 +108,16 @@
               messages.push(`Value is out of range`);
             }
             if (name == 'minLength') {
-              messages.push(`${props.label || 'Value'} must be at least ${value} characters`);
+              messages.push(
+                `${props.label || 'Value'} must be at least ${value} characters`
+              );
             }
             if (name == 'maxLength') {
-              messages.push(`${props.label || 'Value'} must be less than ${value} characters`);
+              messages.push(
+                `${
+                  props.label || 'Value'
+                } must be less than ${value} characters`
+              );
             }
           } else {
             checks.push(true);
@@ -180,7 +198,10 @@
       }
     } else {
       emit('input', e);
-      emit('update:modelValue', props.type == 'file' ? e.target.files : e.target.value);
+      emit(
+        'update:modelValue',
+        props.type == 'file' ? e.target.files : e.target.value
+      );
       // console.log('update:modelValue', props.type == 'file' ? e.target.files : e.target.value);
     }
   }
@@ -202,10 +223,12 @@
       state.add = false;
       var opts = select.value?.getElementsByTagName('option');
       opts[0].selected = 'selected';
+      state.loading = true;
       setTimeout(() => {
+        state.loading = false;
         let names = Array.from(opts).map(el => el.innerHTML);
         opts[names.indexOf(state.dynamicValue)].selected = 'selected';
-      }, 2000);
+      }, 4000);
     }
   }
 
@@ -219,13 +242,18 @@
 
 <template>
   <!-- Input -->
-  <div v-if="types.includes(props.type)" class="flex flex-col items-start gap-2 mt-3">
+  <div
+    v-if="types.includes(props.type)"
+    class="flex flex-col items-start gap-2 mt-3"
+  >
     <label :class="props.disabled ? 'opacity-50' : ''">
       {{ `${props.label} ${state.rules.includes('required') ? '*' : ''}` }}
     </label>
     <input
       @input="handleInput"
-      :value="props.dynamic && props.placeholder ? props.value : props.modelValue"
+      :value="
+        props.dynamic && props.placeholder ? props.value : props.modelValue
+      "
       class="input bg-base-200/50"
       :class="state.class.input"
       :type="props.type"
@@ -237,9 +265,15 @@
     />
   </div>
   <!-- Select -->
-  <div v-if="props.type == 'select'" class="flex flex-col items-start gap-2 mt-3">
+  <div
+    v-if="props.type == 'select'"
+    class="flex flex-col items-start gap-2 mt-3"
+  >
     <label :class="props.disabled ? 'opacity-50' : ''">
-      {{ `${props.label} ${state.rules.includes('required') ? '*' : ''}` }}
+      {{
+        `${props.label} ${state.rules.includes('required') ? '*' : ''}` +
+        `${state.loading ? ' (loading...)' : ''}`
+      }}
     </label>
     <div class="w-full flex">
       <select
@@ -253,11 +287,18 @@
         :selected="props.selected"
         :disabled="props.disabled"
       >
-        <option value="" selected :disabled="!props.dynamic && props.dyanmic !== ''">
+        <option
+          value=""
+          selected
+          :disabled="!props.dynamic && props.dyanmic !== ''"
+        >
           {{ '---' }}
         </option>
         <option v-if="props.dynamic === '' && !state.add" value="+">
-          {{ props.dynamicPlaceholder ?? `+ Add a new ${props.label.toLowerCase()}` }}
+          {{
+            props.dynamicPlaceholder ??
+            `+ Add a new ${props.label.toLowerCase()}`
+          }}
         </option>
         <slot />
       </select>
@@ -271,14 +312,21 @@
           class="input border-none bg-base-200/50 w-full pr-44"
         />
         <div class="absolute right-10 flex gap-2 ml-2">
-          <button @click.prevent="handleCancel" class="btn btn-sm btn-ghost">Cancel</button>
-          <button @click.prevent="handleSubmit" class="btn btn-sm btn-primary">Submit</button>
+          <button @click.prevent="handleCancel" class="btn btn-sm btn-ghost">
+            Cancel
+          </button>
+          <button @click.prevent="handleSubmit" class="btn btn-sm btn-primary">
+            Submit
+          </button>
         </div>
       </div>
     </div>
   </div>
   <!-- TextArea -->
-  <div v-if="props.type == 'textarea'" class="flex flex-col items-start gap-2 mt-4">
+  <div
+    v-if="props.type == 'textarea'"
+    class="flex flex-col items-start gap-2 mt-4"
+  >
     <label :class="props.disabled ? 'opacity-50' : ''">
       {{ `${props.label} ${state.rules.includes('required') ? '*' : ''}` }}
     </label>
@@ -331,7 +379,10 @@
     </label>
   </div>
   <!-- File -->
-  <div v-if="props.type == 'file'" class="form-control flex flex-col items-start gap-2 mt-3">
+  <div
+    v-if="props.type == 'file'"
+    class="form-control flex flex-col items-start gap-2 mt-3"
+  >
     <label :class="props.disabled ? 'opacity-50' : ''">
       {{ `${props.label} ${state.rules.includes('required') ? '*' : ''}` }}
     </label>
