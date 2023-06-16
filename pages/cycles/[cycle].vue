@@ -147,7 +147,6 @@
   });
 
   async function initCycle() {
-    console.log('initiating cycle');
     const cycle = await pb.get('cycles', {
       id: route.params.cycle,
     });
@@ -180,7 +179,6 @@
     );
     state.cycle.active = cycle.active;
     state.loading = false;
-    console.log('cycle', state.cycle);
   }
 
   function updateHash(hash) {

@@ -29,10 +29,6 @@
 
   const step = ref(null);
 
-  onMounted(() => {
-    console.log(step.value[currentStep.value]);
-  });
-
   const currentStep = computed(() => {
     return props.steps.findIndex(step => step.status === 'active');
   });

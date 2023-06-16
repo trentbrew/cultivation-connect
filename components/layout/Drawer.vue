@@ -16,13 +16,14 @@
       growth_stage: null,
       start_date: null,
       csv: {
+        selected: false,
         valid: false,
         init: {
           value: 'manual',
           valid: true,
         },
         origin: {
-          value: 'spreadsheet',
+          value: null,
           valid: false,
         },
         files: null,
@@ -323,11 +324,17 @@
     state.cycle.cultivar = cycle.cultivar[0];
     state.cycle.growth_stage = cycle.growth_stage;
     state.cycle.start_date = cycle.start_date;
-    console.log(state.cycle);
+  }
+
+  function handleFileInput() {
+    console.log('file has been input');
+    state.cycle.csv.selected = true;
   }
 
   function handleCsvValidation(e) {
-    state.cycle.csv.valid = e.valid;
+    console.log('file input: ', state.cycle.csv.files);
+    state.cycle.csv.valid =
+      state.cycle.csv.origin.value && state.cycle.csv.files.length > 0;
   }
 
   function handleValidation(e) {
@@ -449,14 +456,6 @@
         console.log('error submitting record: ', err);
       });
   }
-
-  watch(
-    () => state.payload.record,
-    val => {
-      // console.log('record payload changed: ', val);
-    },
-    { deep: true }
-  );
 
   async function submitCsv() {
     console.log('handling csv submission...', state.cycle.csv.files[0]);
@@ -866,7 +865,7 @@
         >
           <Input
             group="cycle"
-            v-model="state.cycle.csv.origin"
+            v-model="state.cycle.csv.origin.value"
             type="select"
             id="csv_origin"
             name="csv_origin"
@@ -884,14 +883,17 @@
             group="cycle"
             v-model="state.cycle.csv.files"
             :label="`Upload your ${
-              state.cycle.csv.origin == 'aroya' ? 'Aroya data' : 'grow data'
+              state.cycle.csv.origin.value == 'aroya'
+                ? 'Aroya data'
+                : 'grow data'
             } (CSV)`"
             type="file"
+            accept=".csv, text/plain, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
             id="csv_file"
             name="csv_file"
             class="w-full"
-            accept=".csv, text/plain, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-            :disabled="!state.cycle.csv.valid"
+            rules="required"
+            @validation="handleCsvValidation"
           />
         </div>
         <div v-else class="flex flex-col p-8">

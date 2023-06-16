@@ -22,7 +22,6 @@
 
   function calculateMetrics(data) {
     let avg, min, max;
-    console.log('calculating metrics for: ', data);
     // TODO: caluculate avg
     // TODO: caluculate min
     // TODO: calculate max

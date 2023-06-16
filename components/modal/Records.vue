@@ -26,7 +26,6 @@
 
   onMounted(() => {
     fetchCycle();
-    console.log('mounted records modal');
   });
 
   watch(

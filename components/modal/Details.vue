@@ -19,7 +19,6 @@
       id: route.params.cycle,
     });
     state.data = cycle;
-    console.log('cycle data (details modal)', cycle);
   }
 
   function calculateMetrics(data) {
