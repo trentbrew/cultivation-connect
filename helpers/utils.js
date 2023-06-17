@@ -85,24 +85,72 @@ const utils = {
 
   parseCsv: async csv => {
     console.clear();
-    console.log('parsing CSV...');
+
+    const stretch = arr => {
+      let result = [];
+      arr.forEach((item, index) => {
+        if (index > 0) {
+          result.push(item);
+          if (!arr[index + 1]) arr[index + 1] = item;
+        }
+      });
+      return result;
+    };
+
+    const homogenize = headers => {
+      let result = [];
+      headers.forEach(header => {
+        if (header == '% Water Content' || header == 'soil_moist') {
+          result.push('soil_moist');
+        }
+        if (header == ' °F Soil Temperature') {
+          result.push('soil_temp');
+        }
+        if (header == ' mS/cm Pore Water EC') {
+          result.push('pore_ec');
+        }
+      });
+      return result;
+    };
+
     const lines = csv.split('\n').map(line => line.trim());
-    const headers = lines[0].split(',');
+
+    const growth_stages = stretch(lines[0].split(','));
+    const zones = stretch(lines[1].split(','));
+    const ports = stretch(lines[2].split(','));
+    const sensors = stretch(lines[3].split(','));
+    const headers = homogenize(stretch(lines[4].split(',')));
+
     const data = [];
 
-    for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',');
-      const entry = {
-        zone: headers[0], // Assuming the zone information is constant for all entries
-        port: headers[1], // Assuming the port information is constant for all entries
-        timestamp: values[0],
-        soil_moist: values[4],
-        soil_temp: values[2],
-        pore_ec: values[3],
+    ports.forEach((port, portIndex) => {
+      let entry = {};
+      let readings = [];
+      lines.forEach((line, lineIndex) => {
+        if (lineIndex > 4) {
+          line.split(',').forEach((item, itemIndex) => {
+            if (itemIndex == portIndex) {
+              readings.push({
+                [headers[itemIndex]]: item,
+                timestamp: line.split(',')[0],
+              });
+            }
+          });
+        }
+      });
+      entry = {
+        ...entry,
+        port,
+        zone: zones[portIndex],
+        sensor: sensors[portIndex],
+        growth_stage: growth_stages[portIndex],
+        readings,
       };
+      console.log('entry: ', entry);
       data.push(entry);
-    }
+    });
 
+    console.log('final data: ', data);
     return data;
   },
 

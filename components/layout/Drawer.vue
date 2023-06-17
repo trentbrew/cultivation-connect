@@ -458,11 +458,13 @@
   }
 
   async function submitCsv() {
+    console.clear();
     console.log('handling csv submission...', state.cycle.csv.files[0]);
     const file = state.cycle.csv.files[0];
     const blob = new Blob([file], { type: 'text/csv' });
     const csv = await utils.readCsv(blob);
     const parsedCsv = await utils.parseCsv(csv);
+    console.log('parsed csv: ', parsedCsv);
     if (parsedCsv) global.handleCsvUploaded(parsedCsv);
   }
 
