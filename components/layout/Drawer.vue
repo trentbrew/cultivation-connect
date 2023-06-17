@@ -462,10 +462,13 @@
     console.log('handling csv submission...', state.cycle.csv.files[0]);
     const file = state.cycle.csv.files[0];
     const blob = new Blob([file], { type: 'text/csv' });
-    const csv = await utils.readCsv(blob);
-    const parsedCsv = await utils.parseCsv(csv);
-    console.log('parsed csv: ', parsedCsv);
-    if (parsedCsv) global.handleCsvUploaded(parsedCsv);
+    if (state.cycle.csv.origin.value == 'aroya') {
+      const parsedCsv = await utils.parseAroyaData(csv);
+      console.log('parsed csv: ', parsedCsv);
+      if (parsedCsv) global.handleCsvUploaded(parsedCsv);
+    } else {
+      global.toast('error', 'Only Aroya CSVs are supported at this time');
+    }
   }
 
   function triggerDataReview() {

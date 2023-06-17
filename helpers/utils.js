@@ -72,7 +72,6 @@ const utils = {
   // This function takes a CSV file from user input and returns it's contents as a string
 
   readCsv: file => {
-    console.log('reading csv...');
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result);
@@ -83,7 +82,7 @@ const utils = {
 
   // This function takes an ugly CSV and makes it pretty
 
-  parseCsv: async csv => {
+  parseAroyaData: async csv => {
     console.clear();
 
     const stretch = arr => {
@@ -118,6 +117,7 @@ const utils = {
     const growth_stages = stretch(lines[0].split(','));
     const zones = stretch(lines[1].split(','));
     const ports = stretch(lines[2].split(','));
+    console.log('ports: ', ports);
     const sensors = stretch(lines[3].split(','));
     const headers = homogenize(stretch(lines[4].split(',')));
 
@@ -127,12 +127,13 @@ const utils = {
       let entry = {};
       let readings = [];
       lines.forEach((line, lineIndex) => {
+        const timestamp = line.split(',')[0];
         if (lineIndex > 4) {
           line.split(',').forEach((item, itemIndex) => {
-            if (itemIndex == portIndex) {
+            if (itemIndex == portIndex && item != timestamp) {
               readings.push({
                 [headers[itemIndex]]: item,
-                timestamp: line.split(',')[0],
+                timestamp,
               });
             }
           });
@@ -146,7 +147,6 @@ const utils = {
         growth_stage: growth_stages[portIndex],
         readings,
       };
-      console.log('entry: ', entry);
       data.push(entry);
     });
 
