@@ -85,6 +85,10 @@ export const useGlobalStore = defineStore('global', {
     },
   },
   actions: {
+    cancelCsvUpload() {
+      this.csv.uploaded = false;
+      this.csv.entryCount = 0;
+    },
     handleCsvUploaded(data) {
       this.csv.uploaded = true;
       this.csv.entryCount = data.length;

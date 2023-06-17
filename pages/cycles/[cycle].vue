@@ -200,6 +200,7 @@
 
   function handleCsvImportCancel() {
     console.log('canceling csv import....');
+    global.cancelCsvUpload();
   }
 </script>
 
@@ -308,7 +309,10 @@
               , or filling in your data manually.
             </h1>
             <h1 v-if="state.csv" class="text-center font-bold w-full my-12">
-              Importing {{ state.csv.entryCount }} entries...
+              <span v-if="state.csv.entryCount > 0">
+                Importing {{ state.csv.entryCount }} entries...
+              </span>
+              <span v-else>Cancelling CSV import...</span>
             </h1>
             <div v-if="!state.csv" class="flex gap-2">
               <DrawerToggle
