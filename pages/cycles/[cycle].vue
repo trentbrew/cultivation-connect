@@ -201,6 +201,9 @@
   function handleCsvImportCancel() {
     console.log('canceling csv import....');
     global.cancelCsvUpload();
+    setTimeout(() => {
+      state.csv = null;
+    }, 4000);
   }
 </script>
 
@@ -331,7 +334,11 @@
               />
             </div>
             <div v-if="state.csv" class="flex gap-2">
-              <button @click="handleCsvImportCancel" class="btn btn-outline">
+              <button
+                @click="handleCsvImportCancel"
+                class="btn btn-outline"
+                :disabled="state.csv.entryCount == 0"
+              >
                 Cancel
               </button>
             </div>
