@@ -20,6 +20,10 @@ export const useGlobalStore = defineStore('global', {
     constants: {
       ranges,
     },
+    csv: {
+      uploaded: false,
+      entryCount: 0,
+    },
     ui: {
       currentItem: null,
       details: {
@@ -61,6 +65,10 @@ export const useGlobalStore = defineStore('global', {
     },
   }),
   getters: {
+    getCsvUploaded: state => ({
+      uploaded: state.csv.uploaded,
+      entryCount: state.csv.entryCount,
+    }),
     getCache: state => key => state.cache[key],
     getDetailsContext: state => state.ui.details.context,
     getCurrentItem: state => state.ui.currentItem,
@@ -77,6 +85,10 @@ export const useGlobalStore = defineStore('global', {
     },
   },
   actions: {
+    handleCsvUploaded(data) {
+      this.csv.uploaded = true;
+      this.csv.entryCount = data.length;
+    },
     updateCache(key, data) {
       this.cache[key] = data;
     },

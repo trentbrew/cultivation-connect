@@ -334,7 +334,7 @@
   function handleCsvValidation(e) {
     console.log('file input: ', state.cycle.csv.files);
     state.cycle.csv.valid =
-      state.cycle.csv.origin.value && state.cycle.csv.files.length > 0;
+      state.cycle.csv.origin.value && state.cycle.csv.files?.length > 0;
   }
 
   function handleValidation(e) {
@@ -462,17 +462,8 @@
     const file = state.cycle.csv.files[0];
     const blob = new Blob([file], { type: 'text/csv' });
     const csv = await utils.readCsv(blob);
-    // console.log('raw csv: ', csv);
     const parsedCsv = await utils.parseCsv(csv);
-    console.log('parsed csv: ', parsedCsv);
-    // const json = await utils.csvToJson(parsedCsv);
-    // console.log('csv to json: ', json);
-    // validateCsv(json);
-    // triggerDataReview();
-  }
-
-  function validateCsv(json) {
-    console.log('validating json...');
+    if (parsedCsv) global.handleCsvUploaded(parsedCsv);
   }
 
   function triggerDataReview() {

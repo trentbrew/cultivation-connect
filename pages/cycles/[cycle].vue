@@ -31,6 +31,7 @@
 
   const state = reactive({
     loading: false,
+    csv: null,
     cycle: {
       active: false,
       id: '',
@@ -128,6 +129,22 @@
     },
   });
 
+  onMounted(async () => {
+    state.loading = true;
+    router.push({ hash: '' });
+    initCycle();
+  });
+
+  const csvUploaded = computed(() => global.getCsvUploaded);
+
+  watch(
+    () => csvUploaded.value,
+    val => {
+      state.csv = val;
+      console.log(`${val.entryCount} entries have been uploaded...`);
+    }
+  );
+
   watch(
     () => route,
     val => {
@@ -139,12 +156,6 @@
     },
     { deep: true }
   );
-
-  onMounted(async () => {
-    state.loading = true;
-    router.push({ hash: '' });
-    initCycle();
-  });
 
   async function initCycle() {
     const cycle = await pb.get('cycles', {
@@ -185,6 +196,10 @@
     router.push({
       hash: `#${hash}`,
     });
+  }
+
+  function handleCsvImportCancel() {
+    console.log('canceling csv import....');
   }
 </script>
 
@@ -279,10 +294,12 @@
             class="flex flex-col justify-center items-center"
           >
             <WIP
+              v-if="!state.csv"
               img="data"
               class="mb-8 w-[300px] -mt-12 brightness-[0.915] opacity-75"
             />
-            <h1 class="text-center opacity-50 w-full">
+            <Loading v-if="state.csv" size="80" />
+            <h1 v-if="!state.csv" class="text-center opacity-50 w-full">
               You haven't imported any data for this cycle yet. Get started by
               uploading
               <br />
@@ -290,7 +307,10 @@
               <b>CSV File</b>
               , or filling in your data manually.
             </h1>
-            <div class="flex gap-2">
+            <h1 v-if="state.csv" class="text-center font-bold w-full my-12">
+              Importing {{ state.csv.entryCount }} entries...
+            </h1>
+            <div v-if="!state.csv" class="flex gap-2">
               <DrawerToggle
                 @click="router.push({ hash: '#upload-csv' })"
                 label="Upload grow data"
@@ -305,6 +325,11 @@
                 icon="plus"
                 for="new-record"
               />
+            </div>
+            <div v-if="state.csv" class="flex gap-2">
+              <button @click="handleCsvImportCancel" class="btn btn-outline">
+                Cancel
+              </button>
             </div>
           </div>
         </div>
