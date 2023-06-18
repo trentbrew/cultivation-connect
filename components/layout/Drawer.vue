@@ -458,14 +458,23 @@
   }
 
   async function submitCsv() {
-    console.clear();
     console.log('handling csv submission...', state.cycle.csv.files[0]);
     const file = state.cycle.csv.files[0];
     const blob = new Blob([file], { type: 'text/csv' });
+    const csv = await utils.readCsv(blob);
     if (state.cycle.csv.origin.value == 'aroya') {
-      const parsedCsv = await utils.parseAroyaData(csv);
-      console.log('parsed csv: ', parsedCsv);
-      if (parsedCsv) global.handleCsvUploaded(parsedCsv);
+      global.beginCsvImport();
+      const { data: parsed } = await utils.parseAroyaData(csv);
+      if (parsed) {
+        setTimeout(() => {
+          global.handleCsvUploaded(parsed);
+          setTimeout(() => {
+            if (!global.getCsvStatus.cancelled) {
+              global.completeCsvImport();
+            }
+          }, 8000);
+        }, 5000);
+      }
     } else {
       global.toast('error', 'Only Aroya CSVs are supported at this time');
     }

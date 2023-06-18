@@ -21,8 +21,13 @@ export const useGlobalStore = defineStore('global', {
       ranges,
     },
     csv: {
+      done: false,
+      active: false,
+      cancelled: false,
+      importing: false,
       uploaded: false,
       entryCount: 0,
+      data: null,
     },
     ui: {
       currentItem: null,
@@ -65,10 +70,7 @@ export const useGlobalStore = defineStore('global', {
     },
   }),
   getters: {
-    getCsvUploaded: state => ({
-      uploaded: state.csv.uploaded,
-      entryCount: state.csv.entryCount,
-    }),
+    getCsvStatus: state => state.csv,
     getCache: state => key => state.cache[key],
     getDetailsContext: state => state.ui.details.context,
     getCurrentItem: state => state.ui.currentItem,
@@ -86,12 +88,35 @@ export const useGlobalStore = defineStore('global', {
   },
   actions: {
     cancelCsvUpload() {
+      this.csv.done = false;
+      this.csv.cancelled = true;
       this.csv.uploaded = false;
+      this.csv.importing = false;
       this.csv.entryCount = 0;
+      this.csv.active = false;
+    },
+    beginCsvImport() {
+      this.csv.cancelled = false;
+      this.csv.done = false;
+      this.csv.active = true;
+      this.csv.importing = true;
+      this.csv.uploaded = false;
     },
     handleCsvUploaded(data) {
+      if (this.csv.cancelled) return;
+      this.csv.done = false;
       this.csv.uploaded = true;
-      this.csv.entryCount = data.length;
+      this.csv.active = true;
+      this.csv.importing = false;
+      this.csv.entryCount = data[0][0].entries.length;
+      this.csv.data = data;
+    },
+    completeCsvImport() {
+      if (this.csv.cancelled) return;
+      this.csv.done = true;
+      this.csv.active = false;
+      this.csv.importing = false;
+      this.csv.uploaded = false;
     },
     updateCache(key, data) {
       this.cache[key] = data;

@@ -6,32 +6,31 @@
   const route = useRoute();
   const global = useGlobalStore();
 
-  const steps = [
-    {
-      title: 'Create cycle',
-      name: 'create_cycle',
-      status: 'complete',
-    },
-    {
-      title: 'Add data',
-      name: 'import_data',
-      status: 'active',
-    },
-    {
-      title: 'Review data',
-      name: 'review_data',
-      status: 'incomplete',
-    },
-    {
-      title: 'Initiate cycle',
-      name: 'activate_cycle',
-      status: 'incomplete',
-    },
-  ];
-
   const state = reactive({
+    steps: [
+      {
+        title: 'Create cycle',
+        name: 'create_cycle',
+        status: 'complete',
+      },
+      {
+        title: 'Add data',
+        name: 'import_data',
+        status: 'active',
+      },
+      {
+        title: 'Review data',
+        name: 'review_data',
+        status: 'incomplete',
+      },
+      {
+        title: 'Initiate cycle',
+        name: 'activate_cycle',
+        status: 'incomplete',
+      },
+    ],
     loading: false,
-    csv: null,
+    csvStatus: {},
     cycle: {
       active: false,
       id: '',
@@ -135,14 +134,19 @@
     initCycle();
   });
 
-  const csvUploaded = computed(() => global.getCsvUploaded);
+  const csvStatus = computed(() => global.getCsvStatus);
 
   watch(
-    () => csvUploaded.value,
+    () => csvStatus.value,
     val => {
-      state.csv = val;
-      console.log(`${val.entryCount} entries have been uploaded...`);
-    }
+      console.log('csvStatus changed', val);
+      state.csvStatus = val;
+      if (val.done) {
+        state.steps[1].status = 'complete';
+        state.steps[2].status = 'active';
+      }
+    },
+    { deep: true }
   );
 
   watch(
@@ -199,11 +203,10 @@
   }
 
   function handleCsvImportCancel() {
-    console.log('canceling csv import....');
-    global.cancelCsvUpload();
+    state.csvStatus.cancelled = true;
     setTimeout(() => {
-      state.csv = null;
-    }, 4000);
+      global.cancelCsvUpload();
+    }, 3000);
   }
 </script>
 
@@ -293,17 +296,35 @@
               </ModalTrigger>
             </li>
           </ul>
+
+          <div v-show="state.csvStatus.done">
+            <div>
+              <h1 class="text-2xl mb-6">Review your data</h1>
+              <!-- <Table
+                class="w-full"
+                :data="state.csvStatus.data[0][0].entries ?? []"
+              /> -->
+            </div>
+          </div>
+
           <div
-            v-show="!state.cycle.active && !state.loading"
+            v-show="
+              !state.cycle.active && !state.loading && !state.csvStatus.done
+            "
             class="flex flex-col justify-center items-center"
           >
             <WIP
-              v-if="!state.csv"
+              v-if="!state.csvStatus.active"
               img="data"
               class="mb-8 w-[300px] -mt-12 brightness-[0.915] opacity-75"
             />
-            <Loading v-if="state.csv" size="80" />
-            <h1 v-if="!state.csv" class="text-center opacity-50 w-full">
+
+            <Loading v-if="state.csvStatus.active" size="80" />
+
+            <h1
+              v-if="!state.csvStatus.active"
+              class="text-center opacity-50 w-full"
+            >
               You haven't imported any data for this cycle yet. Get started by
               uploading
               <br />
@@ -311,13 +332,24 @@
               <b>CSV File</b>
               , or filling in your data manually.
             </h1>
-            <h1 v-if="state.csv" class="text-center font-bold w-full my-12">
-              <span v-if="state.csv.entryCount > 0">
-                Importing {{ state.csv.entryCount }} entries...
+
+            <h1 v-else class="text-center font-bold w-full my-12">
+              <span
+                v-show="state.csvStatus.importing && !state.csvStatus.cancelled"
+              >
+                Importing data...
               </span>
-              <span v-else>Cancelling CSV import...</span>
+              <span
+                v-show="state.csvStatus.uploaded && !state.csvStatus.cancelled"
+              >
+                Parsing {{ state.csvStatus.entryCount }} entries...
+              </span>
+              <span v-show="state.csvStatus.cancelled">
+                Cancelling CSV import...
+              </span>
             </h1>
-            <div v-if="!state.csv" class="flex gap-2">
+
+            <div v-if="!state.csvStatus.active" class="flex gap-2">
               <DrawerToggle
                 @click="router.push({ hash: '#upload-csv' })"
                 label="Upload grow data"
@@ -333,11 +365,11 @@
                 for="new-record"
               />
             </div>
-            <div v-if="state.csv" class="flex gap-2">
+            <div v-show="state.csvStatus.active" class="flex gap-2">
               <button
                 @click="handleCsvImportCancel"
                 class="btn btn-outline"
-                :disabled="state.csv.entryCount == 0"
+                :disabled="state.csvStatus.cancelled"
               >
                 Cancel
               </button>
@@ -345,7 +377,7 @@
           </div>
         </div>
         <div v-show="!state.cycle.active && !state.loading">
-          <Stepper :steps="steps" class="mb-8" />
+          <Stepper :steps="state.steps" class="mb-8" />
         </div>
       </div>
     </div>

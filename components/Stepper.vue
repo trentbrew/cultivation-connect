@@ -48,6 +48,7 @@
         v-for="(step, index) in props.steps"
         :key="index"
         :class="styles[step.status]"
+        class="duration-[300ms]"
       >
         {{ step.title }}
       </li>

@@ -83,8 +83,6 @@ const utils = {
   // This function takes an ugly CSV and makes it pretty
 
   parseAroyaData: async csv => {
-    console.clear();
-
     const stretch = arr => {
       let result = [];
       arr.forEach((item, index) => {
@@ -112,63 +110,119 @@ const utils = {
       return result;
     };
 
+    const namify = str => {
+      const common = [
+        'soil_moist',
+        '% Water Content',
+        '°F Soil Temperature',
+        'mS/cm Pore Water EC',
+      ];
+      if (common.includes(str)) {
+        if (str == '% Water Content') return 'soil_moisture';
+        if (str == '°F Soil Temperature') return 'grow_medium_temp';
+        if (str == 'mS/cm Pore Water EC') return 'pore_ec';
+      } else {
+        return str.toLowerCase().replaceAll(' ', '_');
+      }
+    };
+
     const lines = csv.split('\n').map(line => line.trim());
 
     const growth_stages = stretch(lines[0].split(','));
     const zones = stretch(lines[1].split(','));
     const ports = stretch(lines[2].split(','));
-    console.log('ports: ', ports);
     const sensors = stretch(lines[3].split(','));
+    const rawHeaders = stretch(lines[4].split(','));
     const headers = homogenize(stretch(lines[4].split(',')));
 
     const data = [];
 
-    ports.forEach((port, portIndex) => {
-      let entry = {};
-      let readings = [];
-      lines.forEach((line, lineIndex) => {
-        const timestamp = line.split(',')[0];
-        if (lineIndex > 4) {
-          line.split(',').forEach((item, itemIndex) => {
-            if (itemIndex == portIndex && item != timestamp) {
-              readings.push({
-                [headers[itemIndex]]: item,
-                timestamp,
+    // ports.forEach((port, portIndex) => {
+    //   let entry = {};
+    //   let readings = [];
+    //   lines.forEach((line, lineIndex) => {
+    //     const timestamp = line.split(',')[0];
+    //     if (lineIndex > 4) {
+    //       line.split(',').forEach((item, itemIndex) => {
+    //         if (itemIndex == portIndex && item != timestamp) {
+    //           readings.push({
+    //             [headers[itemIndex]]: item,
+    //             timestamp,
+    //           });
+    //         }
+    //       });
+    //     }
+    //   });
+    //   entry = {
+    //     ...entry,
+    //     port,
+    //     zone: zones[portIndex],
+    //     sensor: sensors[portIndex],
+    //     growth_stage: growth_stages[portIndex],
+    //     readings,
+    //   };
+    //   data.push(entry);
+    // });
+
+    // Note to self: each zone is it's own cycle
+
+    zones.forEach((zone, zoneIndex) => {
+      let prospective_cycles = [];
+      ports.forEach((port, portIndex) => {
+        let entries = [];
+        if (portIndex == zoneIndex) {
+          lines.forEach((line, lineIndex) => {
+            if (lineIndex > 4) {
+              const vals = line.split(',');
+              let record = [];
+              vals.forEach((value, valueIndex) => {
+                if (valueIndex > 0 && valueIndex == portIndex) {
+                  // console.log(headers);
+                  // console.log(valueIndex);
+                  record.push({
+                    ...record,
+                    label: rawHeaders[valueIndex],
+                    name: headers[valueIndex],
+                    value,
+                  });
+                }
+              });
+              entries.push({
+                entry_id: `${vals[0]}_${zone}_${growth_stages[portIndex]}_${port}`,
+                timestamp: vals[0],
+                port,
+                zone,
+                sensor: sensors[portIndex],
+                growth_stage: growth_stages[portIndex],
+                data: record,
+                // recorded_by (fill @ [cycle].vue)
+                // facility (fill @ [cycle].vue)
+                // cycle (fill @ [cycle].vue)
+                // cultivar (fill @ [cycle].vue)
+                // cycle_day (fill @ [cycle].vue)
+                // cycle_week (fill @ [cycle].vue)
+                // room (fill @ [cycle].vue)
               });
             }
           });
+          prospective_cycles.push({
+            nickname: `${zone}_${growth_stages[portIndex]}`,
+            zone,
+            growth_stage: growth_stages[portIndex],
+            entries,
+          });
         }
       });
-      entry = {
-        ...entry,
-        port,
-        zone: zones[portIndex],
-        sensor: sensors[portIndex],
-        growth_stage: growth_stages[portIndex],
-        readings,
-      };
-      data.push(entry);
+      data.push(prospective_cycles);
     });
 
-    console.log('final data: ', data);
-    return data;
-  },
+    console.log('final data: ', data.flat());
 
-  // csvToJson: csv => {
-  //   console.log('converting csv to json...');
-  //   const lines = csv.split('\n');
-  //   const result = [];
-  //   const headers = lines[0].split(',');
-  //   for (let i = 1; i < lines.length; i++) {
-  //     const obj = {};
-  //     const currentline = lines[i].split(',');
-  //     for (let j = 0; j < headers.length; j++) {
-  //       obj[headers[j]] = currentline[j];
-  //     }
-  //     result.push(obj);
-  //   }
-  //   return result;
-  // },
+    return {
+      data,
+      // entries: data.flat(),
+    };
+  },
 };
 
 export default utils;
