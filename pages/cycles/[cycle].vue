@@ -152,9 +152,10 @@
   watch(
     () => route,
     val => {
+      state.loading = true;
       setTimeout(() => {
         initCycle();
-      }, 2000);
+      }, 5000);
     },
     { deep: true }
   );
@@ -285,11 +286,15 @@
           >
             <!-- TODO: Clamp the grid -->
             <li v-for="(item, index) in state.cycle.conditions" :key="index">
-              <ModalTrigger @click="updateHash(item.name)" target="details">
+              <ModalTrigger
+                @click="item.name != 'yield' ? updateHash(item.name) : () => {}"
+                target="details"
+              >
                 <Stat
                   :id="item.name"
                   :title="item.title"
                   :value="Number(item.value)"
+                  :disabled="item.name == 'yield'"
                 />
               </ModalTrigger>
             </li>

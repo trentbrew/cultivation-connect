@@ -102,7 +102,7 @@
 
   let options = {
     colorBy: 'series',
-    gradientColor: ['#6BD09E', '#CDAB55', '#AF0000'],
+    gradientColor: ['#6BD09E', '#CDAB55', '#E87A76'],
     visualMap: [
       {
         show: false,

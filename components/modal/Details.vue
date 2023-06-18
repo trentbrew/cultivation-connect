@@ -130,7 +130,7 @@
                         class="bg-base-100 border border-base-300 w-full h-32 rounded-[8px] p-2 px-3 flex flex-col justify-between items-start"
                       >
                         <span>Avg</span>
-                        <h2 class="text-3xl mb-3">
+                        <h2 class="text-3xl mb-3 ml-3">
                           <span>
                             {{
                               state.range?.unit == '%'
@@ -150,7 +150,7 @@
                           class="w-full h-32 bg-base-100 border border-base-300 rounded-[8px] p-2 px-3 flex flex-col justify-between items-start"
                         >
                           <span>Min</span>
-                          <h2 class="text-3xl mb-3">
+                          <h2 class="text-3xl mb-3 ml-3">
                             <span>
                               {{
                                 state.range?.unit == '%'
@@ -169,7 +169,7 @@
                           class="w-full h-32 bg-base-100 border border-base-300 rounded-[8px] p-2 px-3 flex flex-col justify-between items-start"
                         >
                           <span>Max</span>
-                          <h2 class="text-3xl mb-3">
+                          <h2 class="text-3xl mb-3 ml-3">
                             <span>
                               {{
                                 state.range?.unit == '%'

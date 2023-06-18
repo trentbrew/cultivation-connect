@@ -15,6 +15,10 @@
       type: Number,
       required: true,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   });
 
   const state = reactive({
@@ -50,6 +54,13 @@
         color: 'text-error-content',
       },
     },
+    {
+      card: 'bg-neutral/25 border-neutral pointer-events-none cursor-not-allowed',
+      icon: {
+        name: 'lock',
+        color: 'text-neutral-content',
+      },
+    },
   ];
 
   onMounted(() => {
@@ -57,23 +68,6 @@
     const r = state.range;
     const v = props.value;
     const p = 0; // TODO: get phase from cycle data
-
-    // if (props.id == 'yield') {
-    //   const outerRange = {
-    //     ok: () => r.min[p] < v && v < r.max[p],
-    //     good: () => v > r.max[p],
-    //   }
-    //   if (outerRange.good()) {
-    //     state.style = styles[0]
-    //     state.status = 'good'
-    //   } else if (outerRange.ok()) {
-    //     state.style = styles[1]
-    //     state.status = 'ok'
-    //   } else {
-    //     state.style = styles[2]
-    //     state.status = 'bad'
-    //   }
-    // } else {
 
     const maxmax = r?.max[p] + r?.margin[p];
     const max = r?.max[p];
@@ -84,9 +78,13 @@
     const yellow = (v > max || v < min) && !red;
     const green = v <= max && v >= min;
 
-    state.style = green ? styles[0] : yellow ? styles[1] : styles[2];
-
-    // }
+    state.style = props.disabled
+      ? styles[3]
+      : green
+      ? styles[0]
+      : yellow
+      ? styles[1]
+      : styles[2];
 
     state.change.value = Math.abs(v - r.median[p]);
     state.change.direction = v > r.median[p] ? 'above' : 'below';
@@ -106,7 +104,7 @@
 <template>
   <div
     v-if="state.style"
-    @click="triggerDetails"
+    @click="props.disabled ? '' : triggerDetails"
     class="w-full h-full border hover:scale-[0.98] active:scale-[0.94] active:brightness-95 rounded duration-150 p-4 group cursor-pointer group"
     :class="state.style.card"
   >
@@ -114,7 +112,11 @@
       <div class="flex justify-between w-full">
         <div class="flex justify-start gap-2 items-center w-full">
           <div :class="state.style.icon.color" v-if="state.style.icon">
-            <Icon :name="state.style.icon.name" :size="18" />
+            <Icon
+              :name="state.style.icon.name"
+              :size="18"
+              :class="props.disabled ? 'invert' : ''"
+            />
           </div>
           <span class="text font-medium">{{ props.title }}</span>
         </div>
@@ -139,7 +141,15 @@
           </span>
           <span class="text-sm ml-1">{{ state.range.unit }}</span>
         </h2>
-        <Pill :id="props.id" :value="props.value" />
+        <Pill
+          :id="props.id"
+          :value="props.disabled ? 0 : props.value"
+          :class="
+            props.disabled
+              ? 'grayscale contrast-[0] opacity-[0.4] !animate-none'
+              : ''
+          "
+        />
       </div>
     </div>
   </div>

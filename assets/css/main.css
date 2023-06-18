@@ -47,11 +47,12 @@ main {
 /* ------------ animations ------------ */
 
 .nudge-up {
-  animation: nudge-up 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite both;
+  animation: nudge-up 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite both;
 }
 
 .nudge-down {
-  animation: nudge-down 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite both;
+  animation: nudge-down 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite
+    both;
 }
 
 @keyframes nudge-down {

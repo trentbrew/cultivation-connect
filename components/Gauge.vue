@@ -22,7 +22,7 @@
   const colors = {
     green: '#6BD09E',
     yellow: '#CDAB55',
-    red: '#AF0000',
+    red: '#E87A76',
   };
 
   let options = {
