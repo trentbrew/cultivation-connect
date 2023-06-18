@@ -30,32 +30,21 @@
 
   onMounted(() => {
     state.range = global.getRange(props.id);
+
     const r = state.range;
     const v = props.value;
     const p = 0; // TODO: get phase from cycle data
 
-    const innerRange = {
-      ok: () => {
-        return (
-          (r?.min[p] - r?.margin[p] < v && v < r?.min[p]) ||
-          (r?.max[p] < v && v < r?.max[p] + r?.margin[p])
-        );
-      },
-      good: () => {
-        return r?.min[p] <= v && v <= r?.max[p];
-      },
-    };
+    const maxmax = r?.max[p] + r?.margin[p];
+    const max = r?.max[p];
+    const min = r?.min[p];
+    const minmin = r?.min[p] - r?.margin[p];
 
-    if (innerRange.good()) {
-      state.style = styles[0];
-      state.status = 'good';
-    } else if (innerRange.ok()) {
-      state.style = styles[1];
-      state.status = 'ok';
-    } else {
-      state.style = styles[2];
-      state.status = 'bad';
-    }
+    const red = v > maxmax || v < minmin;
+    const yellow = (v > max || v < min) && !red;
+    const green = v <= max && v >= min;
+
+    state.style = green ? styles[0] : yellow ? styles[1] : styles[2];
 
     state.change.value = Math.abs(v - r?.median[p]);
     state.change.direction = v > r?.median[p] ? 'above' : 'below';

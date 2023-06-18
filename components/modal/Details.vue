@@ -6,30 +6,23 @@
 
   const state = reactive({
     context: '',
-    data: null, // TODO: use cycle.readings
-    latest_value: 72, // ie. 72
-    avg: 83.25, // ie. 83.25
-    min: 35, // ie. 35
-    max: 138, // ie. 138
+    series: [],
+    data: null,
+    records: null,
+    latest_value: 0, // ie. 72
+    avg: 0, // ie. 83.25
+    min: 0, // ie. 35
+    max: 0, // ie. 138
     range: null,
   });
 
-  async function fetchCycle() {
-    const cycle = await pb.get('cycles', {
-      id: route.params.cycle,
-    });
-    state.data = cycle;
-  }
-
-  function calculateMetrics(data) {
-    let avg, min, max;
-    // TODO: caluculate avg
-    // TODO: caluculate min
-    // TODO: calculate max
-  }
-
   onMounted(() => {
     fetchCycle();
+    fetchRecords();
+    if (route.hash) {
+      state.context = route.hash.substring(1);
+      state.range = global.getRange(route.hash.substring(1));
+    }
   });
 
   watch(
@@ -40,12 +33,57 @@
         newHash !== '#records' &&
         newHash.split('–')[0] !== '#edit'
       ) {
-        fetchCycle();
         state.context = newHash.substring(1);
         state.range = global.getRange(newHash.substring(1));
+        fetchCycle();
+        fetchRecords();
+        calculateMetrics();
       }
     }
   );
+
+  async function fetchCycle() {
+    const cycle = await pb.get('cycles', {
+      id: route.params.cycle,
+    });
+    state.data = cycle;
+  }
+
+  async function fetchRecords() {
+    const records = await pb.get('records', {
+      filter: `cycle = "${route.params.cycle}" && facility.id = "${pb.api.authStore.model.facility}"`,
+    });
+    state.records = records;
+    if (route.hash && route.hash !== '#records') calculateMetrics();
+  }
+
+  function calculateMetrics() {
+    const values = state.records.map(record => {
+      if (record.data[state.context]) return record.data[state.context];
+    });
+    const initialize = datum => {
+      const getPreviousDate = date => {
+        const d = new Date(date);
+        d.setDate(d.getDate() - 1);
+        return d.toISOString().split('T')[0];
+      };
+      return [getPreviousDate(datum[0]), 0];
+    };
+    state.avg = values.reduce((a, b) => a + b, 0) / values.length;
+    state.min = Math.min(...values);
+    state.max = Math.max(...values);
+    state.latest_value = values[values.length - 1];
+    const series = state.records.map(record => {
+      if (record.data[state.context]) {
+        return [record.date_recorded.split(' ')[0], record.data[state.context]];
+      }
+    });
+    if (series.length < 2) {
+      state.series = [initialize(series[0]), series[0]];
+    } else {
+      state.series = series;
+    }
+  }
 </script>
 
 <template>
@@ -57,11 +95,11 @@
           <div class="w-[83vw] h-[79vh]">
             <div class="w-full h-full">
               <div class="absolute ml-4">
-                <div class="ml-4 text-2xl mt-6">
+                <div class="ml-4 text-2xl mt-6 font-bold">
                   {{ state.range?.title ?? '' }}
                 </div>
               </div>
-              <div class="w-full h-full pt-24">
+              <div v-if="route.hash" class="w-full h-full pt-24">
                 <div class="w-full h-full p-4 flex gap-4">
                   <div
                     class="h-full w-fit flex flex-col gap-4 justify-between items-start rounded"
@@ -73,7 +111,7 @@
                       <div class="absolute">
                         <Pill
                           :id="state.context"
-                          :value="state.latest_value"
+                          :value="Number(state.latest_value)"
                           :unit="state.range?.unit"
                           class="translate-y-28"
                         />
@@ -81,7 +119,10 @@
                       <div
                         class="w-96 h-[300px] flex justify-center items-center"
                       >
-                        <!-- <Gauge :context="state.context" :value="state.value" /> -->
+                        <Gauge
+                          :context="state.context"
+                          :value="Number(state.latest_value)"
+                        />
                       </div>
                     </div>
                     <div class="h-fit w-96 flex flex-col gap-4">
@@ -147,7 +188,11 @@
                     </div>
                   </div>
                   <div class="w-full h-full border border-base-300 rounded p-4">
-                    <!-- <LineGraph :context="state.context" :value="32" /> -->
+                    <LineGraph
+                      :context="state.context"
+                      :value="Number(state.latest_value)"
+                      :series="state.series"
+                    />
                   </div>
                 </div>
               </div>

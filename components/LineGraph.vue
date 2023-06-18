@@ -1,6 +1,7 @@
 <script setup>
   import * as echarts from 'echarts';
 
+  const route = useRoute();
   const global = useGlobalStore();
 
   const target = ref(null);
@@ -14,6 +15,10 @@
       type: Number,
       required: true,
     },
+    series: {
+      type: Array,
+      required: true,
+    },
   });
 
   const state = reactive({
@@ -22,40 +27,78 @@
 
   let myChart;
 
-  const range = computed(() => global.getRange(props.context));
-  const collectionsState = computed(() => global.getCollectionsState);
-
-  const data = [
-    // TODO: replace with real data
-    ['2022-01-01', 35],
-    ['2022-01-02', 55],
-    ['2022-01-03', 63],
-    ['2022-01-04', 67],
-    ['2022-01-05', 70],
-    ['2022-01-06', 72],
-    ['2022-01-07', 68],
-    ['2022-01-08', 59],
-    ['2022-01-09', 62],
-    ['2022-01-10', 75],
-    ['2022-01-11', 70],
-    ['2022-01-12', 88],
-    ['2022-01-13', 100],
-    ['2022-01-14', 110],
-    ['2022-01-15', 118],
-    ['2022-01-16', 130],
-    ['2022-01-17', 131],
-    ['2022-01-18', 138],
-    ['2022-01-19', 80],
-    ['2022-01-20', 74],
+  const placeholder_data = [
+    ['2000-06-05', 116],
+    ['2000-06-06', 129],
+    ['2000-06-07', 135],
+    ['2000-06-08', 86],
+    ['2000-06-09', 73],
+    ['2000-06-10', 85],
+    ['2000-06-11', 73],
+    ['2000-06-12', 68],
+    ['2000-06-13', 92],
+    ['2000-06-14', 130],
+    ['2000-06-15', 245],
+    ['2000-06-16', 139],
+    ['2000-06-17', 115],
+    ['2000-06-18', 111],
+    ['2000-06-19', 309],
+    ['2000-06-20', 206],
+    ['2000-06-21', 137],
+    ['2000-06-22', 128],
+    ['2000-06-23', 85],
+    ['2000-06-24', 94],
+    ['2000-06-25', 71],
+    ['2000-06-26', 106],
+    ['2000-06-27', 84],
+    ['2000-06-28', 93],
+    ['2000-06-29', 85],
+    ['2000-06-30', 73],
+    ['2000-07-01', 83],
+    ['2000-07-02', 125],
+    ['2000-07-03', 107],
+    ['2000-07-04', 82],
+    ['2000-07-05', 44],
+    ['2000-07-06', 72],
+    ['2000-07-07', 106],
+    ['2000-07-08', 107],
+    ['2000-07-09', 66],
+    ['2000-07-10', 91],
+    ['2000-07-11', 92],
+    ['2000-07-12', 113],
+    ['2000-07-13', 107],
+    ['2000-07-14', 131],
+    ['2000-07-15', 111],
+    ['2000-07-16', 64],
+    ['2000-07-17', 69],
+    ['2000-07-18', 88],
+    ['2000-07-19', 77],
+    ['2000-07-20', 83],
+    ['2000-07-21', 111],
+    ['2000-07-22', 57],
+    ['2000-07-23', 55],
+    ['2000-07-24', 60],
   ];
 
-  const dateList = data.map(function (item) {
-    return item[0];
+  let series = [];
+
+  props.series.forEach(record => {
+    series = [...series, [record[0], record[1]]];
   });
 
-  const valueList = data.map(function (item) {
-    return item[1];
-  });
+  const range = computed(() => global.getRange(props.context));
+
+  const rMin = range.value.min[0];
+  const rMax = range.value.max[0];
+  const rMar = range.value.margin[0];
+
+  const collectionsState = computed(() => global.getCollectionsState);
+
+  // const dateList = props.series.map(item => item[0]);
+  // const valueList = props.series.map(item => item[1]);
+
+  const dateList = series.map(item => item[0]);
+  const valueList = series.map(item => item[1]);
 
   let options = {
     colorBy: 'series',
@@ -65,8 +108,8 @@
         show: false,
         type: 'continuous',
         seriesIndex: 0,
-        min: 0, // TODO: get min from data
-        max: 400, // TODO: get max from data
+        min: rMin,
+        max: rMax,
         inactiveColor: '#000000',
       },
     ],
@@ -103,7 +146,7 @@
     tooltip: {
       trigger: 'axis',
       showContent: true,
-      formatter: function (params) {
+      formatter: params => {
         return (
           params[0].name + '<br/>' + params[0].value + ' ' + range.value.unit
         );
@@ -133,26 +176,26 @@
       right: 10,
       pieces: [
         {
-          lte: 40, // min - margin
+          lte: rMin - rMar, // min - margin
           color: '#E87A76',
         },
         {
-          gt: 40, // min - margin
-          lte: 50, // min
+          gt: rMin - rMar, // min - margin
+          lte: rMin, // min
           color: '#F1C04A',
         },
         {
-          gt: 50, // min
-          lte: 113, // max
+          gt: rMin, // min
+          lte: rMax, // max
           color: '#6BD09E',
         },
         {
-          gt: 113, // max
-          lte: 123, // max + margin
+          gt: rMax, // max
+          lte: rMax + rMar, // max + margin
           color: '#F1C04A',
         },
         {
-          gt: 123, // max + margin
+          gt: rMax + rMar, // max + margin
           color: '#E87A76',
         },
       ],
@@ -160,45 +203,53 @@
     series: [
       {
         type: 'line',
-        lineStyle: {
-          normal: {
-            width: 4,
-          },
-        },
+        // lineStyle: {
+        //   normal: {
+        //     width: 4,
+        //   },
+        // },
         showSymbol: false,
         data: valueList,
         markLine: {
           silent: true,
-          lineStyle: {
-            color: '#333',
-          },
-          data: [
-            // This should match the range values
-            {
-              yAxis: 40, // min - margin
-            },
-            {
-              yAxis: 50, // min
-            },
-            {
-              yAxis: 113, // max
-            },
-            {
-              yAxis: 123, // relative max
-            },
-          ],
+          // lineStyle: {
+          //   color: '#333',
+          // },
+          // data: [
+          //   {
+          //     yAxis: rMin - rMar, // min - margin
+          //   },
+          //   {
+          //     yAxis: rMin, // min
+          //   },
+          //   {
+          //     yAxis: rMax, // max
+          //   },
+          //   {
+          //     yAxis: rMax + rMax, // relative max
+          //   },
+          // ],
         },
       },
     ],
   };
 
+  function initChart() {
+    myChart.setOption(options);
+  }
+
   onMounted(async () => {
     myChart = echarts.init(target.value);
-    myChart.setOption(options);
-    window.addEventListener('resize', () => {
-      myChart.resize();
-    });
+    window.addEventListener('resize', myChart.resize());
+    initChart();
   });
+
+  watch(
+    () => props.series,
+    val => {
+      initChart();
+    }
+  );
 
   watch(
     () => collectionsState.value,
@@ -209,9 +260,7 @@
 </script>
 
 <template>
-  <div id="line-graph" ref="target">
-    <Input v-model="state.timeframe" type="select" />
-  </div>
+  <div id="line-graph" ref="target"></div>
 </template>
 
 <style scoped>

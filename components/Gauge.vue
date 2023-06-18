@@ -96,6 +96,17 @@
     return parseFloat(((value - trueMin) / (trueMax - trueMin)).toFixed(2));
   }
 
+  function initChart() {
+    myChart.setOption(options);
+  }
+
+  watch(
+    () => props.value,
+    () => {
+      initChart();
+    }
+  );
+
   onMounted(() => {
     const context = global.getRange(props.context);
     const series = options.series[0];
@@ -125,7 +136,7 @@
     ];
 
     myChart = echarts.init(target.value);
-    myChart.setOption(options);
+    initChart();
 
     window.addEventListener('resize', () => {
       myChart.resize();

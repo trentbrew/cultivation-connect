@@ -152,9 +152,7 @@
   watch(
     () => route,
     val => {
-      console.log('the route changed', val);
       setTimeout(() => {
-        console.log('OK. initiating cycle...');
         initCycle();
       }, 2000);
     },
