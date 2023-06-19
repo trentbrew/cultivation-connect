@@ -94,15 +94,12 @@
 
   const collectionsState = computed(() => global.getCollectionsState);
 
-  // const dateList = props.series.map(item => item[0]);
-  // const valueList = props.series.map(item => item[1]);
-
   const dateList = series.map(item => item[0]);
   const valueList = series.map(item => item[1]);
 
   let options = {
     colorBy: 'series',
-    gradientColor: ['#6BD09E', '#CDAB55', '#E87A76'],
+    gradientColor: ['#6BD09E', '#F1C04A', '#E87A76'],
     visualMap: [
       {
         show: false,

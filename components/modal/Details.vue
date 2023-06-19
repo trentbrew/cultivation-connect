@@ -1,8 +1,8 @@
 <script setup>
-  const global = useGlobalStore();
-  const route = useRoute();
-  const router = useRouter();
-  const pb = usePocketbase();
+  const global = useGlobalStore()
+  const route = useRoute()
+  const router = useRouter()
+  const pb = usePocketbase()
 
   const state = reactive({
     context: '',
@@ -14,74 +14,80 @@
     min: 0, // ie. 35
     max: 0, // ie. 138
     range: null,
-  });
+  })
 
   onMounted(() => {
-    fetchCycle();
-    fetchRecords();
+    fetchCycle()
+    fetchRecords()
     if (route.hash) {
-      state.context = route.hash.substring(1);
-      state.range = global.getRange(route.hash.substring(1));
+      state.context = route.hash.substring(1)
+      state.range = global.getRange(route.hash.substring(1))
     }
-  });
+  })
+
+  const hasDetailsHash = computed(
+    () =>
+      route.hash &&
+      route.hash.split('-')[0] != 'edit' &&
+      !['records', 'upload-csv'].includes(route.hash.substring(1))
+  )
 
   watch(
     () => route.hash,
     newHash => {
-      if (
-        newHash &&
-        newHash !== '#records' &&
-        newHash.split('–')[0] !== '#edit'
-      ) {
-        state.context = newHash.substring(1);
-        state.range = global.getRange(newHash.substring(1));
-        fetchCycle();
-        fetchRecords();
-        calculateMetrics();
+      if (hasDetailsHash.value) {
+        state.context = newHash.substring(1)
+        state.range = global.getRange(newHash.substring(1))
+        fetchCycle()
+        fetchRecords()
+        calculateMetrics()
       }
     }
-  );
+  )
 
   async function fetchCycle() {
     const cycle = await pb.get('cycles', {
       id: route.params.cycle,
-    });
-    state.data = cycle;
+    })
+    state.data = cycle
   }
 
   async function fetchRecords() {
-    const records = await pb.get('records', {
-      filter: `cycle = "${route.params.cycle}" && facility.id = "${pb.api.authStore.model.facility}"`,
-    });
-    state.records = records;
-    if (route.hash && route.hash !== '#records') calculateMetrics();
+    if (hasDetailsHash.value) {
+      console.log(route.hash)
+      const records = await pb.get('records', {
+        filter: `cycle = "${route.params.cycle}" && facility.id = "${pb.api.authStore.model.facility}"`,
+      })
+      state.records = records
+      calculateMetrics()
+    }
   }
 
   function calculateMetrics() {
     const values = state.records.map(record => {
-      if (record.data[state.context]) return record.data[state.context];
-    });
+      if (record.data[state.context]) return record.data[state.context]
+    })
     const initialize = datum => {
       const getPreviousDate = date => {
-        const d = new Date(date);
-        d.setDate(d.getDate() - 1);
-        return d.toISOString().split('T')[0];
-      };
-      return [getPreviousDate(datum[0]), 0];
-    };
-    state.avg = values.reduce((a, b) => a + b, 0) / values.length;
-    state.min = Math.min(...values);
-    state.max = Math.max(...values);
-    state.latest_value = values[values.length - 1];
+        const d = new Date(date)
+        d.setDate(d.getDate() - 1)
+        return d.toISOString().split('T')[0]
+      }
+      return [getPreviousDate(datum[0]), 0]
+    }
+    state.avg = values.reduce((a, b) => a + b, 0) / values.length
+    state.min = Math.min(...values)
+    state.max = Math.max(...values)
+    state.latest_value = values[values.length - 1]
     const series = state.records.map(record => {
       if (record.data[state.context]) {
-        return [record.date_recorded.split(' ')[0], record.data[state.context]];
+        return [record.date_recorded.split(' ')[0], record.data[state.context]]
       }
-    });
+    })
     if (series.length < 2) {
-      state.series = [initialize(series[0]), series[0]];
+      state.series = [initialize(series[0]), series[0]]
     } else {
-      state.series = series;
+      state.series = series
     }
   }
 </script>

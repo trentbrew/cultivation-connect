@@ -1,5 +1,5 @@
 <script setup>
-  const global = useGlobalStore();
+  const global = useGlobalStore()
 
   const props = defineProps({
     for: {
@@ -22,12 +22,11 @@
       type: Boolean,
       required: false,
     },
-  });
+  })
 
   function handleDrawerToggle() {
-    console.log('setting drawer context: ', props.for);
-    global.setDrawerContext(props.for);
-    global.setCurrentItem(props.item); // for editing
+    global.setDrawerContext(props.for)
+    global.setCurrentItem(props.item) // for editing
   }
 </script>
 

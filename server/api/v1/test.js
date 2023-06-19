@@ -1,5 +1,5 @@
 export default defineEventHandler(event => {
   return {
-    api: 'This is just a test endpoint',
+    data: 'this is a test endpoint',
   }
 })

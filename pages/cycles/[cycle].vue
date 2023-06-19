@@ -1,10 +1,10 @@
 <script setup>
-  import utils from '@/helpers/utils';
+  import utils from '@/helpers/utils'
 
-  const pb = usePocketbase();
-  const router = useRouter();
-  const route = useRoute();
-  const global = useGlobalStore();
+  const pb = usePocketbase()
+  const router = useRouter()
+  const route = useRoute()
+  const global = useGlobalStore()
 
   const state = reactive({
     steps: [
@@ -126,86 +126,81 @@
         },
       ],
     },
-  });
+  })
 
   onMounted(async () => {
-    state.loading = true;
-    router.push({ hash: '' });
-    initCycle();
-  });
+    state.loading = true
+    router.push({ hash: '' })
+    initCycle()
+  })
 
-  const csvStatus = computed(() => global.getCsvStatus);
+  const csvStatus = computed(() => global.getCsvStatus)
 
   watch(
     () => csvStatus.value,
     val => {
-      console.log('csvStatus changed', val);
-      state.csvStatus = val;
+      console.log('csvStatus changed', val)
+      state.csvStatus = val
       if (val.done) {
-        state.steps[1].status = 'complete';
-        state.steps[2].status = 'active';
+        state.steps[1].status = 'complete'
+        state.steps[2].status = 'active'
       }
     },
     { deep: true }
-  );
+  )
 
   watch(
     () => route,
     val => {
-      state.loading = true;
-      setTimeout(() => {
-        initCycle();
-      }, 5000);
+      state.loading = true
+      initCycle()
     },
     { deep: true }
-  );
+  )
 
   async function initCycle() {
     const cycle = await pb.get('cycles', {
       id: route.params.cycle,
-    });
+    })
     if (cycle.active) {
       const { data: latest_record } = await pb.get('records', {
         id: cycle.latest_record,
-      });
+      })
       state.cycle.conditions.forEach((item, index) => {
         if (latest_record[item.name]) {
-          state.cycle.conditions[index].value = latest_record[item.name];
+          state.cycle.conditions[index].value = latest_record[item.name]
         }
-      });
+      })
     }
-    state.cycle.id = cycle.id;
-    state.cycle.name = cycle.name;
-    state.cycle.latest_record = cycle.latest_record;
-    state.cycle.overview.plants = cycle.plants;
+    state.cycle.id = cycle.id
+    state.cycle.name = cycle.name
+    state.cycle.latest_record = cycle.latest_record
+    state.cycle.overview.plants = cycle.plants
     state.cycle.overview.day = Math.floor(
       utils.timeDifference(Date.now(), Date.parse(cycle.start_date), 'd')
-    );
-    state.cycle.overview.growthPhase = utils.capitalize(cycle.growth_stage);
-    state.cycle.overview.startDate = utils.dateString(
-      cycle.start_date,
-      'short'
-    );
-    // TODO: calculate est harvest date based on grow conditions
+    )
+    state.cycle.overview.growthPhase = utils.capitalize(cycle.growth_stage)
+    state.cycle.overview.startDate = utils.dateString(cycle.start_date, 'short')
+    // TODO: calculate est harvest date
     state.cycle.overview.estHarvestDate = utils.dateString(
       Date.parse(cycle.start_date) + 112 * 24 * 60 * 60 * 1000,
       'short'
-    );
-    state.cycle.active = cycle.active;
-    state.loading = false;
+    )
+    state.cycle.active = cycle.active
+    state.loading = false
   }
 
   function updateHash(hash) {
     router.push({
       hash: `#${hash}`,
-    });
+    })
   }
 
   function handleCsvImportCancel() {
-    state.csvStatus.cancelled = true;
+    state.csvStatus.cancelled = true
     setTimeout(() => {
-      global.cancelCsvUpload();
-    }, 3000);
+      global.cancelCsvUpload()
+    }, 3000)
   }
 </script>
 
@@ -281,7 +276,7 @@
             <Loading size="80" />
           </div>
           <ul
-            v-if="state.cycle.active"
+            v-if="state.cycle.active && !state.loading"
             class="w-full min-h-full grid grid-cols-4 overflow-scroll gap-4 p-4 pt-0"
           >
             <!-- TODO: Clamp the grid -->
@@ -302,7 +297,7 @@
 
           <div v-show="state.csvStatus.done">
             <div>
-              <h1 class="text-2xl mb-6">Review your data</h1>
+              <h1 class="text-2xl mb-6">🚧 Review your data</h1>
               <!-- <Table
                 class="w-full"
                 :data="state.csvStatus.data[0][0].entries ?? []"
@@ -337,19 +332,7 @@
             </h1>
 
             <h1 v-else class="text-center font-bold w-full my-12">
-              <span
-                v-show="state.csvStatus.importing && !state.csvStatus.cancelled"
-              >
-                Importing data...
-              </span>
-              <span
-                v-show="state.csvStatus.uploaded && !state.csvStatus.cancelled"
-              >
-                Parsing {{ state.csvStatus.entryCount }} entries...
-              </span>
-              <span v-show="state.csvStatus.cancelled">
-                Cancelling CSV import...
-              </span>
+              <span>{{ state.csvStatus.message }}</span>
             </h1>
 
             <div v-if="!state.csvStatus.active" class="flex gap-2">

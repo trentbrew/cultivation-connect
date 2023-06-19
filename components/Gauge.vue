@@ -21,7 +21,7 @@
 
   const colors = {
     green: '#6BD09E',
-    yellow: '#CDAB55',
+    yellow: '#F1C04A',
     red: '#E87A76',
   };
 
@@ -34,7 +34,7 @@
         splitNumber: 10,
         axisLine: {
           lineStyle: {
-            width: 4,
+            width: 2,
             color: null,
           },
         },
@@ -69,7 +69,7 @@
         detail: {
           valueAnimation: true,
           formatter: null,
-          color: 'inherit',
+          color: '#000',
           fontSize: 24,
         },
         data: [

@@ -1,10 +1,10 @@
 <script setup>
-  import utils from '@/helpers/utils';
+  import utils from '@/helpers/utils'
 
-  const global = useGlobalStore();
-  const pb = usePocketbase();
-  const route = useRoute();
-  const router = useRouter();
+  const global = useGlobalStore()
+  const pb = usePocketbase()
+  const route = useRoute()
+  const router = useRouter()
 
   const state = reactive({
     cycle: {
@@ -216,26 +216,26 @@
       cultivar: null,
       sensor: null,
     },
-  });
+  })
 
   onMounted(async () => {
-    fetchData();
-  });
+    fetchData()
+  })
 
   const valid = computed(() => {
-    if (state.payload.valid || state.cycle.csv.valid) return true;
-    return false;
-  });
+    if (state.payload.valid || state.cycle.csv.valid) return true
+    return false
+  })
 
-  const drawerContext = computed(() => global.getDrawerContext);
+  const drawerContext = computed(() => global.getDrawerContext)
 
   const title = computed(() => {
-    if (drawerContext.value == 'csv-upload') return 'Import Grow Data';
-    if (drawerContext.value == 'new-cultivar') return 'Add a new cultivar';
-    if (drawerContext.value == 'edit-cultivar') return `Edit cultivar`;
-    if (drawerContext.value == 'new-sensor') return 'Add a new sensor';
-    if (drawerContext.value == 'edit-sensor') return 'Edit sensor';
-    if (drawerContext.value == 'new-cycle') return 'Create a new cycle';
+    if (drawerContext.value == 'csv-upload') return 'Import Grow Data'
+    if (drawerContext.value == 'new-cultivar') return 'Add a new cultivar'
+    if (drawerContext.value == 'edit-cultivar') return `Edit cultivar`
+    if (drawerContext.value == 'new-sensor') return 'Add a new sensor'
+    if (drawerContext.value == 'edit-sensor') return 'Edit sensor'
+    if (drawerContext.value == 'new-cycle') return 'Create a new cycle'
     if (drawerContext.value == 'new-record')
       return `New record (${new Date()
         .toLocaleString('en-US', {
@@ -245,167 +245,166 @@
           hour: '2-digit',
           minute: '2-digit',
         })
-        .replace(',', '')})`;
-  });
+        .replace(',', '')})`
+  })
 
   watch(
     () => route.hash,
     async newHash => {
       if (drawerContext.value == 'csv-upload') {
-        state.cycle.csv.init = 'csv';
+        state.cycle.csv.init = 'csv'
       } else if (
         drawerContext.value == 'new-cycle' ||
         newHash == '#new-cycle'
       ) {
-        state.cycle.csv.init = 'manual';
+        state.cycle.csv.init = 'manual'
       }
       if (
         newHash &&
         ['edit-cultivar', 'edit-sensor'].includes(drawerContext.value)
       ) {
-        const cycle_id = newHash.substring(1).split('–')[1];
-        console.log('auto-populating patch data');
+        const cycle_id = newHash.substring(1).split('–')[1]
+        console.log('auto-populating patch data')
         if (drawerContext.value == 'edit-cultivar') {
           const cycle = await state.data.cycles.filter(cycles => {
-            return cycles.id == cycle_id;
-          })[0];
-          const cultivar_id = cycle?.cultivar[0];
+            return cycles.id == cycle_id
+          })[0]
+          const cultivar_id = cycle?.cultivar[0]
           const cultivar = await state.data?.cultivars.filter(
             cultivar => cultivar.id == cultivar_id
-          )[0];
-          console.log('state.data.cultivars: ', state.data.cultivars);
-          console.log('cultivar_id: ', cultivar_id);
-          console.log('cultivar: ', cultivar);
+          )[0]
+          console.log('state.data.cultivars: ', state.data.cultivars)
+          console.log('cultivar_id: ', cultivar_id)
+          console.log('cultivar: ', cultivar)
           if (cultivar) {
-            state.context.cultivar = cultivar;
-            state.patch.cultivar.name = state.context.cultivar.name;
-            state.patch.cultivar.phenotype = state.context.cultivar.phenotype;
+            state.context.cultivar = cultivar
+            state.patch.cultivar.name = state.context.cultivar.name
+            state.patch.cultivar.phenotype = state.context.cultivar.phenotype
             state.patch.cultivar.acquisition =
-              state.context.cultivar.acquisition;
-            state.patch.cultivar.notes = state.context.cultivar.notes;
-            console.log('state.patch: ', state.patch.cultivar);
+              state.context.cultivar.acquisition
+            state.patch.cultivar.notes = state.context.cultivar.notes
+            console.log('state.patch: ', state.patch.cultivar)
           }
         }
         if (drawerContext.value == 'edit-sensor') {
           // TODO: auto-populate sensor patch data
-          console.log('auto-populating sensor patch data');
+          console.log('auto-populating sensor patch data')
         }
       } else {
-        state.context.cultivar = null;
-        state.context.sensor = null;
-        state.patch.cultivar.name = '';
-        state.patch.cultivar.phenotype = '';
-        state.patch.cultivar.acquisition = '';
-        state.patch.cultivar.notes = '';
-        state.patch.sensor.type = '';
-        state.patch.sensor.brand = '';
-        state.patch.sensor.name = '';
-        state.patch.sensor.condition = '';
+        state.context.cultivar = null
+        state.context.sensor = null
+        state.patch.cultivar.name = ''
+        state.patch.cultivar.phenotype = ''
+        state.patch.cultivar.acquisition = ''
+        state.patch.cultivar.notes = ''
+        state.patch.sensor.type = ''
+        state.patch.sensor.brand = ''
+        state.patch.sensor.name = ''
+        state.patch.sensor.condition = ''
       }
-      fetchData();
+      fetchData()
     }
-  );
+  )
 
   async function fetchData() {
-    state.cycle;
-    state.data.cultivars = await fetch('cultivars');
-    state.data.sensors = await fetch('sensors');
-    state.data.rooms = await fetch('rooms');
-    state.data.zones = await fetch('zones');
-    state.data.cycles = await fetch('cycles');
-    const cycle_id = route.params.cycle;
+    state.cycle
+    state.data.cultivars = await pbFetch('cultivars')
+    state.data.sensors = await pbFetch('sensors')
+    state.data.rooms = await pbFetch('rooms')
+    state.data.zones = await pbFetch('zones')
+    state.data.cycles = await pbFetch('cycles')
+    const cycle_id = route.params.cycle
     const cycle = await state.data.cycles.filter(cycles => {
-      return cycles.id == cycle_id;
-    })[0];
-    state.cycle.id = cycle_id;
-    state.cycle.name = cycle.name;
-    state.cycle.room = cycle.room;
-    state.cycle.zone = cycle.zone;
-    state.cycle.cultivar = cycle.cultivar[0];
-    state.cycle.growth_stage = cycle.growth_stage;
-    state.cycle.start_date = cycle.start_date;
+      return cycles.id == cycle_id
+    })[0]
+    state.cycle.id = cycle_id
+    state.cycle.name = cycle?.name
+    state.cycle.room = cycle?.room
+    state.cycle.zone = cycle?.zone
+    state.cycle.cultivar = cycle?.cultivar[0]
+    state.cycle.growth_stage = cycle?.growth_stage
+    state.cycle.start_date = cycle?.start_date
   }
 
   function handleFileInput() {
-    console.log('file has been input');
-    state.cycle.csv.selected = true;
+    console.log('file has been input')
+    state.cycle.csv.selected = true
   }
 
   function handleCsvValidation(e) {
-    console.log('file input: ', state.cycle.csv.files);
     state.cycle.csv.valid =
-      state.cycle.csv.origin.value && state.cycle.csv.files?.length > 0;
+      state.cycle.csv.origin.value && state.cycle.csv.files?.length > 0
   }
 
   function handleValidation(e) {
-    state['payload'][e.group][e.id].valid = e.valid;
+    state['payload'][e.group][e.id].valid = e.valid
     const groupValidity = Object.values(state['payload'][e.group]).map(
       item => item.valid
-    );
-    state['payload'].valid = !groupValidity.includes(false);
+    )
+    state['payload'].valid = !groupValidity.includes(false)
   }
 
-  async function fetch(collection) {
+  async function pbFetch(collection) {
     if (collection == 'zones') {
       const zones = await pb.get(collection, {
         filter: `room = "${state.payload.cycle.room.value}" && facility.id = "${pb.api.authStore.model.facility}"`,
-      });
-      return zones;
+      })
+      return zones
     }
     const data = await pb.get(collection, {
       filter: `facility.id = "${pb.api.authStore.model.facility}"`,
-    });
-    return data;
+    })
+    return data
   }
 
   function clearForm(group, validity) {
     Object.entries(state.payload[group]).forEach(([key, value]) => {
-      state.payload[group][key].value = null;
-      state.payload[group][key].valid = validity ?? false;
-    });
+      state.payload[group][key].value = null
+      state.payload[group][key].valid = validity ?? false
+    })
   }
 
   async function handleAddItem(e) {
     if (e.id == 'room') {
-      console.log('handling room addition', e);
-      submitRoom(e.value);
+      console.log('handling room addition', e)
+      submitRoom(e.value)
     }
     if (e.id == 'zone') {
-      console.log(`adding zone "${e.value}" to room "${e.room}"`);
-      submitZone(e.value);
+      console.log(`adding zone "${e.value}" to room "${e.room}"`)
+      submitZone(e.value)
     }
   }
 
   async function handleRoomChange(e) {
-    state.payload.cycle.zone.value = '';
-    state.data.zones = await fetch('zones');
+    state.payload.cycle.zone.value = ''
+    state.data.zones = await pbFetch('zones')
   }
 
   function handleSubmit() {
-    if (drawerContext.value == 'new-sensor') submitSensor();
-    if (drawerContext.value == 'new-cultivar') submitCultivar();
-    if (drawerContext.value == 'edit-cultivar') updateCultivar();
-    if (drawerContext.value == 'new-cycle') submitCycle();
-    if (drawerContext.value == 'csv-upload') submitCsv();
-    if (drawerContext.value == 'new-record') submitRecord();
-    router.push({ hash: '' });
+    if (drawerContext.value == 'new-sensor') submitSensor()
+    if (drawerContext.value == 'new-cultivar') submitCultivar()
+    if (drawerContext.value == 'edit-cultivar') updateCultivar()
+    if (drawerContext.value == 'new-cycle') submitCycle()
+    if (drawerContext.value == 'csv-upload') submitCsv()
+    if (drawerContext.value == 'new-record') submitRecord()
+    router.push({ hash: '' })
   }
 
   async function submitRecord() {
     const getCycleDay = () => {
-      const start = new Date(state.cycle.start_date);
-      const today = new Date();
-      const diff = today - start;
-      const day = Math.floor(diff / (1000 * 60 * 60 * 24));
-      return day;
-    };
+      const start = new Date(state.cycle.start_date)
+      const today = new Date()
+      const diff = today - start
+      const day = Math.floor(diff / (1000 * 60 * 60 * 24))
+      return day
+    }
     const getCycleWeek = () => {
-      const start = new Date(state.cycle.start_date);
-      const today = new Date();
-      const diff = today - start;
-      const week = Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
-      return week;
-    };
+      const start = new Date(state.cycle.start_date)
+      const today = new Date()
+      const diff = today - start
+      const week = Math.floor(diff / (1000 * 60 * 60 * 24 * 7))
+      return week
+    }
     const data = {
       air_temp: state.payload.record[0].value,
       grow_medium_temp: state.payload.record[1].value,
@@ -426,7 +425,7 @@
       thc: null, // TODO: get this from the cultivar?
       tac: null, // TODO: get this from the cultivar?
       terp: null, // TODO: get this from the cultivar?
-    };
+    }
     const payload = {
       date_recorded: new Date().toISOString(),
       recorded_by: pb.api.authStore.model.id,
@@ -439,100 +438,129 @@
       cycle_day: getCycleDay(),
       cycle_week: getCycleWeek(),
       data: JSON.stringify(data),
-    };
-    clearForm('record', true);
+    }
+    clearForm('record', true)
     pb.post('records', payload)
       .then(res => {
-        const latest_record = res.id;
+        const latest_record = res.id
         pb.update('cycles', state.cycle.id, {
           active: true,
           latest_record,
         }).then(() => {
-          global.toast('default', 'Successfully submitted record');
-        });
+          global.toast('default', 'Successfully submitted record')
+        })
       })
       .catch(err => {
-        global.toast('error', 'Error submitting record');
-        console.log('error submitting record: ', err);
-      });
+        global.toast('error', 'Error submitting record')
+        console.log('error submitting record: ', err)
+      })
   }
 
   async function submitCsv() {
-    console.log('handling csv submission...', state.cycle.csv.files[0]);
-    const file = state.cycle.csv.files[0];
-    const blob = new Blob([file], { type: 'text/csv' });
-    const csv = await utils.readCsv(blob);
+    // handle readfile on the server
+
+    const file = state.cycle.csv.files[0]
+    const blob = new Blob([file], { type: 'text/csv' })
+
     if (state.cycle.csv.origin.value == 'aroya') {
-      global.beginCsvImport();
-      const { data: parsed } = await utils.parseAroyaData(csv);
-      if (parsed) {
-        setTimeout(() => {
-          global.handleCsvUploaded(parsed);
+      console.clear()
+      global.beginCsvImport()
+
+      const formData = new FormData()
+      formData.append('file', blob)
+
+      try {
+        const response = await fetch('/api/v1/parse-csv', {
+          method: 'POST',
+          body: formData,
+        })
+        if (response.ok) {
+          const reader = response.body.getReader()
+          const decoder = new TextDecoder('utf-8')
+
+          let parsed = ''
+
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            parsed += decoder.decode(value)
+          }
+
+          const parsedData = JSON.parse(parsed)
+          console.log('done parsing: ', parsedData)
+
+          global.handleCsvUploaded(parsedData.data[0].entries.length)
+
+          // TODO: pb.post the parsed data
           setTimeout(() => {
-            if (!global.getCsvStatus.cancelled) {
-              global.completeCsvImport();
-            }
-          }, 8000);
-        }, 5000);
+            global.completeCsvImport()
+          }, 8000)
+        } else {
+          console.log('yikes...', response)
+          global.toast('error', 'Error uploading CSV')
+        }
+      } catch (err) {
+        console.log('error uploading csv: ', err)
+        global.toast('error', 'Error uploading CSV')
       }
     } else {
-      global.toast('error', 'Only Aroya CSVs are supported at this time');
+      global.toast('error', 'Only Aroya CSVs are supported at this time')
     }
   }
 
   function triggerDataReview() {
-    console.log('triggering data review process');
+    console.log('triggering data review process')
   }
 
   function submitSensor() {
     let payload = {
       facility: pb.api.authStore.model.facility,
-    };
+    }
     Object.keys(state.payload.sensor).forEach(key => {
-      if (key != 'valid') payload[key] = state.payload.sensor[key].value;
-    });
-    clearForm('sensor');
+      if (key != 'valid') payload[key] = state.payload.sensor[key].value
+    })
+    clearForm('sensor')
     pb.post('sensors', payload).then(res => {
-      console.log('✅ Added sensor', res);
-      global.toast('default', 'Successfully added sensor');
-      global.updateCache('sensors', res);
-    });
+      console.log('✅ Added sensor', res)
+      global.toast('default', 'Successfully added sensor')
+      global.updateCache('sensors', res)
+    })
   }
 
   function submitCultivar() {
     let payload = {
       facility: pb.api.authStore.model.facility,
-    };
+    }
     Object.keys(state.payload.cultivar).forEach(key => {
-      if (key != 'valid') payload[key] = state.payload.cultivar[key].value;
-    });
-    clearForm('cultivar');
+      if (key != 'valid') payload[key] = state.payload.cultivar[key].value
+    })
+    clearForm('cultivar')
     pb.post('cultivars', payload).then(res => {
-      global.toast('default', 'Successfully added cultivar');
-      global.updateCache('cultivars', res);
-    });
+      global.toast('default', 'Successfully added cultivar')
+      global.updateCache('cultivars', res)
+    })
   }
 
   async function updateCultivar() {
-    let payload = {};
+    let payload = {}
     Object.keys(state.patch.cultivar).forEach(key => {
       if (state.patch.cultivar[key]) {
-        console.log(state.patch.cultivar[key]);
-        payload[key] = state.patch.cultivar[key];
+        console.log(state.patch.cultivar[key])
+        payload[key] = state.patch.cultivar[key]
       }
-    });
-    clearForm('cultivar');
+    })
+    clearForm('cultivar')
     pb.update('cultivars', state.context.cultivar.id, payload).then(res => {
-      global.toast('default', 'Successfully updated cultivar');
-      fetchData();
-    });
+      global.toast('default', 'Successfully updated cultivar')
+      fetchData()
+    })
   }
 
   async function getCultivarName() {
     let name = await pb.get('cultivars', {
       filter: `id = "${state.payload.cycle.cultivar.value}"`,
-    });
-    return name[0].name;
+    })
+    return name[0].name
   }
 
   async function submitCycle() {
@@ -542,34 +570,34 @@
       ).replaceAll(' ', '-')}`,
       growth_stage: 'Propogation',
       facility: pb.api.authStore.model.facility,
-    };
+    }
     Object.keys(state.payload.cycle).forEach(key => {
-      if (key != 'valid') payload[key] = state.payload.cycle[key].value;
-    });
-    clearForm('cycle');
-    console.log('submitting cycle...', payload);
+      if (key != 'valid') payload[key] = state.payload.cycle[key].value
+    })
+    clearForm('cycle')
+    console.log('submitting cycle...', payload)
     pb.post('cycles', payload)
       .then(res => {
-        console.log('✅ Added cycle', res);
-        global.toast('default', 'Your new cycle has been created! 🙌');
-        router.push(`/cycles/${res.id}`);
+        console.log('✅ Added cycle', res)
+        global.toast('default', 'Your new cycle has been created! 🙌')
+        router.push(`/cycles/${res.id}`)
       })
       .catch(err => {
-        console.log('something went wrong...', err);
-        global.toast('error', 'Something went wrong. Please try again.');
-      });
+        console.log('something went wrong...', err)
+        global.toast('error', 'Something went wrong. Please try again.')
+      })
   }
 
   function submitRoom(name) {
     let payload = {
       name,
       facility: pb.api.authStore.model.facility,
-    };
+    }
     pb.post('rooms', payload).then(res => {
-      console.log('✅ Added room', res);
-      global.toast('primary', `New room was successfully added!`);
-      fetchData();
-    });
+      console.log('✅ Added room', res)
+      global.toast('primary', `New room was successfully added!`)
+      fetchData()
+    })
   }
 
   function submitZone(name) {
@@ -577,13 +605,13 @@
       name,
       room: state.payload.cycle.room.value,
       facility: pb.api.authStore.model.facility,
-    };
-    console.log('posting zone...', payload);
+    }
+    console.log('posting zone...', payload)
     pb.post('zones', payload).then(res => {
-      console.log('✅ Added zone', res);
-      global.toast('primary', 'New zone was successfully added!');
-      fetchData();
-    });
+      console.log('✅ Added zone', res)
+      global.toast('primary', 'New zone was successfully added!')
+      fetchData()
+    })
   }
 </script>
 

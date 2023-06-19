@@ -1,4 +1,4 @@
-import ranges from '@/data/ranges';
+import ranges from '@/data/ranges'
 
 export const useGlobalStore = defineStore('global', {
   state: () => ({
@@ -24,10 +24,8 @@ export const useGlobalStore = defineStore('global', {
       done: false,
       active: false,
       cancelled: false,
-      importing: false,
-      uploaded: false,
-      entryCount: 0,
-      data: null,
+      entries: 0,
+      message: '',
     },
     ui: {
       currentItem: null,
@@ -83,94 +81,91 @@ export const useGlobalStore = defineStore('global', {
     getAvatarUrl: state => state.cache.avatar,
     getCollectionsState: state => state.ui.collections.active,
     getRange: state => name => {
-      return state.constants.ranges.find(range => range.name == name);
+      return state.constants.ranges.find(range => range.name == name)
     },
   },
   actions: {
+    setCsvMessage(msg) {
+      this.csv.message = msg
+    },
     cancelCsvUpload() {
-      this.csv.done = false;
-      this.csv.cancelled = true;
-      this.csv.uploaded = false;
-      this.csv.importing = false;
-      this.csv.entryCount = 0;
-      this.csv.active = false;
+      this.csv.message = 'Cancelling...'
+      this.csv.done = false
+      this.csv.active = false
+      this.csv.cancelled = true
     },
     beginCsvImport() {
-      this.csv.cancelled = false;
-      this.csv.done = false;
-      this.csv.active = true;
-      this.csv.importing = true;
-      this.csv.uploaded = false;
+      this.csv.message = 'Uploading CSV...'
+      this.csv.done = false
+      this.csv.active = true
+      this.csv.cancelled = false
     },
-    handleCsvUploaded(data) {
-      if (this.csv.cancelled) return;
-      this.csv.done = false;
-      this.csv.uploaded = true;
-      this.csv.active = true;
-      this.csv.importing = false;
-      this.csv.entryCount = data[0][0].entries.length;
-      this.csv.data = data;
+    handleCsvUploaded(length) {
+      if (this.csv.cancelled) return
+      this.csv.message = `Importing ${length.toLocaleString('en-US', {
+        style: 'decimal',
+      })} entries...`
+      this.csv.done = false
+      this.csv.active = true
     },
     completeCsvImport() {
-      if (this.csv.cancelled) return;
-      this.csv.done = true;
-      this.csv.active = false;
-      this.csv.importing = false;
-      this.csv.uploaded = false;
+      if (this.csv.cancelled) return
+      this.csv.done = true
+      this.csv.active = false
     },
     updateCache(key, data) {
-      this.cache[key] = data;
+      this.cache[key] = data
     },
     closeDetails(context) {
-      this.ui.details.active = false;
-      this.ui.details.context = null;
+      this.ui.details.active = false
+      this.ui.details.context = null
     },
     openDetails(context) {
-      this.ui.details.active = true;
-      this.ui.details.context = context;
+      this.ui.details.active = true
+      this.ui.details.context = context
     },
     setDetails(id) {
-      this.ui.details.active = true;
-      this.ui.details.context = id;
+      this.ui.details.active = true
+      this.ui.details.context = id
     },
     setCurrentItem(name) {
-      this.ui.currentItem = name;
+      this.ui.currentItem = name
     },
     setDrawerContext(context) {
-      this.ui.drawer.context = context;
+      this.ui.drawer.context = context
     },
     toggleCollections() {
-      this.ui.collections.active = !this.ui.collections.active;
+      this.ui.collections.active = !this.ui.collections.active
     },
     dismissNotification(id) {
       this.notifications = this.cache.notifications.filter(
         notification => notification.id !== id
-      );
+      )
     },
     pushNotification(notification) {
-      this.cache.notifications.push(notification);
+      this.cache.notifications.push(notification)
     },
     clearNotifications() {
-      this.cache.notifications = [];
+      this.cache.notifications = []
     },
     setContext(context) {
-      this.window.context = context;
+      this.window.context = context
     },
     setTitle(title) {
-      this.window.title = title;
+      this.window.title = title
     },
     setTheme(theme) {
-      this.settings.appearance.theme = theme;
+      this.settings.appearance.theme = theme
     },
     toast(type, message, duration) {
       this.ui.toast = {
         type,
         message,
         active: true,
-      };
+      }
       setTimeout(() => {
-        this.ui.toast.active = false;
-      }, duration || 3000);
+        this.ui.toast.active = false
+      }, duration || 3000)
     },
   },
-});
+})
