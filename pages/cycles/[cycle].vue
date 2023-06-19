@@ -139,7 +139,6 @@
   watch(
     () => csvStatus.value,
     val => {
-      console.log('csvStatus changed', val)
       state.csvStatus = val
       if (val.done) {
         state.steps[1].status = 'complete'

@@ -489,7 +489,7 @@
           const parsedData = JSON.parse(parsed)
           console.log('done parsing: ', parsedData)
 
-          global.handleCsvUploaded(parsedData.data[0].entries.length)
+          global.handleCsvUploaded(parsedData.entry_count)
 
           // TODO: pb.post the parsed data
           setTimeout(() => {

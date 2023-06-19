@@ -104,7 +104,7 @@ export const useGlobalStore = defineStore('global', {
       if (this.csv.cancelled) return
       this.csv.message = `Importing ${length.toLocaleString('en-US', {
         style: 'decimal',
-      })} entries...`
+      })} records...`
       this.csv.done = false
       this.csv.active = true
     },
