@@ -24,9 +24,11 @@ export const useGlobalStore = defineStore('global', {
       done: false,
       active: false,
       cancelled: false,
-      entries: 0,
+      entry_count: 0,
       message: '',
       reviewing: false,
+      ready: false,
+      report: [],
     },
     ui: {
       currentItem: null,
@@ -91,30 +93,38 @@ export const useGlobalStore = defineStore('global', {
     },
     cancelCsvUpload() {
       this.csv.message = 'Cancelling...'
+      this.csv.ready = false
       this.csv.done = false
       this.csv.active = false
       this.csv.cancelled = true
       this.csv.reviewing = false
+      this.csv.report = null
     },
     beginCsvImport() {
-      this.csv.message = 'Uploading CSV...'
+      this.csv.ready = false
+      this.csv.message = 'Importing data...'
       this.csv.done = false
       this.csv.active = true
       this.csv.cancelled = false
       this.csv.reviewing = false
+      this.csv.report = null
     },
-    handleCsvUploaded(length) {
+    handleCsvUploaded(report, entry_count) {
       if (this.csv.cancelled) return
-      this.csv.message = `Importing ${length.toLocaleString('en-US', {
+      this.csv.message = `Importing ${entry_count.toLocaleString('en-US', {
         style: 'decimal',
       })} records...`
+      this.csv.entry_count = entry_count
+      this.csv.ready = false
       this.csv.done = false
       this.csv.active = true
-      this.csv.reviewing = false
+      this.csv.reviewing = true
+      this.csv.report = report
     },
-    completeCsvImport() {
+    completeCsvImport(report) {
       if (this.csv.cancelled) return
       this.csv.done = false
+      this.csv.ready = true
       this.csv.active = true
       this.csv.reviewing = true
     },

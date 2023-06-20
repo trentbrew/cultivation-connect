@@ -24,26 +24,32 @@
         },
       ],
     },
-  });
+  })
 
   const keys = computed(() => {
     if (props.data.length > 0) {
       return props.data.reduce((acc, item) => {
         return Object.keys(item).reduce((acc, key) => {
-          if (!acc.includes(key)) acc.push(key);
-          return acc;
-        }, acc);
-      }, []);
+          if (!acc.includes(key)) acc.push(key)
+          return acc
+        }, acc)
+      }, [])
     } else {
-      return props.placeholderColumns;
+      return props.placeholderColumns
     }
-  });
+  })
 
-  const data = computed(() => Array.from(props.data).map(item => keys.value.map(key => item[key])));
+  const data = computed(() =>
+    Array.from(props.data).map(item => keys.value.map(key => item[key]))
+  )
+
+  console.log(props.data)
 </script>
 
 <template>
-  <div class="w-full overflow-x-auto rounded border border-base-300 z-[0]">
+  <div
+    class="w-full overflow-x-auto border border-base-300 z-[0] rounded-[16px]"
+  >
     <table class="table w-full">
       <thead>
         <tr>
@@ -54,9 +60,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(item, itemIndex) in data" :key="itemIndex" class="hover cursor-pointer !duration-150">
+        <tr
+          v-for="(item, itemIndex) in data"
+          :key="itemIndex"
+          class="hover cursor-pointer !duration-150"
+        >
           <th class="font-normal text-base-300">{{ itemIndex }}</th>
-          <td v-for="(datum, datumIndex) in Object.entries(item)" :key="datumIndex">
+          <td
+            v-for="(datum, datumIndex) in Object.entries(item)"
+            :key="datumIndex"
+          >
             {{ datum[1] }}
           </td>
         </tr>

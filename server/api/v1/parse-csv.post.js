@@ -15,16 +15,9 @@ const parse = {
 
     const growth_stages = stretch(lines[4].split(','))
     const zones = stretch(lines[5].split(','))
-    const ports = stretch(lines[6].split(','))
-    const sensors = stretch(lines[7].split(','))
     const rawHeaders = stretch(lines[8].split(','))
 
-    console.log('zones: ', zones)
-    console.log('ports: ', ports)
-    console.log('sensors: ', sensors)
-    console.log('rawHeaders: ', rawHeaders)
-
-    const data = [] // all entries
+    const data = []
 
     lines.forEach((line, lineIndex) => {
       const timestamp = line.split(',')[0]
@@ -47,32 +40,54 @@ const parse = {
       }
     })
 
-    const getEntriesPerZone = data => {
-      const entriesPerZone = {}
-      data.forEach(entry => {
-        const { zone } = entry
-        if (!entriesPerZone[zone]) entriesPerZone[zone] = 0
-        entriesPerZone[zone]++
-      })
-      return entriesPerZone
+    const getGrowthStage = zone => {
+      const result = data.filter(entry => entry.zone === zone)
+      return result[0].growth_stage
     }
 
-    const getGrowthStagePerZone = data => {
-      const growthStagePerZone = {}
-      data.forEach(entry => {
-        const { zone, growth_stage } = entry
-        if (!growthStagePerZone[zone]) growthStagePerZone[zone] = ''
-        growthStagePerZone[zone] = growth_stage
+    const report = data => {
+      /*
+        // this is an example report. it displays the growth stage and number of entries for each zone.
+        report = [
+          {
+            zone: 'Zone1',
+            growth_stage: 'Flower',
+            entries: 34134,
+          },
+          {
+            zone: 'Zone2',
+            growth_stage: 'Flower',
+            entries: 102402,
+          },
+          {
+            zone: 'Zone3',
+            growth_stage: 'Flower',
+            entries: 51201,
+          },
+          {
+            zone: 'Zone4',
+            growth_stage: 'Veg',
+            entries: 170670,
+          },
+        ]
+      */
+      const result = []
+      const uniqueZones = [...new Set(Array.from(zones))]
+      uniqueZones.forEach((z, i) => {
+        const g = getGrowthStage(z)
+        const e = data.filter(entry => entry.zone === z).length
+        result.push({
+          zone: z,
+          growth_stage: g,
+          entries: e,
+        })
       })
-      return growthStagePerZone
+      return result
     }
 
     const payload = {
       entry_count: data.length,
-      unique_zones: Array.from(new Set(zones)).length,
-      unique_growth_stages: Array.from(new Set(growth_stages)).length,
-      entries_per_zone: getEntriesPerZone(data),
-      growth_stage_per_zone: getGrowthStagePerZone(data),
+      report: report(data),
       data,
     }
 

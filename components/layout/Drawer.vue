@@ -487,22 +487,23 @@
           }
 
           const parsedData = JSON.parse(parsed)
-          console.log('done parsing: ', parsedData)
 
-          global.handleCsvUploaded(parsedData.entry_count)
+          global.handleCsvUploaded(parsedData.report, parsedData.entry_count)
 
-          setTimeout(() => {
-            global.completeCsvImport()
-          }, 5000)
+          // setTimeout(() => {
+          //   global.completeCsvImport(parsedData.report)
+          // }, 5000)
 
           // TODO: wait until the user has reviewed the data & approves before posting to the db
         } else {
           console.log('yikes...', response)
           global.toast('error', 'Error uploading CSV')
+          global.cancelCsvUpload()
         }
       } catch (err) {
         console.log('error uploading csv: ', err)
         global.toast('error', 'Error uploading CSV')
+        global.cancelCsvUpload()
       }
     } else {
       global.toast('error', 'Only Aroya CSVs are supported at this time')

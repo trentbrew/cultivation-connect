@@ -144,6 +144,7 @@
   watch(
     () => csvStatus.value,
     val => {
+      console.log('csvStatus', val)
       state.csvStatus = val
       if (val.reviewing) {
         state.steps[1].status = 'complete'
@@ -299,11 +300,31 @@
             </li>
           </ul>
 
-          <div v-if="state.csvStatus.active && state.csvStatus.reviewing">
-            <div>
-              <h1 class="text-2xl mb-6">🚧 Review your data</h1>
+          <div
+            v-if="state.csvStatus.active && state.csvStatus.reviewing"
+            class="w-full h-full p-8 -mt-8"
+          >
+            <div class="w-full h-full m-4" v-if="state.csvStatus.report">
+              <h1 class="text-3xl mt-6 mb-2 pl-2">Review your data</h1>
+              <p class="opacity-75 mb-8 pl-2">
+                We found
+                <b>{{ state.csvStatus.entry_count ?? 0 }}</b>
+                total entries across
+                <b>{{ state.csvStatus.report.length }}</b>
+                zones.
+              </p>
+              <Table :data="state.csvStatus.report" class="w-full" />
               <!-- TODO: display overview: (total records, entries per zone, growth stage per zone) -->
               <!-- TODO: prompt for missing data: (cultivar, room) -->
+            </div>
+            <div
+              v-else
+              class="w-full h-full flex flex-col justify-center items-center"
+            >
+              <Loading size="80" />
+              <h1 class="text-center font-bold my-12 w-full">
+                Generating report...
+              </h1>
             </div>
           </div>
 
@@ -337,7 +358,11 @@
             </h1>
 
             <h1
-              v-if="state.csvStatus.active && !state.csvStatus.reviewing"
+              v-if="
+                state.csvStatus.active &&
+                !state.csvStatus.reviewing &&
+                !state.csvStatus.report
+              "
               class="text-center font-bold w-full my-12"
             >
               <span>{{ state.csvStatus.message }}</span>
