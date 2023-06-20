@@ -26,6 +26,7 @@ export const useGlobalStore = defineStore('global', {
       cancelled: false,
       entries: 0,
       message: '',
+      reviewing: false,
     },
     ui: {
       currentItem: null,
@@ -93,12 +94,14 @@ export const useGlobalStore = defineStore('global', {
       this.csv.done = false
       this.csv.active = false
       this.csv.cancelled = true
+      this.csv.reviewing = false
     },
     beginCsvImport() {
       this.csv.message = 'Uploading CSV...'
       this.csv.done = false
       this.csv.active = true
       this.csv.cancelled = false
+      this.csv.reviewing = false
     },
     handleCsvUploaded(length) {
       if (this.csv.cancelled) return
@@ -107,11 +110,13 @@ export const useGlobalStore = defineStore('global', {
       })} records...`
       this.csv.done = false
       this.csv.active = true
+      this.csv.reviewing = false
     },
     completeCsvImport() {
       if (this.csv.cancelled) return
-      this.csv.done = true
-      this.csv.active = false
+      this.csv.done = false
+      this.csv.active = true
+      this.csv.reviewing = true
     },
     updateCache(key, data) {
       this.cache[key] = data

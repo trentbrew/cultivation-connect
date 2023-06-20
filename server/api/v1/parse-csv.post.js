@@ -47,10 +47,32 @@ const parse = {
       }
     })
 
+    const getEntriesPerZone = data => {
+      const entriesPerZone = {}
+      data.forEach(entry => {
+        const { zone } = entry
+        if (!entriesPerZone[zone]) entriesPerZone[zone] = 0
+        entriesPerZone[zone]++
+      })
+      return entriesPerZone
+    }
+
+    const getGrowthStagePerZone = data => {
+      const growthStagePerZone = {}
+      data.forEach(entry => {
+        const { zone, growth_stage } = entry
+        if (!growthStagePerZone[zone]) growthStagePerZone[zone] = ''
+        growthStagePerZone[zone] = growth_stage
+      })
+      return growthStagePerZone
+    }
+
     const payload = {
       entry_count: data.length,
       unique_zones: Array.from(new Set(zones)).length,
       unique_growth_stages: Array.from(new Set(growth_stages)).length,
+      entries_per_zone: getEntriesPerZone(data),
+      growth_stage_per_zone: getGrowthStagePerZone(data),
       data,
     }
 

@@ -491,10 +491,11 @@
 
           global.handleCsvUploaded(parsedData.entry_count)
 
-          // TODO: pb.post the parsed data
           setTimeout(() => {
             global.completeCsvImport()
-          }, 8000)
+          }, 5000)
+
+          // TODO: wait until the user has reviewed the data & approves before posting to the db
         } else {
           console.log('yikes...', response)
           global.toast('error', 'Error uploading CSV')

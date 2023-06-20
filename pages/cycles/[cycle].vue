@@ -14,13 +14,18 @@
         status: 'complete',
       },
       {
-        title: 'Add data',
+        title: 'Upload data',
         name: 'import_data',
         status: 'active',
       },
       {
         title: 'Review data',
         name: 'review_data',
+        status: 'incomplete',
+      },
+      {
+        title: 'Submit data',
+        name: 'submit_data',
         status: 'incomplete',
       },
       {
@@ -140,7 +145,7 @@
     () => csvStatus.value,
     val => {
       state.csvStatus = val
-      if (val.done) {
+      if (val.reviewing) {
         state.steps[1].status = 'complete'
         state.steps[2].status = 'active'
       }
@@ -294,13 +299,11 @@
             </li>
           </ul>
 
-          <div v-show="state.csvStatus.done">
+          <div v-if="state.csvStatus.active && state.csvStatus.reviewing">
             <div>
               <h1 class="text-2xl mb-6">🚧 Review your data</h1>
-              <!-- <Table
-                class="w-full"
-                :data="state.csvStatus.data[0][0].entries ?? []"
-              /> -->
+              <!-- TODO: display overview: (total records, entries per zone, growth stage per zone) -->
+              <!-- TODO: prompt for missing data: (cultivar, room) -->
             </div>
           </div>
 
@@ -316,7 +319,10 @@
               class="mb-8 w-[300px] -mt-12 brightness-[0.915] opacity-75"
             />
 
-            <Loading v-if="state.csvStatus.active" size="80" />
+            <Loading
+              v-if="state.csvStatus.active && !state.csvStatus.reviewing"
+              size="80"
+            />
 
             <h1
               v-if="!state.csvStatus.active"
@@ -330,7 +336,10 @@
               , or filling in your data manually.
             </h1>
 
-            <h1 v-else class="text-center font-bold w-full my-12">
+            <h1
+              v-if="state.csvStatus.active && !state.csvStatus.reviewing"
+              class="text-center font-bold w-full my-12"
+            >
               <span>{{ state.csvStatus.message }}</span>
             </h1>
 
@@ -350,7 +359,10 @@
                 for="new-record"
               />
             </div>
-            <div v-show="state.csvStatus.active" class="flex gap-2">
+            <div
+              v-show="state.csvStatus.active && !state.csvStatus.reviewing"
+              class="flex gap-2"
+            >
               <button
                 @click="handleCsvImportCancel"
                 class="btn btn-outline"
