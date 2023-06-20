@@ -180,7 +180,7 @@ export const useGlobalStore = defineStore('global', {
       }
       setTimeout(() => {
         this.ui.toast.active = false
-      }, duration || 3000)
+      }, duration || 5000)
     },
   },
 })

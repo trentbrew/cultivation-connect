@@ -64,30 +64,37 @@
   }
 
   function calculateMetrics() {
-    const values = state.records.map(record => {
-      if (record.data[state.context]) return record.data[state.context]
-    })
-    const initialize = datum => {
-      const getPreviousDate = date => {
-        const d = new Date(date)
-        d.setDate(d.getDate() - 1)
-        return d.toISOString().split('T')[0]
+    if (state.records) {
+      const values = state.records.map(record => {
+        if (record.data[state.context]) return record.data[state.context]
+      })
+      const initialize = datum => {
+        if (datum) {
+          const getPreviousDate = date => {
+            const d = new Date(date)
+            d.setDate(d.getDate() - 1)
+            return d.toISOString().split('T')[0]
+          }
+          return [getPreviousDate(datum[0]), 0]
+        }
       }
-      return [getPreviousDate(datum[0]), 0]
-    }
-    state.avg = values.reduce((a, b) => a + b, 0) / values.length
-    state.min = Math.min(...values)
-    state.max = Math.max(...values)
-    state.latest_value = values[values.length - 1]
-    const series = state.records.map(record => {
-      if (record.data[state.context]) {
-        return [record.date_recorded.split(' ')[0], record.data[state.context]]
+      state.avg = values.reduce((a, b) => a + b, 0) / values.length
+      state.min = Math.min(...values)
+      state.max = Math.max(...values)
+      state.latest_value = values[values.length - 1]
+      const series = state.records.map(record => {
+        if (record.data[state.context]) {
+          return [
+            record.date_recorded.split(' ')[0],
+            record.data[state.context],
+          ]
+        }
+      })
+      if (series.length < 2) {
+        state.series = [initialize(series[0]), series[0]]
+      } else {
+        state.series = series
       }
-    })
-    if (series.length < 2) {
-      state.series = [initialize(series[0]), series[0]]
-    } else {
-      state.series = series
     }
   }
 </script>

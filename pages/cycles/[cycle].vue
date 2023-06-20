@@ -161,8 +161,15 @@
   watch(
     () => route,
     val => {
-      state.loading = true
-      initCycle()
+      if (
+        !val.hash &&
+        !['#edit-data', '#new-cycle', '#records', '#edit-cultivar'].includes(
+          val.hash
+        )
+      ) {
+        state.loading = true
+        initCycle()
+      }
     },
     { deep: true }
   )
@@ -221,6 +228,9 @@
       'room',
       'growth_stage',
       'plants',
+      'substrate',
+      'nutrients_type',
+      'root_zone_style',
     ]
     const report = state.csvStatus.report
     const headers = Object.keys(report[0])
@@ -254,7 +264,9 @@
     if (!csvIsValid.value) {
       global.toast(
         'default',
-        `Missing required headers: ${state.missingCsvHeaders.join(', ')}`
+        `Missing required headers: ${state.missingCsvHeaders.join(
+          ', '
+        )}. Click the item to edit and try again.`
       )
     } else {
       console.log('generating cycles from csv')
@@ -397,7 +409,9 @@
                 </div>
               </div>
               <Table
+                drawer
                 :data="state.csvStatus.report"
+                :missing="state.missingCsvHeaders"
                 class="w-full h-fit max-h-[450px] border-none"
               />
               <!-- TODO: display overview: (total records, entries per zone, growth stage per zone) -->

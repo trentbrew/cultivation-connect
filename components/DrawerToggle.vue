@@ -2,6 +2,10 @@
   const global = useGlobalStore()
 
   const props = defineProps({
+    slotted: {
+      type: Boolean,
+      default: false,
+    },
     for: {
       type: String,
       required: true,
@@ -32,6 +36,7 @@
 
 <template>
   <label
+    v-if="!props.slotted"
     @click="handleDrawerToggle"
     for="drawer"
     class="btn flex gap-2 justify-center items-center"
@@ -44,4 +49,5 @@
     <Icon v-show="props.icon" :name="props.icon" />
     <span v-if="props.label" class="font-bold">{{ props.label }}</span>
   </label>
+  <label v-else for="drawer" @click="handleDrawerToggle"><slot /></label>
 </template>

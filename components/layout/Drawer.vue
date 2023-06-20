@@ -18,6 +18,7 @@
       csv: {
         selected: false,
         valid: false,
+        report: null,
         init: {
           value: 'manual',
           valid: true,
@@ -41,6 +42,16 @@
         brand: '',
         name: '',
         condition: '',
+      },
+      precycle: {
+        start_date: '',
+        cultivar: '',
+        room: '',
+        zone: '',
+        plants: '',
+        substrate: '',
+        root_zone_style: '',
+        nutrients_type: '',
       },
     },
     payload: {
@@ -236,7 +247,8 @@
     if (drawerContext.value == 'new-sensor') return 'Add a new sensor'
     if (drawerContext.value == 'edit-sensor') return 'Edit sensor'
     if (drawerContext.value == 'new-cycle') return 'Create a new cycle'
-    if (drawerContext.value == 'new-record')
+    if (drawerContext.value == 'edit-data') return 'Edit cycle data'
+    if (drawerContext.value == 'new-record') {
       return `New record (${new Date()
         .toLocaleString('en-US', {
           year: 'numeric',
@@ -246,6 +258,7 @@
           minute: '2-digit',
         })
         .replace(',', '')})`
+    }
   })
 
   watch(
@@ -290,7 +303,24 @@
           // TODO: auto-populate sensor patch data
           console.log('auto-populating sensor patch data')
         }
-      } else {
+        // } else if (drawerContext.value == 'edit-data' && state.cycle.csv.report) {
+        //   console.log('auto-populating precycle data', state.cycle.csv.report)
+        //   state.context.precycle = state.cycle.csv.report.filter(item => {
+        //     return item.zone == `Zone${route.params.index}`
+        //   })
+        //   state.patch.precycle.start_date =
+        //     state.context.precycle.start_date ?? ''
+        //   state.patch.precycle.cultivar = state.context.precycle.cultivar ?? ''
+        //   state.patch.precycle.room = state.context.precycle.room ?? ''
+        //   state.patch.precycle.zone = state.context.precycle.zone ?? ''
+        //   state.patch.precycle.plants = state.context.precycle.plants ?? ''
+        //   state.patch.precycle.substrate = state.context.precycle.substrate ?? ''
+        //   state.patch.precycle.root_zone_style =
+        //     state.context.precycle.root_zone_style ?? ''
+        //   state.patch.precycle.nutrients_type =
+        //     state.context.precycle.nutrients_type ?? ''
+        //   console.log('state.patch.precycle: ', state.patch.precycle)
+        // } else {
         state.context.cultivar = null
         state.context.sensor = null
         state.patch.cultivar.name = ''
@@ -490,7 +520,11 @@
 
           const loading = true
 
-          global.handleCsvUploaded(parsedData.report, parsedData.entry_count)
+          if (parsedData.report) {
+            global.handleCsvUploaded(parsedData.report, parsedData.entry_count)
+            console.log('parsedData: ', parsedData)
+            state.cycle.csv.report = parsedData.report
+          }
 
           const timeout = setTimeout(() => {
             if (!parsedData.report) {
@@ -874,6 +908,167 @@
           class="w-full"
         />
       </form>
+
+      <!-- NEW PRECYCLE -->
+
+      <!-- <form v-if="drawerContext == 'edit-data' && state.cycle.csv.report">
+        <div class="flex flex-col p-8">
+          <Input
+            group="precycle"
+            v-model="state.patch.precycle.start_date"
+            :placeholder="state.path.precycle.start_date"
+            label="Start Date"
+            type="date"
+            id="start_date"
+            name="start_date"
+            rules="required"
+            @validation="handleValidation"
+            class="w-full"
+          />
+          <Input
+            group="precycle"
+            v-model="state.patch.precycle.cultivar"
+            :placeholder="state.patch.precycle.cultivar"
+            id="cultivar"
+            name="cultivar"
+            type="select"
+            label="Cultivar"
+            rules="required"
+            @validation="handleValidation"
+            class="w-full"
+          >
+            <option
+              v-for="(option, index) in state.data.cultivars"
+              :key="index"
+              :value="option?.id"
+            >
+              {{ `${option?.name}` }}
+            </option>
+          </Input>
+          <Input
+            group="precycle"
+            v-model="state.patch.precycle.room"
+            :placeholder="state.patch.precycle.room"
+            id="room"
+            name="room"
+            type="select"
+            dynamic
+            label="Room"
+            rules="required"
+            @validation="handleValidation"
+            @addItem="handleAddItem"
+            @change="handleRoomChange"
+            class="w-full"
+          >
+            <option
+              v-for="(option, index) in state.data.rooms"
+              :key="index"
+              :value="option?.id"
+            >
+              {{ `${option?.name}` }}
+            </option>
+          </Input>
+          <Input
+            group="precycle"
+            v-model="state.patch.precycle.zone"
+            :placeholder="state.patch.precycle.zone"
+            id="zone"
+            name="zone"
+            type="select"
+            dynamic
+            label="Zone"
+            rules="required"
+            @validation="handleValidation"
+            @addItem="handleAddItem"
+            :disabled="
+              state.payload.cycle.room.value == '' ||
+              !state.payload.cycle.room.value
+            "
+            :class="
+              state.payload.cycle.room.value == '' ||
+              !state.payload.cycle.room.value
+                ? 'opacity-50'
+                : ''
+            "
+            class="w-full"
+          >
+            <option
+              v-for="(option, index) in state.data.zones"
+              :key="index"
+              :value="option?.id"
+            >
+              {{ `${option?.name}` }}
+            </option>
+          </Input>
+          <Input
+            group="precycle"
+            v-model="state.patch.precycle.plants"
+            :placeholder="state.patch.precycle.plants"
+            id="plants"
+            name="plants"
+            type="number"
+            label="Number of plants"
+            rules="required|min:1"
+            :min="1"
+            @validation="handleValidation"
+            class="w-full"
+          />
+          <Input
+            group="precycle"
+            v-model="state.patch.precycle.substrate"
+            :placeholder="state.patch.precycle.substrate"
+            id="substrate"
+            name="substrate"
+            type="select"
+            label="Substrate"
+            rules="required"
+            @validation="handleValidation"
+            class="w-full"
+          >
+            <option value="soil">Soil</option>
+            <option value="coco_coir">Coco coir</option>
+            <option value="rockwool">Rockwool</option>
+            <option value="perlite">Perlite</option>
+            <option value="vermiculite">Vermiculite</option>
+            <option value="peat_moss">Peat moss</option>
+            <option value="perlite_coco_coir">Perlite / Coco coir</option>
+            <option value="perlite_vermiculite">Perlite / Vermiculite</option>
+            <option value="peat_moss">Peat moss / Soilless</option>
+            <option value="soilless">Soilless</option>
+          </Input>
+          <Input
+            group="precycle"
+            v-model="state.patch.precycle.root_zone_style"
+            :placeholder="state.patch.precycle.root_zone_style"
+            type="select"
+            id="root_zone_style"
+            name="root_zone_style"
+            label="Root zone style"
+            rules="required"
+            @validation="handleValidation"
+            class="w-full"
+          >
+            <option value="planter">Individual pot / planter</option>
+            <option value="vertical">Vertical</option>
+            <option value="soil_bed">Soil bed</option>
+          </Input>
+          <Input
+            group="precycle"
+            v-model="state.patch.precycle.nutrients_type"
+            :placeholder="state.patch.precycle.nutrients_type"
+            type="select"
+            label="Nutrients type"
+            id="nutrients_type"
+            name="nutrients_type"
+            rules="required"
+            @validation="handleValidation"
+            class="w-full"
+          >
+            <option value="organic">Commercial brand</option>
+            <option value="inorganic">Custom blend</option>
+          </Input>
+        </div>
+      </form> -->
 
       <!-- NEW CYCLE -->
 

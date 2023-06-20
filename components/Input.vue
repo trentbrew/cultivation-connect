@@ -1,7 +1,8 @@
 <script setup>
-  const global = useGlobalStore();
+  const global = useGlobalStore()
 
   const props = defineProps([
+    'nolabel',
     'modelValue',
     'class',
     'type',
@@ -23,9 +24,9 @@
     'disabled',
     'accept',
     'dynamic',
-  ]);
+  ])
 
-  const select = ref(null);
+  const select = ref(null)
 
   const emit = defineEmits([
     'update:modelValue',
@@ -33,7 +34,7 @@
     'input',
     'change',
     'addItem',
-  ]);
+  ])
 
   const state = reactive({
     loading: false,
@@ -44,13 +45,13 @@
       input: '',
     },
     rules: [],
-  });
+  })
 
   onMounted(() => {
-    validate();
-  });
+    validate()
+  })
 
-  const types = ['text', 'number', 'date', 'time', 'email', 'password'];
+  const types = ['text', 'number', 'date', 'time', 'email', 'password']
 
   const validators = {
     required: () => {
@@ -59,84 +60,84 @@
         props.modelValue != '' &&
         props.modelValue.length > 0
       )
-        return true;
-      return false;
+        return true
+      return false
     },
     email: () => {
-      const regex = /\S+@\S+\.\S+/;
-      if (regex.test(props.modelValue)) return true;
-      return false;
+      const regex = /\S+@\S+\.\S+/
+      if (regex.test(props.modelValue)) return true
+      return false
     },
     zipcode: () => {
-      const regex = /^\d{5}(?:[-\s]\d{4})?$/;
-      if (regex.test(props.modelValue)) return true;
-      return false;
+      const regex = /^\d{5}(?:[-\s]\d{4})?$/
+      if (regex.test(props.modelValue)) return true
+      return false
     },
     min: value => {
-      if (props.modelValue >= value) return true;
-      return false;
+      if (props.modelValue >= value) return true
+      return false
     },
     max: value => {
-      if (props.modelValue <= value) return true;
-      return false;
+      if (props.modelValue <= value) return true
+      return false
     },
     minLength: value => {
-      if (props.modelValue.length >= value) return true;
-      return false;
+      if (props.modelValue.length >= value) return true
+      return false
     },
     maxLength: value => {
-      if (props.modelValue.length <= value) return true;
-      return false;
+      if (props.modelValue.length <= value) return true
+      return false
     },
-  };
+  }
 
   function validation() {
-    let checks = [];
-    let messages = [];
-    let failed = [];
+    let checks = []
+    let messages = []
+    let failed = []
     if (props.rules) {
-      const rules = props.rules.split('|');
-      state.rules = rules;
+      const rules = props.rules.split('|')
+      state.rules = rules
       for (let i = 0; i < rules.length; i++) {
-        const rule = rules[i];
+        const rule = rules[i]
         if (rule.includes(':')) {
-          const [name, value] = rule.split(':');
+          const [name, value] = rule.split(':')
           if (!validators[name](value)) {
-            checks.push(false);
-            if (!failed.includes(name)) failed.push(name);
+            checks.push(false)
+            if (!failed.includes(name)) failed.push(name)
             if (name == 'min' || name == 'max') {
-              messages.push(`Value is out of range`);
+              messages.push(`Value is out of range`)
             }
             if (name == 'minLength') {
               messages.push(
                 `${props.label || 'Value'} must be at least ${value} characters`
-              );
+              )
             }
             if (name == 'maxLength') {
               messages.push(
                 `${
                   props.label || 'Value'
                 } must be less than ${value} characters`
-              );
+              )
             }
           } else {
-            checks.push(true);
+            checks.push(true)
           }
         } else {
           if (!validators[rule]()) {
-            checks.push(false);
-            if (!failed.includes(rule)) failed.push(rule);
+            checks.push(false)
+            if (!failed.includes(rule)) failed.push(rule)
             if (rule == 'required') {
-              messages.push(`${props.label || 'Value'} field is required`);
+              messages.push(`${props.label || 'Value'} field is required`)
             }
             if (rule == 'email') {
-              messages.push(`Email address is invalid`);
+              messages.push(`Email address is invalid`)
             }
             if (rule == 'zipcode') {
-              messages.push(`Zipcode is invalid`);
+              messages.push(`Zipcode is invalid`)
             }
           } else {
-            checks.push(true);
+            checks.push(true)
           }
         }
       }
@@ -144,109 +145,109 @@
         valid: !checks.includes(false),
         message: messages.join(', '),
         rules: failed,
-      };
+      }
     }
     return {
       valid: true,
       message: '',
       rules: [],
-    };
+    }
   }
 
   function validate() {
-    let inputClass = '';
-    let labelClass = '';
-    const v = validation();
+    let inputClass = ''
+    let labelClass = ''
+    const v = validation()
     if (!v.valid) {
       if (types.includes(props.type) || props.type == 'textarea') {
-        inputClass = ' input-error';
-        labelClass = ' text-error';
+        inputClass = ' input-error'
+        labelClass = ' text-error'
       }
       if (props.type == 'select') {
-        inputClass = ' select-error';
-        labelClass = ' text-error';
+        inputClass = ' select-error'
+        labelClass = ' text-error'
       }
     } else {
-      inputClass = '';
-      labelClass = '';
+      inputClass = ''
+      labelClass = ''
     }
-    state.valid = v.valid;
-    state.class.input = props.class + inputClass;
-    state.class.label = labelClass;
+    state.valid = v.valid
+    state.class.input = props.class + inputClass
+    state.class.label = labelClass
     emit('validation', {
       valid: v.valid,
       message: v.message,
       rules: v.rules,
       group: props.group,
       id: props.id,
-    });
+    })
   }
 
   function handleInput(e) {
     // console.log('handling input: ', e);
     if (props.dynamic === '') {
       if (e.target.value == '+') {
-        state.add = true;
+        state.add = true
       } else {
         if (e.target.id != 'dynamic') {
-          state.add = false;
+          state.add = false
         } else {
-          state.dynamicValue = e.target.value;
+          state.dynamicValue = e.target.value
         }
-        emit('input', e);
-        emit('update:modelValue', e.target.value);
+        emit('input', e)
+        emit('update:modelValue', e.target.value)
       }
     } else {
-      emit('input', e);
+      emit('input', e)
       emit(
         'update:modelValue',
         props.type == 'file' ? e.target.files : e.target.value
-      );
+      )
       // console.log('update:modelValue', props.type == 'file' ? e.target.files : e.target.value);
     }
   }
 
   function handleCancel() {
-    state.add = false;
+    state.add = false
   }
 
   function handleSubmit(e) {
     if (state.dynamicValue == '' || !state.dynamicValue) {
-      global.toast('warning', `New ${props.label} cannot be blank`);
+      global.toast('warning', `New ${props.label} cannot be blank`)
     } else {
-      console.log('adding item', e);
+      console.log('adding item', e)
       emit('addItem', {
         group: props.group,
         id: props.id,
         value: state.dynamicValue,
-      });
-      state.add = false;
-      var opts = select.value?.getElementsByTagName('option');
-      opts[0].selected = true;
-      state.loading = true;
+      })
+      state.add = false
+      var opts = select.value?.getElementsByTagName('option')
+      opts[0].selected = true
+      state.loading = true
       setTimeout(() => {
-        state.loading = false;
-        let names = Array.from(opts).map(el => el.innerHTML);
-        console.log('names', names);
+        state.loading = false
+        let names = Array.from(opts).map(el => el.innerHTML)
+        console.log('names', names)
         console.log(
           'opts[names.indexOf(state.dynamicValue)]',
           opts[names.indexOf(state.dynamicValue)]
-        );
+        )
         console.log(
           'selecting the new option...',
           opts[names.indexOf(state.dynamicValue)]
-        );
-        opts[names.indexOf(state.dynamicValue)].selected = true;
-      }, 2500);
+        )
+        opts[names.indexOf(state.dynamicValue)].selected = true
+      }, 2500)
     }
   }
 
   watch(
     () => props.modelValue,
     () => {
-      validate();
+      validate()
     }
-  );
+  )
 </script>
 
 <template>
@@ -255,7 +256,7 @@
     v-if="types.includes(props.type)"
     class="flex flex-col items-start gap-2 mt-3"
   >
-    <label :class="props.disabled ? 'opacity-50' : ''">
+    <label v-show="!props.nolabel" :class="props.disabled ? 'opacity-50' : ''">
       {{ `${props.label} ${state.rules.includes('required') ? '*' : ''}` }}
     </label>
     <input
@@ -279,6 +280,7 @@
     class="flex flex-col items-start gap-2 mt-3"
   >
     <label
+      v-show="!props.nolabel"
       class="w-full flex justify-between"
       :class="props.disabled ? 'opacity-50' : ''"
     >
@@ -341,7 +343,7 @@
     v-if="props.type == 'textarea'"
     class="flex flex-col items-start gap-2 mt-4"
   >
-    <label :class="props.disabled ? 'opacity-50' : ''">
+    <label v-show="!props.nolabel" :class="props.disabled ? 'opacity-50' : ''">
       {{ `${props.label} ${state.rules.includes('required') ? '*' : ''}` }}
     </label>
     <textarea
