@@ -488,7 +488,16 @@
 
           const parsedData = JSON.parse(parsed)
 
+          const loading = true
+
           global.handleCsvUploaded(parsedData.report, parsedData.entry_count)
+
+          const timeout = setTimeout(() => {
+            if (!parsedData.report) {
+              global.toast('error', 'Upload has timed out... Please try again.')
+              global.cancelCsvUpload()
+            }
+          }, 10000)
 
           // setTimeout(() => {
           //   global.completeCsvImport(parsedData.report)

@@ -24,7 +24,7 @@
         status: 'incomplete',
       },
       {
-        title: 'Submit data',
+        title: 'Submit cycles',
         name: 'submit_data',
         status: 'incomplete',
       },
@@ -35,6 +35,7 @@
       },
     ],
     loading: false,
+    missingCsvHeaders: [],
     csvStatus: {},
     cycle: {
       active: false,
@@ -150,6 +151,9 @@
         state.steps[1].status = 'complete'
         state.steps[2].status = 'active'
       }
+      if (val.report) {
+        validateReport()
+      }
     },
     { deep: true }
   )
@@ -206,6 +210,60 @@
     setTimeout(() => {
       global.cancelCsvUpload()
     }, 3000)
+  }
+
+  function validateReport() {
+    // this function adds any missing data to the report, like cultivar, room, etc
+    const total_headers = [
+      'start_date',
+      'cultivar',
+      'zone',
+      'room',
+      'growth_stage',
+      'plants',
+    ]
+    const report = state.csvStatus.report
+    const headers = Object.keys(report[0])
+    const missing_headers = total_headers.filter(
+      item => !headers.includes(item)
+    )
+    total_headers.forEach(item => {
+      if (missing_headers.includes(item)) {
+        report.forEach(row => {
+          row[item] = '---'
+        })
+      }
+    })
+  }
+
+  const csvIsValid = computed(() => {
+    // if the report is missing any of the required headers, it's not valid
+    const report = state.csvStatus.report
+    const headers = Object.keys(report[0])
+    const missing_headers = []
+    headers.forEach(item => {
+      console.log(item)
+      if (report[0][item] === '---') missing_headers.push(item)
+    })
+    state.missingCsvHeaders = missing_headers
+    return missing_headers.length === 0
+  })
+
+  function handleGenerateCycles() {
+    console.log('csvIsValid', csvIsValid.value)
+    if (!csvIsValid.value) {
+      global.toast(
+        'default',
+        `Missing required headers: ${state.missingCsvHeaders.join(', ')}`
+      )
+    } else {
+      console.log('generating cycles from csv')
+      // TODO: prompt user for cultivar
+      // TODO: create each new zone if it doesn't exist
+      // TODO: parse the growth stages
+      // TODO: create the cycle payloads
+      // TODO: trigger loading page & upload the cycles to the db
+    }
   }
 </script>
 
@@ -302,18 +360,46 @@
 
           <div
             v-if="state.csvStatus.active && state.csvStatus.reviewing"
-            class="w-full h-full p-8 -mt-8"
+            class="w-full h-full p-8 pt-0"
           >
-            <div class="w-full h-full m-4" v-if="state.csvStatus.report">
-              <h1 class="text-3xl mt-6 mb-2 pl-2">Review your data</h1>
-              <p class="opacity-75 mb-8 pl-2">
-                We found
-                <b>{{ state.csvStatus.entry_count ?? 0 }}</b>
-                total entries across
-                <b>{{ state.csvStatus.report.length }}</b>
-                zones.
-              </p>
-              <Table :data="state.csvStatus.report" class="w-full" />
+            <div class="w-full h-full" v-if="state.csvStatus.report">
+              <h1 class="text-3xl mt-6 mb-4">
+                {{ `${state.csvStatus.report.length} cycles found` }}
+              </h1>
+              <div class="flex justify-between items-end h-[60px]">
+                <div class="opacity-75 mb-8">
+                  <p>
+                    <b>{{ state.csvStatus.entry_count ?? 0 }}</b>
+                    total entries have been uploaded across
+                    <b>{{ state.csvStatus.report.length }}</b>
+                    cycles.
+                    <br />
+                  </p>
+                </div>
+                <div class="flex gap-2 my-8">
+                  <button
+                    @click="router.go(router.path)"
+                    class="btn btn-outline"
+                  >
+                    Re-upload
+                  </button>
+                  <button
+                    @click="handleGenerateCycles"
+                    class="btn btn-primary"
+                    :class="
+                      !csvIsValid.value
+                        ? 'btn-disabled !pointer-events-auto'
+                        : ''
+                    "
+                  >
+                    {{ `Submit ${state.csvStatus.report.length} cycles` }}
+                  </button>
+                </div>
+              </div>
+              <Table
+                :data="state.csvStatus.report"
+                class="w-full h-fit max-h-[450px] border-none"
+              />
               <!-- TODO: display overview: (total records, entries per zone, growth stage per zone) -->
               <!-- TODO: prompt for missing data: (cultivar, room) -->
             </div>

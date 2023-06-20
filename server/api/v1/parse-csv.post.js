@@ -74,9 +74,13 @@ const parse = {
       const result = []
       const uniqueZones = [...new Set(Array.from(zones))]
       uniqueZones.forEach((z, i) => {
+        const start_date = data
+          .filter(entry => entry.zone === z)[0]
+          .timestamp.split(' ')[0]
         const g = getGrowthStage(z)
         const e = data.filter(entry => entry.zone === z).length
         result.push({
+          start_date,
           zone: z,
           growth_stage: g,
           entries: e,

@@ -1,5 +1,9 @@
 <script setup>
   const props = defineProps({
+    hoverable: {
+      type: Boolean,
+      default: true,
+    },
     placeholderColumns: {
       type: Array,
       default: () => ['Name', 'Age', 'Country'],
@@ -63,9 +67,10 @@
         <tr
           v-for="(item, itemIndex) in data"
           :key="itemIndex"
-          class="hover cursor-pointer !duration-150"
+          class="cursor-pointer !duration-150"
+          :class="props.hoverable ? 'hover' : ''"
         >
-          <th class="font-normal text-base-300">{{ itemIndex }}</th>
+          <th class="font-normal">{{ itemIndex }}</th>
           <td
             v-for="(datum, datumIndex) in Object.entries(item)"
             :key="datumIndex"
