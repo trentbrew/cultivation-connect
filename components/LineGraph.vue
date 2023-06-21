@@ -80,15 +80,18 @@
     ['2000-07-24', 60],
   ]
 
-  const series = [props.series[0].map(item => [item[0], item[1]])]
+  const s = props.series[0].map(item => [item[0], item[1]])
+
+  const series = s
 
   console.log('series', series)
+  console.log('s', s)
 
   const range = computed(() => global.getRange(props.context))
 
-  const rMin = parseFloat(range.value.min[0])
-  const rMax = parseFloat(range.value.max[0])
-  const rMar = parseFloat(range.value.margin[0])
+  const rMin = range.value.min[0]
+  const rMax = range.value.max[0]
+  const rMar = range.value.margin[0]
 
   const collectionsState = computed(() => global.getCollectionsState)
 

@@ -18,7 +18,6 @@
   })
 
   onMounted(async () => {
-    console.log('mouted details')
     if (hasDetailsHash.value) {
       state.context = route.hash.substring(1)
       state.range = global.getRange(route.hash.substring(1))

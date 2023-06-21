@@ -95,12 +95,10 @@
     const trueMin = context?.relative_min
     const trueMax = context?.relative_max
     const result = parseFloat((value - trueMin) / (trueMax - trueMin))
-    console.log('rationalize: ', value, trueMin, trueMax, result)
     return result
   }
 
   function initChart() {
-    console.log('options: ', options)
     myChart.setOption(options)
   }
 
