@@ -78,7 +78,11 @@
           return [getPreviousDate(datum[0]), 0]
         }
       }
-      state.avg = values.reduce((a, b) => a + b, 0) / values.length
+      console.log('getting avg...')
+      console.log(values)
+      state.avg =
+        values.reduce((a, b) => Number(a) + Number(b), 0) / values.length
+      console.log(state.svg)
       state.min = Math.min(...values)
       state.max = Math.max(...values)
       state.latest_value = values[values.length - 1]
@@ -144,13 +148,15 @@
                       >
                         <span>Avg</span>
                         <h2 class="text-3xl mb-3 ml-3">
-                          <span>
+                          <span class="font-bold">
                             {{
                               state.range?.unit == '%'
                                 ? Number.isInteger(state.avg * 100)
                                   ? state.avg * 100
                                   : (state.avg * 100).toFixed(2)
-                                : state.avg
+                                : Number.isInteger(state.avg)
+                                ? state.avg
+                                : state.avg.toFixed(2)
                             }}
                           </span>
                           <span class="text-sm ml-1">
@@ -164,13 +170,15 @@
                         >
                           <span>Min</span>
                           <h2 class="text-3xl mb-3 ml-3">
-                            <span>
+                            <span class="font-bold">
                               {{
                                 state.range?.unit == '%'
                                   ? Number.isInteger(state.min * 100)
                                     ? state.min * 100
                                     : (state.min * 100).toFixed(2)
-                                  : state.min
+                                  : Number.isInteger(state.min)
+                                  ? state.min
+                                  : state.min.toFixed(2)
                               }}
                             </span>
                             <span class="text-sm ml-1">
@@ -183,13 +191,15 @@
                         >
                           <span>Max</span>
                           <h2 class="text-3xl mb-3 ml-3">
-                            <span>
+                            <span class="font-bold">
                               {{
                                 state.range?.unit == '%'
                                   ? Number.isInteger(state.max * 100)
                                     ? state.max * 100
                                     : (state.max * 100).toFixed(2)
-                                  : state.max
+                                  : Number.isInteger(state.max)
+                                  ? state.max
+                                  : state.max.toFixed(2)
                               }}
                             </span>
                             <span class="text-sm ml-1">

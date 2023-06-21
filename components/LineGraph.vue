@@ -1,10 +1,10 @@
 <script setup>
-  import * as echarts from 'echarts';
+  import * as echarts from 'echarts'
 
-  const route = useRoute();
-  const global = useGlobalStore();
+  const route = useRoute()
+  const global = useGlobalStore()
 
-  const target = ref(null);
+  const target = ref(null)
 
   const props = defineProps({
     context: {
@@ -19,13 +19,13 @@
       type: Array,
       required: true,
     },
-  });
+  })
 
   const state = reactive({
     timeframe: null,
-  });
+  })
 
-  let myChart;
+  let myChart
 
   const placeholder_data = [
     ['2000-06-05', 116],
@@ -78,24 +78,24 @@
     ['2000-07-22', 57],
     ['2000-07-23', 55],
     ['2000-07-24', 60],
-  ];
+  ]
 
-  let series = [];
+  let series = []
 
   props.series.forEach(record => {
-    series = [...series, [record[0], record[1]]];
-  });
+    series = [...series, [record[0], record[1]]]
+  })
 
-  const range = computed(() => global.getRange(props.context));
+  const range = computed(() => global.getRange(props.context))
 
-  const rMin = range.value.min[0];
-  const rMax = range.value.max[0];
-  const rMar = range.value.margin[0];
+  const rMin = range.value.min[0]
+  const rMax = range.value.max[0]
+  const rMar = range.value.margin[0]
 
-  const collectionsState = computed(() => global.getCollectionsState);
+  const collectionsState = computed(() => global.getCollectionsState)
 
-  const dateList = series.map(item => item[0]);
-  const valueList = series.map(item => item[1]);
+  const dateList = series.map(item => item[0])
+  const valueList = series.map(item => item[1])
 
   let options = {
     colorBy: 'series',
@@ -146,7 +146,7 @@
       formatter: params => {
         return (
           params[0].name + '<br/>' + params[0].value + ' ' + range.value.unit
-        );
+        )
       },
     },
     xAxis: [
@@ -229,31 +229,31 @@
         },
       },
     ],
-  };
+  }
 
   function initChart() {
-    myChart.setOption(options);
+    myChart.setOption(options)
   }
 
   onMounted(async () => {
-    myChart = echarts.init(target.value);
-    window.addEventListener('resize', myChart.resize());
-    initChart();
-  });
+    myChart = echarts.init(target.value)
+    window.addEventListener('resize', myChart.resize())
+    initChart()
+  })
 
   watch(
     () => props.series,
     val => {
-      initChart();
+      initChart()
     }
-  );
+  )
 
   watch(
     () => collectionsState.value,
     () => {
-      myChart.resize();
+      myChart.resize()
     }
-  );
+  )
 </script>
 
 <template>

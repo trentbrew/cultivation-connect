@@ -135,7 +135,6 @@
   })
 
   onMounted(async () => {
-    state.loading = true
     router.push({ hash: '' })
     initCycle()
   })
@@ -160,21 +159,22 @@
 
   watch(
     () => route,
-    val => {
-      if (
-        !val.hash &&
-        !['#edit-data', '#new-cycle', '#records', '#edit-cultivar'].includes(
-          val.hash
-        )
-      ) {
+    async val => {
+      console.log('the route changed. updating & re-rendering cycle')
+      if (!route.hash) {
         state.loading = true
-        initCycle()
+        setTimeout(() => {
+          initCycle()
+          state.loading = false
+          console.log('updated state: ', state.cycle.conditions)
+        }, 2000)
       }
     },
     { deep: true }
   )
 
   async function initCycle() {
+    state.loading = true
     const cycle = await pb.get('cycles', {
       id: route.params.cycle,
     })
@@ -294,6 +294,7 @@
             <span class="text-base">View records</span>
           </ModalTrigger>
           <DrawerToggle
+            @click="updateHash('new-record')"
             v-if="state.cycle.active"
             class="bg-black"
             label="New record"
@@ -470,14 +471,14 @@
 
             <div v-if="!state.csvStatus.active" class="flex gap-2">
               <DrawerToggle
-                @click="router.push({ hash: '#upload-csv' })"
+                @click="updateHash('upload-csv')"
                 label="Upload grow data"
                 class="btn-primary mt-12 w-fit"
                 icon="upload"
                 for="csv-upload"
               />
               <DrawerToggle
-                @click="router.push({ hash: '#new-record' })"
+                @click="updateHash('new-record')"
                 label="Manually enter data"
                 class="bg-black mt-12 w-fit"
                 icon="plus"
