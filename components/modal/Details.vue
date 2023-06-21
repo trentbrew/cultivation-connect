@@ -82,7 +82,6 @@
         values.reduce((a, b) => Number(a) + Number(b), 0) / values.length
       state.min = Math.min(...values)
       state.max = Math.max(...values)
-      state.latest_value = values[values.length - 1]
       let series = state.records.map(record => {
         if (record.data[state.context]) {
           return [
@@ -94,8 +93,11 @@
       if (series.length < 2) {
         state.series = [initialize(series[0]), series[0]]
       } else {
-        state.series = series
+        state.series = series.sort((a, b) => {
+          return new Date(a[0]) - new Date(b[0])
+        })
       }
+      state.latest_value = state.series[0][state.series[0].length - 1]
     }
   }
 </script>

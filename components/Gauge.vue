@@ -28,8 +28,8 @@
     series: [
       {
         type: 'gauge',
-        startAngle: 220,
-        endAngle: -70,
+        startAngle: 210,
+        endAngle: -30,
         splitNumber: 10,
         axisLine: {
           lineStyle: {

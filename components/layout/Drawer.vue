@@ -140,27 +140,27 @@
       },
       record: [
         {
-          label: 'Air Temperature',
+          label: 'Air Temperature (℉)',
           name: 'air_temp',
           value: null,
         },
         {
-          label: 'Soil Temperature',
+          label: 'Soil Temperature (℉)',
           name: 'grow_medium_temp',
           value: null,
         },
         {
-          label: 'Air Humidity',
+          label: 'Air Humidity (%)',
           name: 'air_humidity',
           value: null,
         },
         {
-          label: 'Solar',
+          label: 'Solar (W/m2)',
           name: 'solar',
           value: null,
         },
         {
-          label: 'Vapor Pressure Deficit',
+          label: 'Vapor Pressure Deficit (kPa)',
           name: 'vpd',
           value: null,
         },
@@ -170,43 +170,23 @@
           value: null,
         },
         {
-          label: 'CO2',
+          label: 'CO2 (ppm)',
           name: 'co2',
           value: null,
         },
         {
-          label: 'Pore EC',
+          label: 'Pore EC (%)',
           name: 'pore_ec',
           value: null,
         },
         {
-          label: 'Pore EC (Day)',
-          name: 'day_time_pore_ec',
+          label: 'Soil Moisture (%)',
+          name: 'soil_moisture',
           value: null,
         },
         {
-          label: 'Pore EC (Night)',
-          name: 'night_time_pore_ec',
-          value: null,
-        },
-        {
-          label: 'Soil Moisture (Day)',
-          name: 'day_time_soil_moisture',
-          value: null,
-        },
-        {
-          label: 'Soil Moisture (Night)',
-          name: 'night_time_soil_moisture',
-          value: null,
-        },
-        {
-          label: 'Dry Back (Day)',
-          name: 'day_time_dry_back',
-          value: null,
-        },
-        {
-          label: 'Dry Back (Night)',
-          name: 'night_time_dry_back',
+          label: 'Dry Back (%)',
+          name: 'dry_back',
           value: null,
         },
         {
@@ -421,6 +401,17 @@
   }
 
   async function submitRecord() {
+    // instead of prompting the user for the day/night values, calculate them here
+    // If time of record is between 6am and 6pm, it's day. Otherwise, it's night.
+
+    const date_recorded = new Date().toISOString()
+
+    const timeOfDay = () => {
+      const hour = new Date(date_recorded).getHours()
+      if (hour >= 6 && hour < 18) return 'day'
+      else return 'night'
+    }
+
     const getCycleDay = () => {
       const start = new Date(state.cycle.start_date)
       const today = new Date()
@@ -428,6 +419,7 @@
       const day = Math.floor(diff / (1000 * 60 * 60 * 24))
       return day
     }
+
     const getCycleWeek = () => {
       const start = new Date(state.cycle.start_date)
       const today = new Date()
@@ -435,6 +427,7 @@
       const week = Math.floor(diff / (1000 * 60 * 60 * 24 * 7))
       return week
     }
+
     const data = {
       air_temp: state.payload.record[0].value,
       grow_medium_temp: state.payload.record[1].value,
@@ -444,20 +437,29 @@
       dli: state.payload.record[5].value,
       co2: state.payload.record[6].value,
       pore_ec: state.payload.record[7].value,
-      day_time_pore_ec: state.payload.record[8].value,
-      night_time_pore_ec: state.payload.record[9].value,
-      day_time_soil_moisture: state.payload.record[10].value,
-      night_time_soil_moisture: state.payload.record[11].value,
-      day_time_dry_back: state.payload.record[12].value,
-      night_time_dry_back: state.payload.record[13].value,
-      ph: state.payload.record[14].value,
+      soil_moisture: state.payload.record[8].value,
+      dry_back: state.payload.record[9].value,
+      ph: state.payload.record[10].value,
       yield: null, // TODO: calulate this?
       thc: null, // TODO: get this from the cultivar?
       tac: null, // TODO: get this from the cultivar?
       terp: null, // TODO: get this from the cultivar?
     }
+
+    if (timeOfDay() == 'day') {
+      data.pore_ec = state.payload.record[7].value
+      data.day_time_pore_ec = state.payload.record[7].value
+      data.day_time_soil_moisture = state.payload.record[8].value
+      data.day_time_dry_back = state.payload.record[9].value
+    } else {
+      data.pore_ec = state.payload.record[7].value
+      data.night_time_pore_ec = state.payload.record[7].value
+      data.night_time_soil_moisture = state.payload.record[8].value
+      data.night_time_dry_back = state.payload.record[9].value
+    }
+
     const payload = {
-      date_recorded: new Date().toISOString(),
+      date_recorded,
       recorded_by: pb.api.authStore.model.id,
       facility: pb.api.authStore.model.facility,
       room: state.cycle.room,
@@ -469,7 +471,9 @@
       cycle_week: getCycleWeek(),
       data: JSON.stringify(data),
     }
+
     clearForm('record', true)
+
     pb.post('records', payload)
       .then(res => {
         const latest_record = res.id

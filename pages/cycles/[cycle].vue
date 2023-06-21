@@ -363,9 +363,12 @@
               >
                 <Stat
                   :id="item.name"
-                  :title="item.title"
-                  :value="Number(item.value)"
-                  :disabled="item.name == 'yield'"
+                  :title="
+                    item.value ? item.title : `${item.title} (No records)`
+                  "
+                  :value="item.value ? Number(item.value) : 0"
+                  :disabled="item.name == 'yield' || !item.value"
+                  :class="!item.value ? 'pointer-events-none' : ''"
                 />
               </ModalTrigger>
             </li>

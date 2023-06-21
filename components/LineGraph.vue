@@ -80,11 +80,7 @@
     ['2000-07-24', 60],
   ]
 
-  const series = props.series
-    .map(item => [item[0], Number(item[1])])
-    .sort((a, b) => {
-      return new Date(a[0]) - new Date(b[0])
-    })
+  const series = props.series.map(item => [item[0], Number(item[1])])
 
   console.log('series', series)
 
