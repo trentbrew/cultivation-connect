@@ -476,8 +476,9 @@
         pb.update('cycles', state.cycle.id, {
           active: true,
           latest_record,
-        }).then(() => {
-          global.toast('default', 'Successfully submitted record')
+        }).catch(err => {
+          global.toast('error', 'Error updating cycle')
+          console.log('error updating cycle: ', err)
         })
       })
       .catch(err => {

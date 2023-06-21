@@ -80,11 +80,7 @@
     ['2000-07-24', 60],
   ]
 
-  let series = []
-
-  props.series.forEach(record => {
-    series = [...series, [record[0], record[1]]]
-  })
+  const series = props.series.map(item => [item[0], Number(item[1])])
 
   const range = computed(() => global.getRange(props.context))
 

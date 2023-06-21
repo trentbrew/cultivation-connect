@@ -78,15 +78,12 @@
           return [getPreviousDate(datum[0]), 0]
         }
       }
-      console.log('getting avg...')
-      console.log(values)
       state.avg =
         values.reduce((a, b) => Number(a) + Number(b), 0) / values.length
-      console.log(state.svg)
       state.min = Math.min(...values)
       state.max = Math.max(...values)
       state.latest_value = values[values.length - 1]
-      const series = state.records.map(record => {
+      let series = state.records.map(record => {
         if (record.data[state.context]) {
           return [
             record.date_recorded.split(' ')[0],
