@@ -482,9 +482,9 @@
           latest_record,
         })
           .then(() => {
-            setTimeout(() => {
-              global.toast('default', 'Successfully submitted record')
-            }, 800)
+            // setTimeout(() => {
+            //   global.toast('default', 'Successfully submitted record')
+            // }, 800)
           })
           .catch(err => {
             global.toast('error', 'Error submitting record')
@@ -1329,12 +1329,6 @@
         <DrawerToggle
           class="btn-primary"
           @click="handleSubmit"
-          :disabled="
-            route.hash.substring(1).split('–')[0] == 'edit' ||
-            drawerContext == 'new-record'
-              ? false
-              : !valid
-          "
           :for="drawerContext"
           label="Submit"
         />

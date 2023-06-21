@@ -43,6 +43,7 @@
       name: '',
       latest_record: null,
       overview: {
+        latest: '',
         plants: 0,
         day: 0,
         growthPhase: '',
@@ -136,7 +137,8 @@
 
   onMounted(async () => {
     router.push({ hash: '' })
-    initCycle()
+    await initCycle()
+    console.log(state.cycle)
   })
 
   const csvStatus = computed(() => global.getCsvStatus)
@@ -175,16 +177,39 @@
 
   async function initCycle() {
     state.loading = true
+
     const cycle = await pb.get('cycles', {
       id: route.params.cycle,
     })
+
+    const formatDateTime = str => {
+      const date = new Date(str)
+      const today = new Date()
+      const yesterday = new Date(today)
+      yesterday.setDate(yesterday.getDate() - 1)
+      const isToday = date.toDateString() === today.toDateString()
+      const isYesterday = date.toDateString() === yesterday.toDateString()
+      const month = date.toLocaleString('default', { month: 'long' })
+      const day = date.getDate()
+      const hour = date.getHours()
+      const minute = date.getMinutes()
+      const ampm = hour >= 12 ? 'PM' : 'AM'
+      const formattedHour = hour % 12 || 12
+      const formattedMinute = minute < 10 ? `0${minute}` : minute
+      if (isToday) return `Today ${formattedHour}:${formattedMinute} ${ampm}`
+      if (isYesterday)
+        return `Yesterday ${formattedHour}:${formattedMinute} ${ampm}`
+      return `${month} ${day} ${formattedHour}:${formattedMinute} ${ampm}`
+    }
+
     if (cycle.active) {
-      const { data: latest_record } = await pb.get('records', {
+      const latest_record = await pb.get('records', {
         id: cycle.latest_record,
       })
+      state.cycle.overview.latest = formatDateTime(latest_record.date_recorded)
       state.cycle.conditions.forEach((item, index) => {
-        if (latest_record[item.name]) {
-          state.cycle.conditions[index].value = latest_record[item.name]
+        if (latest_record.data[item.name]) {
+          state.cycle.conditions[index].value = latest_record.data[item.name]
         }
       })
     }
@@ -284,7 +309,7 @@
     <div class="w-full h-screen flex flex-col">
       <div class="w-full h-20 flex justify-between items-center p-4">
         <Path class="ml-4" page="Cycles" :cycle="state.cycle" />
-        <div class="flex gap-2">
+        <div class="flex gap-4">
           <ModalTrigger
             @click="updateHash('records')"
             class="btn btn-outline gap-2 hover:bg-base-200 hover:text-base-content"
@@ -338,6 +363,12 @@
                 {{ state.cycle.overview.estHarvestDate }}
               </div>
             </div>
+            <div v-if="state.cycle.overview.latest" class="stat">
+              <div class="stat-title">Latest record</div>
+              <div class="stat-value">
+                {{ state.cycle.overview.latest }}
+              </div>
+            </div>
           </div>
         </header>
 
@@ -345,12 +376,64 @@
           class="w-full h-full"
           :class="'flex flex-col justify-center items-center'"
         >
-          <div
+          <ul
             v-show="state.loading"
             class="w-full h-full flex justify-center items-center"
+            style="animation: enter 0.5s ease-in-out forwards"
           >
-            <Loading size="80" />
-          </div>
+            <ul
+              class="w-full min-h-full grid grid-cols-4 overflow-scroll gap-4 p-4 pt-0 opacity-50"
+            >
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+              <li
+                class="bg-base-200 animate-pulse rounded-[8px] w-full h-full"
+              ></li>
+            </ul>
+          </ul>
           <ul
             v-if="state.cycle.active && !state.loading"
             class="w-full min-h-full grid grid-cols-4 overflow-scroll gap-4 p-4 pt-0"
@@ -360,15 +443,13 @@
               <ModalTrigger
                 @click="item.name != 'yield' ? updateHash(item.name) : () => {}"
                 target="details"
+                :class="!item.value ? 'pointer-events-none' : ''"
               >
                 <Stat
                   :id="item.name"
-                  :title="
-                    item.value ? item.title : `${item.title} (No records)`
-                  "
-                  :value="item.value ? Number(item.value) : 0"
+                  :title="item.title"
+                  :value="item.value"
                   :disabled="item.name == 'yield' || !item.value"
-                  :class="!item.value ? 'pointer-events-none' : ''"
                 />
               </ModalTrigger>
             </li>
@@ -511,6 +592,14 @@
 </template>
 
 <style>
+  @keyframes enter {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
   .stat-title {
     @apply text-sm;
   }

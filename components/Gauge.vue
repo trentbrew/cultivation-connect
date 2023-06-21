@@ -19,7 +19,7 @@
   })
 
   const colors = {
-    green: '#6BD09E',
+    green: '#81CB91',
     yellow: '#F1C04A',
     red: '#E87A76',
   }
@@ -28,9 +28,9 @@
     series: [
       {
         type: 'gauge',
-        startAngle: 210,
-        endAngle: -30,
-        splitNumber: 10,
+        startAngle: 200,
+        endAngle: -20,
+        splitNumber: 0,
         axisLine: {
           lineStyle: {
             width: 3,
@@ -62,7 +62,7 @@
         },
         axisLabel: {
           color: 'inherit',
-          distance: 20,
+          distance: 18,
           fontSize: 12,
           formatter: null,
         },
@@ -71,6 +71,7 @@
           formatter: null,
           color: '#000',
           fontSize: 32,
+          offsetCenter: [0, '60%'],
         },
         data: [
           {
@@ -82,21 +83,24 @@
   }
 
   function sum(a, b) {
-    return parseInt(a) + parseInt(b)
+    return Number(a) + Number(b)
   }
 
   function difference(a, b) {
-    return parseInt(a) - parseInt(b)
+    return Number(a) - Number(b)
   }
 
   function rationalize(value) {
     const context = global.getRange(props.context)
-    const trueMin = difference(context?.min, context?.margin * 2)
-    const trueMax = sum(context?.max, context?.margin * 2)
-    return parseFloat(((value - trueMin) / (trueMax - trueMin)).toFixed(2))
+    const trueMin = context?.relative_min
+    const trueMax = context?.relative_max
+    const result = parseFloat((value - trueMin) / (trueMax - trueMin))
+    console.log('rationalize: ', value, trueMin, trueMax, result)
+    return result
   }
 
   function initChart() {
+    console.log('options: ', options)
     myChart.setOption(options)
   }
 
@@ -114,37 +118,43 @@
     let series = options.series[0]
 
     series.data[0].value = props.value
+    // no matter the range, we wanna show 10 equally spaced labels
+    series.splitNumber = 10
 
-    if (context?.unit === '%') {
-      series.axisLabel.formatter = value => Math.round(value * 100) + '%'
-      series.detail.formatter = value => Math.round(value * 100) + '%'
-    } else {
-      series.axisLabel.formatter = value => {
-        if (value % 1 == 0) return Math.floor(value) + context?.unit
-        return ''
-      }
-      series.min = context?.relative_min
-      series.max = context?.relative_max
-      series.detail.formatter = value => value + context?.unit
+    series.axisLabel.formatter = value => {
+      return value % 1 == 0 ? value : value.toFixed(2)
     }
+    series.min = context?.relative_min
+    series.max = context?.relative_max
+    series.detail.formatter = value => value + context?.unit
 
-    series.axisLine.lineStyle.color = [
-      // TODO: sync context index with current grow phase
-      [rationalize(difference(context?.min[0], context?.margin)), colors.red],
-      [rationalize(context?.min[0]), colors.yellow],
-      [rationalize(context?.median[0]), colors.green],
-      [rationalize(context?.max[0]), colors.yellow],
-      [rationalize(sum(context?.max[0], context?.margin)), colors.red],
-    ]
-
-    console.log('series', series)
+    if (context?.median < 1 && context?.median > 0) {
+      series.axisLine.lineStyle.color = [
+        [difference(context?.min[0], context?.margin[0]), colors.red],
+        [context?.min[0], colors.yellow],
+        [context?.median[0], colors.green],
+        [context?.max[0], colors.green],
+        [sum(context?.max[0], context?.margin[0]), colors.yellow],
+        [1, colors.red],
+      ]
+    } else {
+      series.axisLine.lineStyle.color = [
+        [
+          rationalize(difference(context?.min[0], context?.margin[0])),
+          colors.red,
+        ],
+        [rationalize(context?.min[0]), colors.yellow],
+        [rationalize(context?.median[0]), colors.green],
+        [rationalize(context?.max[0]), colors.green],
+        [rationalize(sum(context?.max[0], context?.margin[0])), colors.yellow],
+        [1, colors.red],
+      ]
+    }
 
     myChart = echarts.init(target.value)
     initChart()
 
-    window.addEventListener('resize', () => {
-      myChart.resize()
-    })
+    window.addEventListener('resize', myChart.resize())
   })
 </script>
 

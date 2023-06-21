@@ -13,6 +13,11 @@ module.exports = {
       borderRadius: {
         DEFAULT: '8px',
       },
+      colors: {
+        success: {
+          DEFAULT: '#81CB91',
+        },
+      },
     },
   },
   plugins: [require('daisyui')],

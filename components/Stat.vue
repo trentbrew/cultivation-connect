@@ -1,6 +1,6 @@
 <script setup>
-  const global = useGlobalStore();
-  const router = useRouter();
+  const global = useGlobalStore()
+  const router = useRouter()
 
   const props = defineProps({
     id: {
@@ -12,14 +12,14 @@
       required: true,
     },
     value: {
-      type: Number,
-      required: true,
+      type: [Number, String],
+      required: false,
     },
     disabled: {
       type: Boolean,
       default: false,
     },
-  });
+  })
 
   const state = reactive({
     range: {},
@@ -30,7 +30,7 @@
     status: null,
     style: null,
     icon: null,
-  });
+  })
 
   const styles = [
     {
@@ -57,26 +57,26 @@
     {
       card: 'bg-neutral/25 border-neutral pointer-events-none cursor-not-allowed',
       icon: {
-        name: 'lock',
+        name: 'clear',
         color: 'text-neutral-content',
       },
     },
-  ];
+  ]
 
   onMounted(() => {
-    state.range = global.getRange(props.id);
-    const r = state.range;
-    const v = props.value;
-    const p = 0; // TODO: get phase from cycle data
+    state.range = global.getRange(props.id)
+    const r = state.range
+    const v = props.value
+    const p = 0 // TODO: get phase from cycle data
 
-    const maxmax = r?.max[p] + r?.margin[p];
-    const max = r?.max[p];
-    const min = r?.min[p];
-    const minmin = r?.min[p] - r?.margin[p];
+    const maxmax = r?.max[p] + r?.margin[p]
+    const max = r?.max[p]
+    const min = r?.min[p]
+    const minmin = r?.min[p] - r?.margin[p]
 
-    const red = v > maxmax || v < minmin;
-    const yellow = (v > max || v < min) && !red;
-    const green = v <= max && v >= min;
+    const red = v > maxmax || v < minmin
+    const yellow = (v > max || v < min) && !red
+    const green = v <= max && v >= min
 
     state.style = props.disabled
       ? styles[3]
@@ -84,27 +84,27 @@
       ? styles[0]
       : yellow
       ? styles[1]
-      : styles[2];
+      : styles[2]
 
-    state.change.value = Math.abs(v - r.median[p]);
-    state.change.direction = v > r.median[p] ? 'above' : 'below';
-  });
+    state.change.value = Math.abs(v - r.median[p])
+    state.change.direction = v > r.median[p] ? 'above' : 'below'
+  })
 
   function handleMove() {
-    console.log('handling reorder');
+    console.log('handling reorder')
     // global.toast('default', 'This feature is not yet available.')
   }
 
   function triggerDetails() {
-    global.setDetails(props.id);
-    router.push(`#${props.id}`);
+    global.setDetails(props.id)
+    router.push(`#${props.id}`)
   }
 </script>
 
 <template>
   <div
     v-if="state.style"
-    @click="props.disabled ? '' : triggerDetails"
+    @click="triggerDetails"
     class="w-full h-full border hover:scale-[0.98] active:scale-[0.94] active:brightness-95 rounded duration-150 p-4 group cursor-pointer group"
     :class="state.style.card"
   >
@@ -130,7 +130,7 @@
       </div>
       <div>
         <h2 class="text-4xl font-bold mb-3">
-          <span>
+          <span v-show="props.value">
             {{
               state.range.unit == '%'
                 ? Number.isInteger(props.value * 100)
@@ -139,16 +139,15 @@
                 : props.value
             }}
           </span>
-          <span class="text-sm ml-1">{{ state.range.unit }}</span>
+          <span v-show="props.value" class="text-sm ml-1">
+            {{ state.range.unit }}
+          </span>
+          <span v-show="!props.value && state.value !== 0">{{ '' }}</span>
         </h2>
         <Pill
           :id="props.id"
           :value="props.disabled ? 0 : props.value"
-          :class="
-            props.disabled
-              ? 'grayscale contrast-[0] opacity-[0.4] !animate-none'
-              : ''
-          "
+          :disabled="props.disabled"
         />
       </div>
     </div>

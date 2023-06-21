@@ -5,6 +5,7 @@
   const pb = usePocketbase()
 
   const state = reactive({
+    loading: false,
     context: '',
     series: [],
     data: null,
@@ -16,12 +17,15 @@
     range: null,
   })
 
-  onMounted(() => {
-    fetchCycle()
-    fetchRecords()
-    if (route.hash) {
+  onMounted(async () => {
+    console.log('mouted details')
+    if (hasDetailsHash.value) {
       state.context = route.hash.substring(1)
       state.range = global.getRange(route.hash.substring(1))
+      await fetchCycle()
+      await fetchRecords()
+      console.log('state.data: ', state.data)
+      console.log('state.range: ', state.range)
     }
   })
 
@@ -33,16 +37,24 @@
   )
 
   watch(
-    () => route.hash,
-    newHash => {
+    () => route,
+    newRoute => {
+      state.loading = true
+      state.data = null
+      state.records = null
       if (hasDetailsHash.value) {
-        state.context = newHash.substring(1)
-        state.range = global.getRange(newHash.substring(1))
-        fetchCycle()
-        fetchRecords()
-        calculateMetrics()
+        state.context = newRoute.hash.substring(1)
+        state.range = global.getRange(newRoute.hash.substring(1))
+        setTimeout(async () => {
+          await fetchCycle()
+          await fetchRecords()
+          state.loading = false
+        }, 1200)
+        console.log('state.data: ', state.data)
+        console.log('state.range: ', state.range)
       }
-    }
+    },
+    { deep: true }
   )
 
   async function fetchCycle() {
@@ -53,61 +65,70 @@
   }
 
   async function fetchRecords() {
-    if (hasDetailsHash.value) {
-      console.log(route.hash)
-      const records = await pb.get('records', {
-        filter: `cycle = "${route.params.cycle}" && facility.id = "${pb.api.authStore.model.facility}"`,
-      })
-      state.records = records
-      calculateMetrics()
-    }
+    console.log('fetching records')
+    console.log(route.hash)
+    const records = await pb.get('records', {
+      filter: `cycle = "${route.params.cycle}" && facility.id = "${pb.api.authStore.model.facility}"`,
+    })
+    console.log(records)
+    state.records = records.sort((a, b) => {
+      return new Date(a.date_recorded) - new Date(b.date_recorded)
+    })
+    console.log(state.records)
+    calculateMetrics(state.records)
   }
 
-  function calculateMetrics() {
-    if (state.records) {
-      const values = state.records.map(record => {
-        if (record.data[state.context]) return record.data[state.context]
-      })
-      const initialize = datum => {
-        if (datum) {
-          const getPreviousDate = date => {
-            const d = new Date(date)
-            d.setDate(d.getDate() - 1)
-            return d.toISOString().split('T')[0]
-          }
-          return [getPreviousDate(datum[0]), 0]
+  function calculateMetrics(records) {
+    const values = records.map(record => {
+      if (record.data[state.context]) return record.data[state.context]
+    })
+
+    const initialize = datum => {
+      if (datum) {
+        const getPreviousDate = date => {
+          const d = new Date(date)
+          d.setDate(d.getDate() - 1)
+          return d.toISOString().split('T')[0]
         }
+        return [getPreviousDate(datum[0]), 0]
       }
-      state.avg =
-        values.reduce((a, b) => Number(a) + Number(b), 0) / values.length
-      state.min = Math.min(...values)
-      state.max = Math.max(...values)
-      let series = state.records.map(record => {
-        if (record.data[state.context]) {
-          return [
-            record.date_recorded.split(' ')[0],
-            record.data[state.context],
-          ]
-        }
-      })
-      if (series.length < 2) {
-        state.series = [initialize(series[0]), series[0]]
-      } else {
-        state.series = series.sort((a, b) => {
-          return new Date(a[0]) - new Date(b[0])
-        })
-      }
-      state.latest_value = state.series[0][state.series[0].length - 1]
     }
+
+    state.avg =
+      values.reduce((a, b) => Number(a) + Number(b), 0) / values.length
+    state.min = Math.min(...values)
+    state.max = Math.max(...values)
+
+    let series = records.map(record => {
+      if (record.data[state.context]) {
+        return [record.date_recorded, record.data[state.context]]
+      }
+    })
+
+    console.log(series)
+
+    if (series.length < 2) {
+      state.series = [initialize(series[0]), series[0]]
+    } else {
+      state.series = [
+        series.map(item => {
+          return [item[0].split(' ')[0], Number(item[1])]
+        }),
+      ]
+    }
+    state.latest_value = values[values.length - 1]
   }
 </script>
 
 <template>
-  <div v-if="state.data && state.range">
+  <div>
     <input type="checkbox" id="details" class="modal-toggle" />
     <label for="details" class="modal">
       <label for="" class="p-0 m-0">
-        <div class="modal-box !border-base-200">
+        <div
+          v-if="state.data && state.range && !state.loading"
+          class="modal-box !border-base-200"
+        >
           <div class="w-[83vw] h-[79vh]">
             <div class="w-full h-full">
               <div class="absolute ml-4">
@@ -229,6 +250,9 @@
               <Icon name="close" />
             </label>
           </div>
+        </div>
+        <div v-else class="model-box !border-base-200">
+          <Loading size="80" />
         </div>
       </label>
     </label>

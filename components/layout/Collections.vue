@@ -1,43 +1,43 @@
 <script setup>
-  const global = useGlobalStore();
-  const route = useRoute();
-  const router = useRouter();
-  const pb = usePocketbase();
+  const global = useGlobalStore()
+  const route = useRoute()
+  const router = useRouter()
+  const pb = usePocketbase()
 
-  const context = computed(() => route.name.split('-')[0]);
+  const context = computed(() => route.name.split('-')[0])
 
   const state = reactive({
     search: '',
     data: [],
-  });
+  })
 
   onMounted(() => {
-    fetchData();
-  });
+    fetchData()
+  })
 
   async function fetchData() {
     state.data = await pb.get(context.value, {
       filter: `facility.id = "${pb.api.authStore.model.facility}"`,
-    });
+    })
   }
 
   const filteredData = computed(() => {
-    if (state.search == '') return state.data;
+    if (state.search == '') return state.data
     return state.data.filter(record => {
-      return record.name.toLowerCase().includes(state.search.toLowerCase());
-    });
-  });
+      return record.name.toLowerCase().includes(state.search.toLowerCase())
+    })
+  })
 
   function handleNewCycle() {
-    router.push({ hash: '#new-cycle' });
+    router.push({ hash: '#new-cycle' })
   }
 
   watch(
     () => route.path,
     () => {
-      fetchData();
+      fetchData()
     }
-  );
+  )
 </script>
 
 <template>
@@ -74,10 +74,16 @@
         <li v-for="(record, index) in filteredData" :key="index">
           <router-link
             :to="`/cycles/${record.id}`"
-            class="font-medium h-16 w-full p-8 flex justify-start items-center cursor-pointer hover:bg-base-200 active:scale-[0.96] active:rounded-[4px] duration-150"
+            class="font-medium h-16 w-full p-8 flex justify-start gap-4 items-center cursor-pointer hover:bg-base-200 active:bg-base-300 duration-150"
             :class="index == 0 ? 'pt-8' : ''"
           >
-            {{ record.name }}
+            <span>
+              {{ record.name }}
+            </span>
+            <span v-if="record.active" class="badge bg-black text-white">
+              Active
+            </span>
+            <span v-else class="badge badge-outline">Inactive</span>
           </router-link>
         </li>
       </ul>
@@ -98,6 +104,7 @@
   .router-link-exact-active,
   .router-link-active {
     background: #0000000f !important;
-    font-weight: bold;
+    border-left: solid black 2px;
+    /* font-weight: bold; */
   }
 </style>

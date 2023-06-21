@@ -80,15 +80,15 @@
     ['2000-07-24', 60],
   ]
 
-  const series = props.series.map(item => [item[0], Number(item[1])])
+  const series = [props.series[0].map(item => [item[0], item[1]])]
 
   console.log('series', series)
 
   const range = computed(() => global.getRange(props.context))
 
-  const rMin = range.value.min[0]
-  const rMax = range.value.max[0]
-  const rMar = range.value.margin[0]
+  const rMin = parseFloat(range.value.min[0])
+  const rMax = parseFloat(range.value.max[0])
+  const rMar = parseFloat(range.value.margin[0])
 
   const collectionsState = computed(() => global.getCollectionsState)
 
@@ -167,6 +167,9 @@
       },
     ],
     visualMap: {
+      textStyle: {
+        fontSize: 12,
+      },
       top: 50,
       right: 10,
       pieces: [
@@ -182,7 +185,7 @@
         {
           gt: rMin, // min
           lte: rMax, // max
-          color: '#6BD09E',
+          color: '#81CB91',
         },
         {
           gt: rMax, // max
