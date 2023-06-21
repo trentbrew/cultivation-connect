@@ -1,7 +1,6 @@
 <script setup>
   import * as echarts from 'echarts'
 
-  const route = useRoute()
   const global = useGlobalStore()
 
   const target = ref(null)
@@ -34,7 +33,7 @@
         splitNumber: 10,
         axisLine: {
           lineStyle: {
-            width: 2,
+            width: 3,
             color: null,
           },
         },
@@ -68,7 +67,7 @@
           formatter: null,
         },
         detail: {
-          // valueAnimation: true,
+          valueAnimation: true,
           formatter: null,
           color: '#000',
           fontSize: 32,

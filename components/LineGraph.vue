@@ -80,7 +80,13 @@
     ['2000-07-24', 60],
   ]
 
-  const series = props.series.map(item => [item[0], Number(item[1])])
+  const series = props.series
+    .map(item => [item[0], Number(item[1])])
+    .sort((a, b) => {
+      return new Date(a[0]) - new Date(b[0])
+    })
+
+  console.log('series', series)
 
   const range = computed(() => global.getRange(props.context))
 
@@ -196,11 +202,11 @@
     series: [
       {
         type: 'line',
-        // lineStyle: {
-        //   normal: {
-        //     width: 4,
-        //   },
-        // },
+        lineStyle: {
+          normal: {
+            width: 3,
+          },
+        },
         showSymbol: false,
         data: valueList,
         markLine: {

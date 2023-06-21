@@ -165,10 +165,9 @@
         state.loading = true
         setTimeout(() => {
           initCycle()
-          // global.toast('default', 'Successfully submitted record')
           state.loading = false
           console.log('updated state: ', state.cycle.conditions)
-        }, 2000)
+        }, 1200)
       }
     },
     { deep: true }
