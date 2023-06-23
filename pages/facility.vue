@@ -67,10 +67,10 @@
               {{ state.data.facility?.company_name }}
             </h1>
           </div>
-          <button class="btn btn-outline gap-3">
+          <!-- <button class="btn btn-outline gap-3">
             <Icon name="edit" />
             <span>Edit facility details</span>
-          </button>
+          </button> -->
         </div>
 
         <header class="p-4">
