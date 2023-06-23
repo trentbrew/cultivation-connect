@@ -172,10 +172,6 @@
             :class="datum[1] === '---' ? 'text-error' : ''"
           >
             {{ datum[1] }}
-            <!-- <div v-if="datum[1] !== '---'">{{ datum[1] }}</div>
-            <div v-else class="h-full flex items-center">
-              <Input type="text" :nolabel="true" class="-mt-3" />
-            </div> -->
           </td>
         </tr>
       </tbody>

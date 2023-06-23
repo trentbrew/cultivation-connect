@@ -1,36 +1,36 @@
 <script setup>
-  const global = useGlobalStore();
-  const route = useRoute();
-  const router = useRouter();
+  const global = useGlobalStore()
+  const route = useRoute()
+  const router = useRouter()
 
   const state = reactive({
     ui: {
       collections: false,
       currentItem: null,
     },
-  });
+  })
 
-  const collectionsActive = computed(() => global.getCollectionsState);
-  const currentItem = computed(() => global.getCurrentItem);
+  const collectionsActive = computed(() => global.getCollectionsState)
+  const currentItem = computed(() => global.getCurrentItem)
 
   onMounted(() => {
-    state.ui.collections = collectionsActive.value;
-    state.ui.currentItem = currentItem.value;
-  });
+    state.ui.collections = collectionsActive.value
+    state.ui.currentItem = currentItem.value
+  })
 
   watch(
     () => collectionsActive.value,
     val => {
-      state.ui.collections = val;
+      state.ui.collections = val
     }
-  );
+  )
 
   watch(
     () => currentItem.value,
     val => {
-      state.ui.currentItem = val;
+      state.ui.currentItem = val
     }
-  );
+  )
 
   const nonCollectionRoutes = [
     'facility',
@@ -40,7 +40,7 @@
     'account-username',
     'auth-login',
     'auth-signup',
-  ];
+  ]
 </script>
 
 <template>
@@ -55,7 +55,7 @@
       >
         <LayoutCollections />
       </div>
-      <main class="duration-300 w-full h-screen bg-base-100 overflow-hidden">
+      <main class="duration-300 w-full h-screen bg-base-100 overflow-auto">
         <NuxtPage />
       </main>
     </div>

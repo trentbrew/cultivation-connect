@@ -1,7 +1,7 @@
 <script setup>
-  const pb = usePocketbase();
-  const global = useGlobalStore();
-  const route = useRoute();
+  const pb = usePocketbase()
+  const global = useGlobalStore()
+  const route = useRoute()
 
   const state = reactive({
     avatarUrl: '',
@@ -9,7 +9,7 @@
       collections: true,
       context: '',
     },
-  });
+  })
 
   const pages = [
     {
@@ -27,7 +27,7 @@
       path: '/settings',
       icon: 'configure',
     },
-  ];
+  ]
 
   const nonCollectionRoutes = [
     'facility',
@@ -37,48 +37,48 @@
     'account-username',
     'auth-login',
     'auth-signup',
-  ];
+  ]
 
   const loggedIn = computed(() => {
-    const user = pb.api.authStore;
-    if (user.isValid && user.model.id && user.token) return true;
-    return false;
-  });
+    const user = pb.api.authStore
+    if (user.isValid && user.model.id && user.token) return true
+    return false
+  })
 
   const collectionless = computed(() =>
     nonCollectionRoutes.includes(route.name)
-  );
+  )
 
-  const collectionsActive = computed(() => global.getCollectionsState);
+  const collectionsActive = computed(() => global.getCollectionsState)
 
   const context = computed(() => {
-    let ctx = route.name;
-    if (ctx == 'account-username') return pb.api.authStore.model?.username;
-    if (ctx == 'auth-login') return 'Login';
-    if (ctx == 'auth-signup') return 'Sign Up';
-    return ctx.charAt(0).toUpperCase() + ctx.slice(1);
-  });
+    let ctx = route.name
+    if (ctx == 'account-username') return pb.api.authStore.model?.username
+    if (ctx == 'auth-login') return 'Login'
+    if (ctx == 'auth-signup') return 'Sign Up'
+    return ctx.charAt(0).toUpperCase() + ctx.slice(1)
+  })
 
   onMounted(() => {
-    state.ui.context = route.name;
+    state.ui.context = route.name
     pb.getAvatarUrl().then(url => {
-      state.avatarUrl = url;
-    });
-  });
+      state.avatarUrl = url
+    })
+  })
 
   watch(
     () => route.name,
     val => {
-      state.ui.context = val;
+      state.ui.context = val
     }
-  );
+  )
 
   watch(
     () => collectionsActive.value,
     val => {
-      state.ui.collections = val;
+      state.ui.collections = val
     }
-  );
+  )
 </script>
 
 <template>
@@ -178,7 +178,7 @@
         :class="collectionless && 'pointer-events-none opacity-0 scale-90'"
         class="tooltip tooltip-right hover:tooltip-open duration-150"
         :data-tip="`${state.ui.collections ? 'Close' : 'Open'} ${
-          context.toLowerCase() || ''
+          context.toLowerCase().split('-')[0] || ''
         } list`"
       >
         <button class="btn btn-ghost m-4" @click="global.toggleCollections">
