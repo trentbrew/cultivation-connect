@@ -232,7 +232,6 @@
                   <div class="w-full h-full border border-base-300 rounded p-4">
                     <LineGraph
                       :context="state.context"
-                      :value="Number(state.latest_value)"
                       :series="state.series"
                     />
                   </div>

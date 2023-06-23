@@ -1,30 +1,30 @@
 <script setup>
-  const pb = usePocketbase();
-  const router = useRouter();
+  const pb = usePocketbase()
+  const router = useRouter()
 
-  const facilityID = pb.api.authStore.model.facility;
+  const facilityID = pb.api.authStore.model.facility
 
   const state = reactive({
     loading: true,
     data: {
       cycles: [],
     },
-  });
+  })
 
   onMounted(() => {
-    fetchCycles();
-  });
+    fetchCycles()
+  })
 
   async function fetchCycles() {
     const data = await pb.get('cycles', {
       filter: `facility.id = "${facilityID}"`,
-    });
-    state.data.cycles = data;
+    })
+    state.data.cycles = data
     if (data.length > 0) {
-      const path = `/cycles/${state.data.cycles[0].id}`;
-      router.push(path);
+      const path = `/cycles/${state.data.cycles[0].id}`
+      router.push(path)
     }
-    state.loading = false;
+    state.loading = false
   }
 </script>
 
@@ -34,10 +34,9 @@
       <div
         class="flex flex-col justify-center items-center rounded w-full h-full gap-10"
       >
-        <WIP
-          img="growth"
-          class="-translate-x-10 w-[250px] brightness-[0.91] mb-2"
-        />
+        <!-- TODO: replace this with a GIF of the cycles page -->
+        <!-- <WIP img="data" class="w-[250px] brightness-[0.91] mb-2" /> -->
+        <Icon name="calendar" size="150" class="opacity-20" />
         <h1 class="text-center max-w-lg">
           <strong>Cycles</strong>
           <span class="text-base-content/50">
@@ -50,7 +49,7 @@
           for="new-cycle"
           label="Create your first cycle"
           icon="plus"
-          class="btn-primary mt-8"
+          class="btn-primary mt-4"
         />
       </div>
     </div>

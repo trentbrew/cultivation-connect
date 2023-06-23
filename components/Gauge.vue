@@ -105,9 +105,7 @@
   watch(
     () => props.value,
     () => {
-      if (props.value) {
-        initChart()
-      }
+      if (props.value) initChart()
     }
   )
 
@@ -116,12 +114,8 @@
     let series = options.series[0]
 
     series.data[0].value = props.value
-    // no matter the range, we wanna show 10 equally spaced labels
     series.splitNumber = 10
-
-    series.axisLabel.formatter = value => {
-      return value % 1 == 0 ? value : value.toFixed(2)
-    }
+    series.axisLabel.formatter = v => (v % 1 == 0 ? v : v.toFixed(2))
     series.min = context?.relative_min
     series.max = context?.relative_max
     series.detail.formatter = value => value + context?.unit
@@ -150,9 +144,12 @@
     }
 
     myChart = echarts.init(target.value)
+
     initChart()
 
-    window.addEventListener('resize', myChart.resize())
+    window.addEventListener('resize', () => {
+      myChart.resize()
+    })
   })
 </script>
 
@@ -165,7 +162,6 @@
     width: inherit !important;
     height: inherit !important;
   }
-
   canvas {
     width: inherit !important;
     height: inherit !important;

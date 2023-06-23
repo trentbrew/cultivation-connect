@@ -11,92 +11,25 @@
       type: String,
       required: true,
     },
-    value: {
-      type: Number,
-      required: true,
-    },
     series: {
       type: Array,
       required: true,
     },
   })
 
-  const state = reactive({
-    timeframe: null,
-  })
-
-  let myChart
-
-  const placeholder_data = [
-    ['2000-06-05', 116],
-    ['2000-06-06', 129],
-    ['2000-06-07', 135],
-    ['2000-06-08', 86],
-    ['2000-06-09', 73],
-    ['2000-06-10', 85],
-    ['2000-06-11', 73],
-    ['2000-06-12', 68],
-    ['2000-06-13', 92],
-    ['2000-06-14', 130],
-    ['2000-06-15', 245],
-    ['2000-06-16', 139],
-    ['2000-06-17', 115],
-    ['2000-06-18', 111],
-    ['2000-06-19', 309],
-    ['2000-06-20', 206],
-    ['2000-06-21', 137],
-    ['2000-06-22', 128],
-    ['2000-06-23', 85],
-    ['2000-06-24', 94],
-    ['2000-06-25', 71],
-    ['2000-06-26', 106],
-    ['2000-06-27', 84],
-    ['2000-06-28', 93],
-    ['2000-06-29', 85],
-    ['2000-06-30', 73],
-    ['2000-07-01', 83],
-    ['2000-07-02', 125],
-    ['2000-07-03', 107],
-    ['2000-07-04', 82],
-    ['2000-07-05', 44],
-    ['2000-07-06', 72],
-    ['2000-07-07', 106],
-    ['2000-07-08', 107],
-    ['2000-07-09', 66],
-    ['2000-07-10', 91],
-    ['2000-07-11', 92],
-    ['2000-07-12', 113],
-    ['2000-07-13', 107],
-    ['2000-07-14', 131],
-    ['2000-07-15', 111],
-    ['2000-07-16', 64],
-    ['2000-07-17', 69],
-    ['2000-07-18', 88],
-    ['2000-07-19', 77],
-    ['2000-07-20', 83],
-    ['2000-07-21', 111],
-    ['2000-07-22', 57],
-    ['2000-07-23', 55],
-    ['2000-07-24', 60],
-  ]
-
-  const s = props.series[0].map(item => [item[0], item[1]])
-
-  const series = s
-
-  console.log('series', series)
-  console.log('s', s)
-
+  const collectionsState = computed(() => global.getCollectionsState)
   const range = computed(() => global.getRange(props.context))
 
   const rMin = range.value.min[0]
   const rMax = range.value.max[0]
   const rMar = range.value.margin[0]
 
-  const collectionsState = computed(() => global.getCollectionsState)
+  const series = props.series[0].map(item => [item[0], item[1]])
 
   const dateList = series.map(item => item[0])
   const valueList = series.map(item => item[1])
+
+  let myChart
 
   let options = {
     colorBy: 'series',
@@ -114,11 +47,11 @@
     toolbox: {
       show: true,
       feature: {
-        dataZoom: {
-          yAxisIndex: 'none',
-        },
-        dataView: { readOnly: false },
-        restore: {},
+        // dataZoom: {
+        //   yAxisIndex: 'none',
+        // },
+        // dataView: { readOnly: false },
+        // restore: {},
         saveAsImage: {},
       },
     },
@@ -167,6 +100,7 @@
       {
         bottom: 50,
         left: 50,
+        right: 110,
       },
     ],
     visualMap: {
@@ -209,27 +143,28 @@
             width: 3,
           },
         },
+        smooth: true,
         showSymbol: false,
         data: valueList,
         markLine: {
-          silent: true,
-          // lineStyle: {
-          //   color: '#333',
-          // },
-          // data: [
-          //   {
-          //     yAxis: rMin - rMar, // min - margin
-          //   },
-          //   {
-          //     yAxis: rMin, // min
-          //   },
-          //   {
-          //     yAxis: rMax, // max
-          //   },
-          //   {
-          //     yAxis: rMax + rMax, // relative max
-          //   },
-          // ],
+          silent: false,
+          lineStyle: {
+            color: '#333',
+          },
+          data: [
+            {
+              yAxis: rMin - rMar, // min - margin
+            },
+            {
+              yAxis: rMin, // min
+            },
+            {
+              yAxis: rMax, // max
+            },
+            {
+              yAxis: rMax + rMax, // relative max
+            },
+          ],
         },
       },
     ],
@@ -241,22 +176,20 @@
 
   onMounted(async () => {
     myChart = echarts.init(target.value)
-    window.addEventListener('resize', myChart.resize())
+    window.addEventListener('resize', () => {
+      myChart.resize()
+    })
     initChart()
   })
 
   watch(
     () => props.series,
-    val => {
-      initChart()
-    }
+    () => initChart()
   )
 
   watch(
     () => collectionsState.value,
-    () => {
-      myChart.resize()
-    }
+    () => myChart.resize()
   )
 </script>
 

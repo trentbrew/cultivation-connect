@@ -521,8 +521,8 @@
           >
             <WIP
               v-if="!state.csvStatus.active"
-              img="data"
-              class="mb-8 w-[300px] -mt-12 brightness-[0.915] opacity-75"
+              img="growth"
+              class="mb-12 -translate-x-8 w-[220px] -mt-12 brightness-[0.915] opacity-75"
             />
 
             <Loading

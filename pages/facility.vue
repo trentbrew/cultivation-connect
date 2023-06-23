@@ -4,6 +4,7 @@
   const router = useRouter()
 
   const state = reactive({
+    loading: false,
     data: {
       facility: null,
       rooms: null,
@@ -30,12 +31,14 @@
   onMounted(async () => {
     console.clear()
     const user = pb.api.authStore.model
+    state.loading = true
     state.data.facility = await pbFetch('facilities', { id: user.facility })
     state.data.rooms = await pbFetch('rooms')
     state.data.zones = await pbFetch('zones')
     state.data.sensors = await pbFetch('sensors')
     state.data.cultivars = await pbFetch('cultivars')
     state.data.cycles = await pbFetch('cycles')
+    state.loading = false
     console.log('state.data: ', state.data)
   })
 
@@ -45,14 +48,18 @@
     const name = pb.api.authStore.model.first_name
     if (hour < 12) return `Good morning, ${name}!`
     else if (hour < 18) return `Good afternoon, ${name}!`
-    else return `Good evening!`
+    else return `Good evening, ${name}!`
   })
 </script>
 
 <template>
   <AuthRouteGuard>
     <div class="w-full h-screen flex flex-col">
-      <div id="content" class="flex flex-col flex-grow">
+      <div
+        v-if="!state.loading"
+        id="content"
+        class="flex flex-col flex-grow w-full"
+      >
         <div class="w-full flex justify-between items-start p-8">
           <div>
             <span class="text-lg">{{ greet }}</span>
@@ -65,6 +72,7 @@
             <span>Edit facility details</span>
           </button>
         </div>
+
         <header class="p-4">
           <div
             class="stats stats-horizontal rounded w-full border border-base-300"
@@ -103,42 +111,37 @@
           </div>
         </header>
 
-        <div class="w-full h-[calc(100vh-285px)] p-4 pt-0">
-          <div class="w-full h-full grid grid-rows-2 gap-4 grid-cols-4">
+        <div class="w-full h-full p-4 pt-0">
+          <div class="w-full h-full gap-4 flex flex-col">
             <!-- CYCLE CONDITIONS -->
             <div
-              class="border-[1px] border-base-300 rounded-[8px] p-4 col-span-4"
+              class="w-full h-[60vh] rounded-[8px] p-4 border-[1px] border-base-300"
             >
-              <!-- <MultiLineGraph /> -->
+              <MultiLineGraph />
             </div>
             <!-- ROOMS & ZONES -->
-            <div
-              class="border-[1px] border-base-300 rounded-[8px] p-4 bg-base-100 col-span-2 h-full"
-            ></div>
-            <!-- CULTIVARS -->
-            <div
-              class="bg-base-100 flex flex-col h-full border-[1px] border-base-300"
-            >
-              <!-- <h2 class="m-4 font-bold">Cultivars</h2>
-              <Table
-                v-if="state.data.cultivars"
-                :data="state.data.cultivars"
-                class="flex-grow"
-              /> -->
+            <div class="flex gap-4 h-full">
+              <div
+                class="w-full h-96 border-[1px] border-base-300 rounded-[8px] p-4 bg-base-100"
+              ></div>
+              <div
+                class="w-full h-96 border-[1px] border-base-300 rounded-[8px] p-4 bg-base-100"
+              ></div>
             </div>
-            <!-- SENSORS -->
-            <div
-              class="bg-base-100 flex flex-col h-full border-[1px] border-base-300"
-            >
-              <!-- <h2 class="m-4 font-bold">Sensors</h2>
-              <Table
-                v-if="state.data.sensors"
-                :data="state.data.sensors"
-                class="flex-grow"
-              /> -->
+            <!-- CULTIVARS & SENSORS -->
+            <div class="flex gap-4 h-full">
+              <div
+                class="w-full h-96 border-[1px] border-base-300 rounded-[8px] p-4 bg-base-100"
+              ></div>
+              <div
+                class="w-full h-96 border-[1px] border-base-300 rounded-[8px] p-4 bg-base-100"
+              ></div>
             </div>
           </div>
         </div>
+      </div>
+      <div v-else class="w-full h-full flex justify-center items-center">
+        <Loading size="60" />
       </div>
     </div>
   </AuthRouteGuard>
