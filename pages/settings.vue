@@ -7,6 +7,7 @@
     facility: '',
     avatar_url: '',
     payload: {
+      avatar: null,
       username: {
         editing: false,
         value: '',
