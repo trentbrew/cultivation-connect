@@ -169,7 +169,7 @@
             v-for="(datum, datumIndex) in Object.entries(item)"
             :key="datumIndex"
             class="h-full"
-            :class="datum[1] === '---' ? 'text-error' : ''"
+            :class="datum[1] === '---' ? '' : ''"
           >
             {{ datum[1] }}
             <!-- <div v-if="datum[1] !== '---'">{{ datum[1] }}</div>

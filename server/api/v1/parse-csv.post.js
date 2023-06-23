@@ -12,7 +12,6 @@ const parse = {
     }
 
     const lines = csv.split('\n').map(line => line.trim())
-
     const growth_stages = stretch(lines[4].split(','))
     const zones = stretch(lines[5].split(','))
     const rawHeaders = stretch(lines[8].split(','))
@@ -46,31 +45,6 @@ const parse = {
     }
 
     const report = data => {
-      /*
-        // this is an example report. it displays the growth stage and number of entries for each zone.
-        report = [
-          {
-            zone: 'Zone1',
-            growth_stage: 'Flower',
-            entries: 34134,
-          },
-          {
-            zone: 'Zone2',
-            growth_stage: 'Flower',
-            entries: 102402,
-          },
-          {
-            zone: 'Zone3',
-            growth_stage: 'Flower',
-            entries: 51201,
-          },
-          {
-            zone: 'Zone4',
-            growth_stage: 'Veg',
-            entries: 170670,
-          },
-        ]
-      */
       const result = []
       const uniqueZones = [...new Set(Array.from(zones))]
       uniqueZones.forEach((z, i) => {
