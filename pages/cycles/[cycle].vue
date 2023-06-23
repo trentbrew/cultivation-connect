@@ -346,7 +346,7 @@
               </div>
             </div>
             <div class="stat">
-              <div class="stat-title">Growth Phase</div>
+              <div class="stat-title">Growth phase</div>
               <div class="stat-value">
                 {{ state.cycle.overview.growthPhase }}
               </div>

@@ -145,7 +145,7 @@ const ranges = [
     name: 'night_time_pore_ec',
     title: 'Pore EC (Night)',
     relative_min: 0,
-    relative_max: 0.12,
+    relative_max: 0.02,
     min: [0.01],
     median: [0.05],
     max: [0.1],
