@@ -57,30 +57,30 @@ main {
 
 @keyframes nudge-down {
   0% {
-    transform: translate(0, 0);
+    transform: translate(-0.1rem, -0.1rem) rotate(90deg);
     transition-timing-function: linear;
   }
   50% {
-    transform: translate(0.1rem, -0.1rem);
+    transform: translate(0.1rem, 0.1rem) rotate(90deg);
     transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   }
   100% {
-    transform: translate(0, 0);
+    transform: translate(-0.1rem, -0.1rem) rotate(90deg);
     transition-timing-function: linear;
   }
 }
 
 @keyframes nudge-up {
   0% {
-    transform: translate(0.1rem, -0.1rem);
+    transform: translate(0.1rem, -0.1rem) rotate(0deg);
     transition-timing-function: linear;
   }
   50% {
-    transform: translate(-0.1rem, 0.1rem);
+    transform: translate(-0.1rem, 0.1rem) rotate(0deg);
     transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   }
   100% {
-    transform: translate(0.1rem, -0.1rem);
+    transform: translate(0.1rem, -0.1rem) rotate(0deg);
     transition-timing-function: linear;
   }
 }

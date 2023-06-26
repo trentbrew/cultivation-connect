@@ -70,11 +70,7 @@
       v-show="!props.disabled"
       name="arrow_top_right"
       size="16"
-      :class="
-        state.change.direction == 'above'
-          ? 'rotate-90 nudge-down'
-          : 'rotate-0 nudge-up'
-      "
+      :class="state.change.direction == 'above' ? 'nudge-down' : 'nudge-up'"
     />
     <span v-show="!props.disabled" class="text-xs font-medium">
       {{

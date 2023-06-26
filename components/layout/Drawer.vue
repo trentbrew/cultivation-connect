@@ -1223,7 +1223,6 @@
             "
             class="w-full"
           >
-            <!-- TODO: only display zones that belong to the selected room -->
             <option
               v-for="(option, index) in state.data.zones"
               :key="index"
