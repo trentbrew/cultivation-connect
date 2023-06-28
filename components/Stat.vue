@@ -34,7 +34,7 @@
 
   const styles = [
     {
-      card: 'bg-success/25 border-success',
+      card: 'bg-success/25 border-primary/50',
       icon: {
         name: 'check_circle_outline',
         color: 'text-success-content',
@@ -55,8 +55,10 @@
       },
     },
     {
-      card: `bg-neutral/25 border-neutral pointer-events-none cursor-not-allowed ${
-        props.id.includes('day_time') ? '' : '' // maybe sun do a spin?
+      card: `pointer-events-none cursor-not-allowed ${
+        props.id.includes('_time')
+          ? 'bg-base-100 border-neutral/40'
+          : 'bg-base-200 border-neutral/50' // maybe sun do a spin?
       }`,
       icon: {
         name: props.id.includes('night_time')
@@ -98,7 +100,6 @@
 
   function handleMove() {
     console.log('handling reorder')
-    // global.toast('default', 'This feature is not yet available.')
   }
 
   function triggerDetails() {

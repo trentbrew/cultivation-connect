@@ -59,7 +59,11 @@
   <div
     class="pl-2 pr-3 h-6 w-fit rounded-full flex justify-center items-center gap-1 !cursor-default group-hover:scale-[1.04] group-active:scale-[1.11] group-active:brightness-105 duration-150"
     :class="`${state.style} ${
-      props.disabled ? '!bg-black/20 !animate-none !pl-3' : ''
+      props.disabled
+        ? props.id.includes('_time')
+          ? '!bg-black/10 !pl-3'
+          : '!bg-black/10 !animate-none !pl-3'
+        : ''
     }`"
   >
     <div
