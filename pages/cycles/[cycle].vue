@@ -24,7 +24,7 @@
         status: 'incomplete',
       },
       {
-        title: 'Submit cycles',
+        title: 'Submit',
         name: 'submit_data',
         status: 'incomplete',
       },
@@ -137,13 +137,7 @@
 
   onMounted(async () => {
     router.push({ hash: '' })
-    console.log('mounted [cycle].vue')
-    try {
-      await initCycle()
-    } catch (err) {
-      console.log('\nsomething went wrong while initializing cycle: ', err)
-    }
-    console.log('state.cycle: ', state.cycle)
+    await initCycle()
   })
 
   const csvStatus = computed(() => global.getCsvStatus)
@@ -151,7 +145,6 @@
   watch(
     () => csvStatus.value,
     val => {
-      console.log('csvStatus', val)
       state.csvStatus = val
       if (val.reviewing) {
         state.steps[1].status = 'complete'
@@ -167,13 +160,11 @@
   watch(
     () => route,
     async val => {
-      console.log('the route changed. updating & re-rendering cycle')
       if (!route.hash) {
         state.loading = true
         setTimeout(() => {
           initCycle()
           state.loading = false
-          console.log('updated state: ', state.cycle.conditions)
         }, 1200)
       }
     },
@@ -203,13 +194,9 @@
   async function initCycle() {
     state.loading = true
 
-    console.log('initCycle()')
-
     const cycle = await pb.get('cycles', {
       id: route.params.cycle,
     })
-
-    console.log('cycle: ', cycle)
 
     if (cycle) {
       state.cycle.id = cycle.id
@@ -293,7 +280,6 @@
     const headers = Object.keys(report[0])
     const missing_headers = []
     headers.forEach(item => {
-      console.log(item)
       if (report[0][item] === '---') missing_headers.push(item)
     })
     state.missingCsvHeaders = missing_headers
@@ -301,7 +287,6 @@
   })
 
   function handleGenerateCycles() {
-    console.log('csvIsValid', csvIsValid.value)
     if (!csvIsValid.value) {
       global.toast(
         'default',
@@ -393,7 +378,7 @@
           :class="'flex flex-col justify-center items-center'"
         >
           <ul
-            v-show="state.loading"
+            v-show="state.loading && !state.csvStatus.reviewing"
             class="w-full h-full flex justify-center items-center"
             style="animation: enter 0.5s ease-in-out forwards"
           >
@@ -599,7 +584,11 @@
             </div>
           </div>
         </div>
-        <div v-show="!state.cycle.active && !state.loading">
+        <div
+          v-show="
+            (!state.cycle.active && !state.loading) || state.csvStatus.reviewing
+          "
+        >
           <Stepper :steps="state.steps" class="mb-8" />
         </div>
       </div>

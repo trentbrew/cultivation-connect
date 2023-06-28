@@ -23,8 +23,6 @@
       state.range = global.getRange(route.hash.substring(1))
       await fetchCycle()
       await fetchRecords()
-      console.log('state.data: ', state.data)
-      console.log('state.range: ', state.range)
     }
   })
 
@@ -49,8 +47,6 @@
           await fetchRecords()
           state.loading = false
         }, 1200)
-        console.log('state.data: ', state.data)
-        console.log('state.range: ', state.range)
       }
     },
     { deep: true }
@@ -64,16 +60,12 @@
   }
 
   async function fetchRecords() {
-    console.log('fetching records')
-    console.log(route.hash)
     const records = await pb.get('records', {
       filter: `cycle = "${route.params.cycle}" && facility.id = "${pb.api.authStore.model.facility}"`,
     })
-    console.log(records)
     state.records = records.sort((a, b) => {
       return new Date(a.date_recorded) - new Date(b.date_recorded)
     })
-    console.log(state.records)
     calculateMetrics(state.records)
   }
 
@@ -104,15 +96,11 @@
       }
     })
 
-    console.log(series)
-
     if (series.length < 2) {
       state.series = [initialize(series[0]), series[0]]
     } else {
       state.series = [
-        series.map(item => {
-          return [item[0].split(' ')[0], Number(item[1])]
-        }),
+        series.map(item => [item[0].split(' ')[0], Number(item[1])]),
       ]
     }
     state.latest_value = values[values.length - 1]

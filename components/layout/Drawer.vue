@@ -257,7 +257,6 @@
         ['edit-cultivar', 'edit-sensor'].includes(drawerContext.value)
       ) {
         const cycle_id = newHash.substring(1).split('–')[1]
-        console.log('auto-populating patch data')
         if (drawerContext.value == 'edit-cultivar') {
           const cycle = await state.data.cycles.filter(cycles => {
             return cycles.id == cycle_id
@@ -266,9 +265,6 @@
           const cultivar = await state.data?.cultivars.filter(
             cultivar => cultivar.id == cultivar_id
           )[0]
-          console.log('state.data.cultivars: ', state.data.cultivars)
-          console.log('cultivar_id: ', cultivar_id)
-          console.log('cultivar: ', cultivar)
           if (cultivar) {
             state.context.cultivar = cultivar
             state.patch.cultivar.name = state.context.cultivar.name
@@ -276,7 +272,6 @@
             state.patch.cultivar.acquisition =
               state.context.cultivar.acquisition
             state.patch.cultivar.notes = state.context.cultivar.notes
-            console.log('state.patch: ', state.patch.cultivar)
           }
         }
         if (drawerContext.value == 'edit-sensor') {
@@ -317,10 +312,8 @@
   )
 
   async function fetchData() {
-    console.log('fetching drawer data')
     state.cycle
     state.data.cultivars = await pbFetch('cultivars')
-    console.log('state.data.cultivars: ', state.data.cultivars)
     state.data.sensors = await pbFetch('sensors')
     state.data.rooms = await pbFetch('rooms')
     state.data.zones = await pbFetch('zones')
@@ -377,14 +370,8 @@
   }
 
   async function handleAddItem(e) {
-    if (e.id == 'room') {
-      console.log('handling room addition', e)
-      submitRoom(e.value)
-    }
-    if (e.id == 'zone') {
-      console.log(`adding zone "${e.value}" to room "${e.room}"`)
-      submitZone(e.value)
-    }
+    if (e.id == 'room') submitRoom(e.value)
+    if (e.id == 'zone') submitZone(e.value)
   }
 
   async function handleRoomChange(e) {
@@ -531,11 +518,8 @@
 
           const parsedData = JSON.parse(parsed)
 
-          const loading = true
-
           if (parsedData.report) {
             global.handleCsvUploaded(parsedData.report, parsedData.entry_count)
-            console.log('parsedData: ', parsedData)
             state.cycle.csv.report = parsedData.report
           }
 
@@ -564,10 +548,6 @@
     } else {
       global.toast('error', 'Only Aroya CSVs are supported at this time')
     }
-  }
-
-  function triggerDataReview() {
-    console.log('triggering data review process')
   }
 
   function submitSensor() {
