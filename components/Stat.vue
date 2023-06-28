@@ -55,9 +55,15 @@
       },
     },
     {
-      card: 'bg-neutral/25 border-neutral pointer-events-none cursor-not-allowed',
+      card: `bg-neutral/25 border-neutral pointer-events-none cursor-not-allowed ${
+        props.id.includes('day_time') ? '' : '' // maybe sun do a spin?
+      }`,
       icon: {
-        name: 'clear',
+        name: props.id.includes('night_time')
+          ? 'moon'
+          : props.id.includes('day_time')
+          ? 'sun'
+          : 'cross_box',
         color: 'text-neutral-content',
       },
     },
