@@ -89,7 +89,7 @@
           ? 'Note recorded before 6am'
           : props.id.includes('night_time')
           ? 'Not recorded before 6pm'
-          : 'Not recorded'
+          : 'Untracked'
       }}
     </span>
   </div>

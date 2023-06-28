@@ -129,7 +129,7 @@
         {
           title: 'Yield',
           name: 'yield',
-          value: 0, // placeholder: 60
+          value: -1, // placeholder: 60
         },
       ],
     },
@@ -229,6 +229,8 @@
             state.cycle.conditions[index].value = latest_record.data[item.name]
           }
         })
+        state.cycle.conditions.sort((a, b) => a.value - b.value)
+        state.cycle.conditions.reverse()
       }
     }
     state.loading = false

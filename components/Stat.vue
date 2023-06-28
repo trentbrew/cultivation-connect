@@ -137,7 +137,7 @@
       </div>
       <div>
         <h2 class="text-4xl font-bold mb-3">
-          <span v-show="props.value">
+          <span v-show="props.value && props.id !== 'yield'">
             {{
               state.range.unit == '%'
                 ? Number.isInteger(props.value * 100)
@@ -146,10 +146,17 @@
                 : props.value
             }}
           </span>
-          <span v-show="props.value" class="text-sm ml-1">
+          <span
+            v-show="props.value && props.id !== 'yield'"
+            class="text-sm ml-1"
+          >
             {{ state.range.unit }}
           </span>
-          <span v-show="!props.value && state.value !== 0">{{ '' }}</span>
+          <span
+            v-show="(!props.value && state.value !== 0) || props.id === 'yield'"
+          >
+            {{ '' }}
+          </span>
         </h2>
         <Pill
           :id="props.id"
