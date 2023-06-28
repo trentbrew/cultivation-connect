@@ -317,8 +317,10 @@
   )
 
   async function fetchData() {
+    console.log('fetching drawer data')
     state.cycle
     state.data.cultivars = await pbFetch('cultivars')
+    console.log('state.data.cultivars: ', state.data.cultivars)
     state.data.sensors = await pbFetch('sensors')
     state.data.rooms = await pbFetch('rooms')
     state.data.zones = await pbFetch('zones')

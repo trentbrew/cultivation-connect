@@ -25,26 +25,19 @@
         },
       ],
     },
-  });
-
-  const step = ref(null);
-
-  const currentStep = computed(() => {
-    return props.steps.findIndex(step => step.status === 'active');
-  });
+  })
 
   const styles = {
     complete: 'step step-primary',
     active: 'step step-primary font-bold active-step',
     incomplete: 'step text-base-content/50',
-  };
+  }
 </script>
 
 <template>
   <div>
     <ul class="steps w-full">
       <li
-        ref="step"
         v-for="(step, index) in props.steps"
         :key="index"
         :class="styles[step.status]"

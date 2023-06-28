@@ -137,8 +137,13 @@
 
   onMounted(async () => {
     router.push({ hash: '' })
-    await initCycle()
-    console.log(state.cycle)
+    console.log('mounted [cycle].vue')
+    try {
+      await initCycle()
+    } catch (err) {
+      console.log('\nsomething went wrong while initializing cycle: ', err)
+    }
+    console.log('state.cycle: ', state.cycle)
   })
 
   const csvStatus = computed(() => global.getCsvStatus)
@@ -175,59 +180,70 @@
     { deep: true }
   )
 
+  const formatDateTime = str => {
+    const date = new Date(str)
+    const today = new Date()
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
+    const isToday = date.toDateString() === today.toDateString()
+    const isYesterday = date.toDateString() === yesterday.toDateString()
+    const month = date.toLocaleString('default', { month: 'long' })
+    const day = date.getDate()
+    const hour = date.getHours()
+    const minute = date.getMinutes()
+    const ampm = hour >= 12 ? 'PM' : 'AM'
+    const formattedHour = hour % 12 || 12
+    const formattedMinute = minute < 10 ? `0${minute}` : minute
+    if (isToday) return `Today ${formattedHour}:${formattedMinute} ${ampm}`
+    if (isYesterday)
+      return `Yesterday ${formattedHour}:${formattedMinute} ${ampm}`
+    return `${month} ${day} ${formattedHour}:${formattedMinute} ${ampm}`
+  }
+
   async function initCycle() {
     state.loading = true
+
+    console.log('initCycle()')
 
     const cycle = await pb.get('cycles', {
       id: route.params.cycle,
     })
 
-    const formatDateTime = str => {
-      const date = new Date(str)
-      const today = new Date()
-      const yesterday = new Date(today)
-      yesterday.setDate(yesterday.getDate() - 1)
-      const isToday = date.toDateString() === today.toDateString()
-      const isYesterday = date.toDateString() === yesterday.toDateString()
-      const month = date.toLocaleString('default', { month: 'long' })
-      const day = date.getDate()
-      const hour = date.getHours()
-      const minute = date.getMinutes()
-      const ampm = hour >= 12 ? 'PM' : 'AM'
-      const formattedHour = hour % 12 || 12
-      const formattedMinute = minute < 10 ? `0${minute}` : minute
-      if (isToday) return `Today ${formattedHour}:${formattedMinute} ${ampm}`
-      if (isYesterday)
-        return `Yesterday ${formattedHour}:${formattedMinute} ${ampm}`
-      return `${month} ${day} ${formattedHour}:${formattedMinute} ${ampm}`
-    }
+    console.log('cycle: ', cycle)
 
-    if (cycle.active) {
-      const latest_record = await pb.get('records', {
-        id: cycle.latest_record,
-      })
-      state.cycle.overview.latest = formatDateTime(latest_record.date_recorded)
-      state.cycle.conditions.forEach((item, index) => {
-        if (latest_record.data[item.name]) {
-          state.cycle.conditions[index].value = latest_record.data[item.name]
-        }
-      })
+    if (cycle) {
+      state.cycle.id = cycle.id
+      state.cycle.name = cycle.name
+      state.cycle.latest_record = cycle.latest_record
+      state.cycle.overview.plants = cycle.plants
+      state.cycle.overview.day = Math.floor(
+        utils.timeDifference(Date.now(), Date.parse(cycle?.start_date), 'd')
+      )
+      state.cycle.overview.growthPhase = utils.capitalize(cycle.growth_stage)
+      state.cycle.overview.startDate = utils.dateString(
+        cycle.start_date,
+        'short'
+      )
+      // TODO: calculate est harvest date
+      state.cycle.overview.estHarvestDate = utils.dateString(
+        Date.parse(cycle.start_date) + 112 * 24 * 60 * 60 * 1000,
+        'short'
+      )
+      state.cycle.active = cycle.active
+      if (cycle.active) {
+        const latest_record = await pb.get('records', {
+          id: cycle.latest_record,
+        })
+        state.cycle.overview.latest = formatDateTime(
+          latest_record.date_recorded
+        )
+        state.cycle.conditions.forEach((item, index) => {
+          if (latest_record.data[item.name]) {
+            state.cycle.conditions[index].value = latest_record.data[item.name]
+          }
+        })
+      }
     }
-    state.cycle.id = cycle.id
-    state.cycle.name = cycle.name
-    state.cycle.latest_record = cycle.latest_record
-    state.cycle.overview.plants = cycle.plants
-    state.cycle.overview.day = Math.floor(
-      utils.timeDifference(Date.now(), Date.parse(cycle.start_date), 'd')
-    )
-    state.cycle.overview.growthPhase = utils.capitalize(cycle.growth_stage)
-    state.cycle.overview.startDate = utils.dateString(cycle.start_date, 'short')
-    // TODO: calculate est harvest date
-    state.cycle.overview.estHarvestDate = utils.dateString(
-      Date.parse(cycle.start_date) + 112 * 24 * 60 * 60 * 1000,
-      'short'
-    )
-    state.cycle.active = cycle.active
     state.loading = false
   }
 
