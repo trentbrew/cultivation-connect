@@ -446,9 +446,11 @@
               <ModalTrigger
                 @click="item.name != 'yield' ? updateHash(item.name) : () => {}"
                 target="details"
+                class="h-max"
                 :class="!item.value ? 'pointer-events-none' : ''"
               >
                 <Stat
+                  class=""
                   :id="item.name"
                   :title="item.title"
                   :value="item.value"

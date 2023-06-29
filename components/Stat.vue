@@ -57,8 +57,9 @@
     {
       card: `pointer-events-none cursor-not-allowed ${
         props.id.includes('_time')
-          ? 'bg-base-100 border-neutral/40'
-          : 'bg-base-200 border-neutral/50' // maybe sun do a spin?
+          ? // ? 'bg-base-100 border-neutral/40' // white cards
+            'bg-base-200 border-neutral/50 min-h-[135px]'
+          : 'bg-base-200 border-neutral/50 min-h-[135px]' // maybe sun do a spin?
       }`,
       icon: {
         name: props.id.includes('night_time')

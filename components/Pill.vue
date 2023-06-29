@@ -86,10 +86,10 @@
     <span class="font-medium text-xs" v-show="props.disabled">
       {{
         props.id.includes('day_time')
-          ? 'Note recorded before 6am'
+          ? 'Not tracked at night'
           : props.id.includes('night_time')
-          ? 'Not recorded before 6pm'
-          : 'Untracked'
+          ? 'Not tracked during the day'
+          : 'Not tracked'
       }}
     </span>
   </div>
