@@ -8,7 +8,11 @@
 import { defineNuxtPlugin } from '#app'
 import PocketBase from 'pocketbase'
 
-const pocketbase = new PocketBase('https://cultivationconnect.fly.dev')
+const pocketbase = new PocketBase(
+  process.env.NODE_ENV === 'development'
+    ? 'https://cultivationconnect.fly.dev'
+    : 'https://cultivationconnect.pockethost.io'
+)
 
 const pb = {
   api: pocketbase,

@@ -1,41 +1,39 @@
 <script setup>
-  const global = useGlobalStore();
-  const route = useRoute();
-  const router = useRouter();
-  const pb = usePocketbase();
+  const global = useGlobalStore()
+  const route = useRoute()
+  const router = useRouter()
+  const pb = usePocketbase()
 
   const state = reactive({
     help: false,
     data: null,
-  });
+  })
 
   async function fetchCycle() {
     const cycle = await pb.get('cycles', {
       id: route.params.cycle,
-    });
-    state.data = cycle;
+    })
+    state.data = cycle
   }
 
   function handleHelp() {
-    state.help = !state.help;
+    state.help = !state.help
   }
 
   function handleContinue() {
-    router.push({ hash: '' });
+    router.push({ hash: '' })
   }
 
   onMounted(() => {
-    fetchCycle();
-  });
+    if (route.hash === '#records') fetchCycle()
+  })
 
   watch(
     () => route.hash,
     newHash => {
-      if (newHash === '#records') {
-        fetchCycle();
-      }
+      if (newHash === '#records') fetchCycle()
     }
-  );
+  )
 </script>
 
 <template>

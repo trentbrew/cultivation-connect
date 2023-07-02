@@ -8,17 +8,21 @@
  -->
 
 <script setup>
-  import utils from '@/helpers/utils';
+  import utils from '@/helpers/utils'
 
-  const pb = usePocketbase();
-  const global = useGlobalStore();
-  const router = useRouter();
+  const pb = usePocketbase()
+  const global = useGlobalStore()
+  const router = useRouter()
 
   const state = reactive({
     debug: false,
     progress: 0,
     sections: [],
     currentSection: 0,
+    placeholders: {
+      room_grow_area: 0,
+      total_grow_area: 0,
+    },
     payload: {
       farm: {
         valid: false,
@@ -47,7 +51,7 @@
           valid: false,
         },
         number_of_zones: {
-          value: 0,
+          value: 1,
           valid: false,
         },
         zone_square_footage: {
@@ -55,15 +59,15 @@
           valid: false,
         },
         number_of_rooms: {
-          value: 0,
+          value: 1,
           valid: false,
         },
         room_square_footage: {
-          value: 0,
+          value: null,
           valid: false,
         },
         grow_surface_area: {
-          value: 0,
+          value: null,
           valid: false,
         },
       },
@@ -119,15 +123,60 @@
       cultivars: [],
       sensors: [],
     },
-  });
+  })
+
+  function updateGrowArea() {
+    console.log('updateGrowArea')
+    const room_grow_area =
+      Number(state.payload.farm.zone_square_footage.value) *
+      Number(state.payload.farm.number_of_zones.value) *
+      Number(state.payload.farm.number_of_rooms.value)
+    console.log('room_grow_area: ', room_grow_area)
+    state.placeholders.room_grow_area = room_grow_area
+    const total_grow_area =
+      Number(state.payload.farm.number_of_rooms.value) *
+      Number(
+        state.payload.farm.room_square_footage.value ||
+          state.placeholders.room_grow_area
+      )
+    console.log('total_grow_area: ', total_grow_area)
+    state.placeholders.total_grow_area = total_grow_area
+  }
+
+  watch(
+    () => state.payload.farm.number_of_rooms.value,
+    newVal => {
+      updateGrowArea()
+    }
+  )
+  watch(
+    () => state.payload.farm.number_of_zones.value,
+    newVal => {
+      updateGrowArea()
+    }
+  )
+  watch(
+    () => state.payload.farm.zone_square_footage.value,
+    newVal => {
+      updateGrowArea()
+    }
+  )
 
   const inferredRoomArea = computed(() => {
-    return state.payload.number_of_zones * state.payload.zone_square_footage;
-  });
+    const result =
+      Number(state.payload.number_of_zones ?? 1) *
+      Number(state.payload.zone_square_footage ?? 0)
+    console.log('inferredRoomArea: ', result)
+    return result
+  })
 
   const inferredGrowArea = computed(() => {
-    return state.payload.number_of_rooms * inferredRoomArea.value;
-  });
+    const result =
+      Number(state.payload.number_of_rooms ?? 1) *
+      Number(inferredRoomArea.value ?? 0)
+    console.log('inferredGrowArea: ', result)
+    return result
+  })
 
   const states = [
     ['Alabama', 'AL'],
@@ -180,50 +229,50 @@
     ['West Virginia', 'WV'],
     ['Wisconsin', 'WI'],
     ['Wyoming', 'WY'],
-  ];
+  ]
 
   onMounted(async () => {
-    if (pb.api.authStore.model.onboarded) router.push('/facility');
-    let elements = await document.getElementsByTagName('section');
-    state.sections = Array.from(elements).map(el => el.id);
-    if (pb.api.authStore.model.facility) fetchData();
+    if (pb.api.authStore.model.onboarded) router.push('/facility')
+    let elements = await document.getElementsByTagName('section')
+    state.sections = Array.from(elements).map(el => el.id)
+    if (pb.api.authStore.model.facility) fetchData()
     window.addEventListener('beforeunload', e => {
       if (state.currentSection > 0) {
-        e.preventDefault();
-        e.returnValue = '';
-        return 'Are you sure you want to exit? Your progress will not be saved.';
+        e.preventDefault()
+        e.returnValue = ''
+        return 'Are you sure you want to exit? Your progress will not be saved.'
       }
-    });
+    })
     window.addEventListener('unload', e => {
-      pb.delete('facilities', pb.api.authStore.model.facility);
-    });
-  });
+      pb.delete('facilities', pb.api.authStore.model.facility)
+    })
+  })
 
-  const sensors = computed(() => global.getCache('sensors'));
-  const cultivars = computed(() => global.getCache('cultivars'));
+  const sensors = computed(() => global.getCache('sensors'))
+  const cultivars = computed(() => global.getCache('cultivars'))
 
   watch(
     () => sensors.value,
     newVal => {
-      console.log('sensors changed: ', newVal);
-      state.data.sensors.push(newVal);
+      console.log('sensors changed: ', newVal)
+      state.data.sensors.push(newVal)
     }
-  );
+  )
 
   watch(
     () => cultivars.value,
     newVal => {
-      console.log('cultivars changed: ', newVal);
-      state.data.cultivars.push(newVal);
+      console.log('cultivars changed: ', newVal)
+      state.data.cultivars.push(newVal)
     }
-  );
+  )
 
   async function fetchData() {
-    console.log('fetching data...');
+    console.log('fetching data...')
     pb.get('facilities', {
       id: pb.api.authStore.model.facility,
     }).then(data => {
-      console.log('fetched facility: ', data);
+      console.log('fetched facility: ', data)
       // Object.entries(data).forEach(item => {
       //   console.log(item);
       //   if (state.payload.farm && state.payload.farm[item[0]]) {
@@ -233,93 +282,104 @@
       // });
       // console.log('autofilled payload: ', state.payload.farm);
       // TODO: unwrap the address string and autofill the address fields
-    });
-    state.data.sensors = await fetch('sensors');
-    state.data.cultivars = await fetch('cultivars');
-    console.log('intake: state.data', state.data);
+    })
+    state.data.sensors = await fetch('sensors')
+    state.data.cultivars = await fetch('cultivars')
+    console.log('intake: state.data', state.data)
   }
 
   // This function ensures that the fetched data belongs to the current facility
 
   function fetch(collection, options) {
     return pb.get(collection, {
-      filter: `facility.id = "${pb.api.authStore.model.facility}"${options?.filter ? ` && ${options.filter}` : ''}`,
+      filter: `facility.id = "${pb.api.authStore.model.facility}"${
+        options?.filter ? ` && ${options.filter}` : ''
+      }`,
       ...options,
-    });
+    })
   }
 
   function handleValidation(e) {
-    state.payload[e.group][e.id].valid = e.valid;
-    const groupValidity = Object.values(state.payload[e.group]).map(item => item.valid);
-    state.payload[e.group].valid = !groupValidity.includes(false);
+    state.payload[e.group][e.id].valid = e.valid
+    const groupValidity = Object.values(state.payload[e.group]).map(
+      item => item.valid
+    )
+    state.payload[e.group].valid = !groupValidity.includes(false)
   }
 
   function handleScroll(e) {
-    let scrollTop = e.target.scrollTop;
-    let scrollHeight = e.target.scrollHeight;
-    let clientHeight = e.target.clientHeight;
-    state.progress = (scrollTop / (scrollHeight - clientHeight)) * 100;
+    let scrollTop = e.target.scrollTop
+    let scrollHeight = e.target.scrollHeight
+    let clientHeight = e.target.clientHeight
+    state.progress = (scrollTop / (scrollHeight - clientHeight)) * 100
   }
 
   function scrollTo(id) {
-    const el = document.getElementById(id);
-    el.scrollIntoView({ behavior: 'smooth' });
-    state.currentSection = state.sections.indexOf(id);
+    const el = document.getElementById(id)
+    el.scrollIntoView({ behavior: 'smooth' })
+    state.currentSection = state.sections.indexOf(id)
   }
 
   function createFacility() {
-    let payload = {};
+    let payload = {}
     Object.keys(state.payload.farm).forEach(key => {
-      if (key != 'valid') payload[key] = state.payload.farm[key].value;
-    });
-    console.log('creating facility...', payload);
+      if (key != 'valid') payload[key] = state.payload.farm[key].value
+    })
+    console.log('creating facility...', payload)
     if (pb.api.authStore.model.facility) {
-      pb.update('facilities', pb.api.authStore.model.facility, payload).then(res => {
-        console.log('✅ updated facility', res);
-        scrollTo('cultivation');
-      });
+      pb.update('facilities', pb.api.authStore.model.facility, payload).then(
+        res => {
+          console.log('✅ updated facility', res)
+          scrollTo('cultivation')
+        }
+      )
     } else {
       pb.post('facilities', {
         ...payload,
         facility_address: parseAddress('farm'),
         grow_surface_area_unit: 'acres', // TODO: Add dynamic unit selection
       }).then(res => {
-        console.log('✅ created facility', res);
+        console.log('✅ created facility', res)
         pb.update('users', pb.api.authStore.model.id, {
           facility: res.id,
         }).then(res => {
-          console.log('✅ updated user (res)', res);
-          console.log('✅ updated user (authStore.model)', pb.api.authStore.model);
-          scrollTo('cultivation');
-        });
-      });
+          console.log('✅ updated user (res)', res)
+          console.log(
+            '✅ updated user (authStore.model)',
+            pb.api.authStore.model
+          )
+          scrollTo('cultivation')
+        })
+      })
     }
   }
 
   function updateFacility() {
-    let payload = {};
+    let payload = {}
     Object.keys(state.payload.cultivation).forEach(key => {
-      if (key != 'valid') payload[key] = state.payload.cultivation[key].value;
-    });
-    console.log(`submitting cultivation data...`, payload);
-    pb.update('facilities', pb.api.authStore.model.facility, payload).then(res => {
-      console.log('✅ updated facility with the cultivation data', res);
-      scrollTo('sensors');
-    });
+      if (key != 'valid') payload[key] = state.payload.cultivation[key].value
+    })
+    console.log(`submitting cultivation data...`, payload)
+    pb.update('facilities', pb.api.authStore.model.facility, payload).then(
+      res => {
+        console.log('✅ updated facility with the cultivation data', res)
+        scrollTo('sensors')
+      }
+    )
   }
 
   function parseAddress(ctx) {
-    return `${state.payload[ctx].street.value}, ${state.payload[ctx].city.value}, ${state.payload[ctx].state.value} ${state.payload[ctx].zip.value}`;
+    return `${state.payload[ctx].street.value}, ${state.payload[ctx].city.value}, ${state.payload[ctx].state.value} ${state.payload[ctx].zip.value}`
   }
 
   function completeIntakeForm() {
     pb.update('users', pb.api.authStore.model.id, {
       onboarded: true,
     }).then(res => {
-      console.log('✅ updated user (res)', res);
-      console.log('✅ updated user (authStore.model)', pb.api.authStore.model);
-      router.push('/facility');
-    });
+      console.log('✅ updated user (res)', res)
+      console.log('✅ updated user (authStore.model)', pb.api.authStore.model)
+      router.push('/facility')
+    })
   }
 </script>
 
@@ -345,9 +405,14 @@
       >
         <span :style="`--value: ${state.currentSection}`"></span>
       </span>
-      <div class="duration-[2s]" :class="state.currentSection === -1 ? 'opacity-0' : 'opacity-1'">
+      <div
+        class="duration-[2s]"
+        :class="state.currentSection === -1 ? 'opacity-0' : 'opacity-1'"
+      >
         <span class="text-xl text-base-300 mx-3">/</span>
-        <span class="text-xl text-base-300">{{ state.sections.length - 1 }}</span>
+        <span class="text-xl text-base-300">
+          {{ state.sections.length - 1 }}
+        </span>
       </div>
     </div>
 
@@ -355,10 +420,15 @@
       <label tabindex="0" class="btn btn-ghost !px-4 cursor-pointer">
         <Icon name="dots_horizontal" />
       </label>
-      <ul tabindex="0" class="dropdown-content menu w-40 text-left border bg-base-100 border-base-300 rounded mb-3">
+      <ul
+        tabindex="0"
+        class="dropdown-content menu w-40 text-left border bg-base-100 border-base-300 rounded mb-3"
+      >
         <li>
           <ModalTrigger
-            @click="global.toast('default', 'This feature is under development,')"
+            @click="
+              global.toast('default', 'This feature is under development,')
+            "
             target="help"
             class="justify-start"
           >
@@ -390,7 +460,10 @@
           <br />
           by learning about you and your farm.
         </p>
-        <button @click="scrollTo('farm')" class="btn btn-primary flex gap-2 pr-6 mt-4">
+        <button
+          @click="scrollTo('farm')"
+          class="btn btn-primary flex gap-2 pr-6 mt-4"
+        >
           <Icon name="arrow_down" />
           <span>Continue</span>
         </button>
@@ -467,7 +540,11 @@
                 @validation="handleValidation"
                 class="w-full"
               >
-                <option v-for="(state, index) in states" :key="index" :value="state[1]">
+                <option
+                  v-for="(state, index) in states"
+                  :key="index"
+                  :value="state[1]"
+                >
                   {{ state[0] }}
                 </option>
               </Input>
@@ -505,7 +582,6 @@
                 label="Zone area (sqft)"
                 v-model="state.payload.farm.zone_square_footage.value"
                 type="number"
-                placeholder="Zone square footage"
                 class="w-full"
                 rules="required"
                 @validation="handleValidation"
@@ -535,7 +611,7 @@
                 label="Room area (sqft)"
                 v-model="state.payload.farm.room_square_footage.value"
                 type="number"
-                :placeholder="inferredRoomArea || 0"
+                :placeholder="state.placeholders.room_grow_area"
                 @validation="handleValidation"
                 rules="required"
                 class="w-full"
@@ -551,12 +627,15 @@
             min="0"
             rules="required"
             @validation="handleValidation"
-            :placeholder="inferredGrowArea || 0"
+            :placeholder="state.placeholders.total_grow_area"
             class="w-full"
             group="farm"
           />
           <div class="flex gap-4 mt-12 w-full justify-start">
-            <button @click="scrollTo('intro')" class="btn btn-outline flex gap-2 pr-6">
+            <button
+              @click="scrollTo('intro')"
+              class="btn btn-outline flex gap-2 pr-6"
+            >
               <Icon name="arrow_up" />
               <span>Back</span>
             </button>
@@ -762,7 +841,10 @@
             </div>
           </div>
           <div class="flex gap-4 mt-12 w-full justify-start">
-            <button @click="scrollTo('farm')" class="btn btn-outline flex gap-2 pr-6">
+            <button
+              @click="scrollTo('farm')"
+              class="btn btn-outline flex gap-2 pr-6"
+            >
               <Icon name="arrow_up" />
               <span>Back</span>
             </button>
@@ -794,12 +876,19 @@
               v-if="state.data.sensors.length == 0"
               class="bg-base-100 border border-base-300 w-full h-60 flex justify-center items-center rounded-b"
             >
-              <DrawerToggle for="new-sensor" label="Add a new sensor" class="btn-outline !w-fit !px-4" />
+              <DrawerToggle
+                for="new-sensor"
+                label="Add a new sensor"
+                class="btn-outline !w-fit !px-4"
+              />
             </div>
           </div>
           <div class="w-full flex justify-between">
             <div class="flex gap-4 mt-8 w-full justify-start">
-              <button @click="scrollTo('cultivation')" class="btn btn-outline flex gap-2 pr-6">
+              <button
+                @click="scrollTo('cultivation')"
+                class="btn btn-outline flex gap-2 pr-6"
+              >
                 <Icon name="arrow_up" />
                 <span>Back</span>
               </button>
@@ -809,7 +898,9 @@
                 :class="state.data.sensors.length > 0 ? 'btn-primary' : ''"
               >
                 <Icon name="arrow_down" />
-                <span>{{ state.data.sensors.length > 0 ? 'Continue' : 'Skip' }}</span>
+                <span>
+                  {{ state.data.sensors.length > 0 ? 'Continue' : 'Skip' }}
+                </span>
               </button>
             </div>
             <DrawerToggle
@@ -831,7 +922,11 @@
           <div class="w-full">
             <Table
               class="w-full rounded-b-none"
-              :placeholder-columns="['name', 'phenotype', 'genetic acquisition']"
+              :placeholder-columns="[
+                'name',
+                'phenotype',
+                'genetic acquisition',
+              ]"
               :data="state.data.cultivars"
               :class="state.data.cultivars.length == 0 ? 'border-none' : ''"
             />
@@ -839,12 +934,19 @@
               v-if="state.data.cultivars.length == 0"
               class="bg-base-100 border border-base-300 w-full h-60 flex justify-center items-center rounded-b"
             >
-              <DrawerToggle for="new-cultivar" label="Add cultivars" class="btn-outline !w-fit !px-4" />
+              <DrawerToggle
+                for="new-cultivar"
+                label="Add cultivars"
+                class="btn-outline !w-fit !px-4"
+              />
             </div>
           </div>
           <div class="flex w-full justify-between">
             <div class="flex gap-4 mt-12 w-full justify-start">
-              <button @click="scrollTo('sensors')" class="btn btn-outline flex gap-2 pr-6">
+              <button
+                @click="scrollTo('sensors')"
+                class="btn btn-outline flex gap-2 pr-6"
+              >
                 <Icon name="arrow_up" />
                 <span>Back</span>
               </button>
@@ -854,7 +956,9 @@
                 :class="state.data.cultivars.length > 0 ? 'btn-primary' : ''"
               >
                 <Icon name="arrow_down" />
-                <span>{{ state.data.cultivars.length > 0 ? 'Continue' : 'Skip' }}</span>
+                <span>
+                  {{ state.data.cultivars.length > 0 ? 'Continue' : 'Skip' }}
+                </span>
               </button>
             </div>
             <DrawerToggle
@@ -871,11 +975,17 @@
           <div class="w-full">
             <h1 class="text-xl">You're all set!</h1>
             <div class="flex gap-4 mt-12 w-full justify-start">
-              <button @click="scrollTo('cultivars')" class="btn btn-outline flex gap-2 pr-6">
+              <button
+                @click="scrollTo('cultivars')"
+                class="btn btn-outline flex gap-2 pr-6"
+              >
                 <Icon name="arrow_up" />
                 <span>Back</span>
               </button>
-              <button @click="completeIntakeForm" class="btn btn-primary flex gap-2 pr-6">
+              <button
+                @click="completeIntakeForm"
+                class="btn btn-primary flex gap-2 pr-6"
+              >
                 <Icon name="check_alt" />
                 <span>Continue to Dashboard</span>
               </button>
