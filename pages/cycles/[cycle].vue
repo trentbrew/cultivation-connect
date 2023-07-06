@@ -278,16 +278,15 @@
       'start_date',
       'zone',
       'growth_stage',
-      // 'cultivar',
-      // 'room',
-      // 'plants',
-      // 'substrate',
-      // 'nutrients_type',
-      // 'root_zone_style',
+      'cultivar',
+      'room',
+      'plants',
+      'substrate',
+      'nutrients_type',
+      'root_zone_style',
     ]
-    const report = state.csvStatus.report.filter(item => {
-      return Number(item['zone'].substring(4)) === state.cycle.roomIndex
-    })
+    const report = state.csvStatus.report
+    console.log('report', report)
     const headers = Object.keys(report[0])
     const missing_headers = total_headers.filter(
       item => !headers.includes(item)
@@ -295,7 +294,7 @@
     total_headers.forEach(item => {
       if (missing_headers.includes(item)) {
         report.forEach(row => {
-          console.log(state.cycle[item.toLowerCase()])
+          // console.log(state.cycle[item.toLowerCase()])
           row[item] = '---'
         })
       }
@@ -504,7 +503,7 @@
           >
             <div class="w-full h-full" v-if="state.csvStatus.report">
               <h1 class="text-3xl mt-6 mb-4">
-                {{ `${state.csvStatus.report.length} cycles found` }}
+                {{ `${state.csvStatus.entry_count} entries found` }}
               </h1>
               <div class="flex justify-between items-end h-[60px]">
                 <div class="opacity-75 mb-8">

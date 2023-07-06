@@ -14,7 +14,7 @@
 
 3. Run locally
 
-- `npm run dev`
+- `npm run dev``
 
 <br/>
 
