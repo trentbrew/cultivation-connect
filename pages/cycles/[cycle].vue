@@ -41,8 +41,15 @@
       active: false,
       id: '',
       name: '',
+      roomIndex: 0,
       latest_record: null,
+      cultivar: '',
+      plants: 0,
+      substrate: '',
+      nutrients_type: '',
+      root_zone_style: '',
       overview: {
+        room: '',
         latest: '',
         plants: 0,
         day: 0,
@@ -199,9 +206,24 @@
     })
 
     if (cycle) {
+      console.log(cycle)
       state.cycle.id = cycle.id
       state.cycle.name = cycle.name
       state.cycle.latest_record = cycle.latest_record
+      state.cycle.cultivar = cycle.cultivar
+      state.cycle.plants = cycle.plants
+      state.cycle.substrate = cycle.substrate
+      state.cycle.nutrients_type = cycle.nutrients_type
+      state.cycle.growth_stage = cycle.growth_stage
+      const room = await pb.get('rooms', {
+        id: cycle.room,
+      })
+      state.cycle.roomIndex = room.index
+      state.cycle.overview.room = room.name
+      const zone = await pb.get('zones', {
+        id: cycle.zone,
+      })
+      state.cycle.overview.zone = zone.name
       state.cycle.overview.plants = cycle.plants
       state.cycle.overview.day = Math.floor(
         utils.timeDifference(Date.now(), Date.parse(cycle?.start_date), 'd')
@@ -250,19 +272,22 @@
   }
 
   function validateReport() {
+    console.log('validating report...')
     // this function adds any missing data to the report, like cultivar, room, etc
     const total_headers = [
       'start_date',
-      'cultivar',
       'zone',
-      'room',
       'growth_stage',
-      'plants',
-      'substrate',
-      'nutrients_type',
-      'root_zone_style',
+      // 'cultivar',
+      // 'room',
+      // 'plants',
+      // 'substrate',
+      // 'nutrients_type',
+      // 'root_zone_style',
     ]
-    const report = state.csvStatus.report
+    const report = state.csvStatus.report.filter(item => {
+      return Number(item['zone'].substring(4)) === state.cycle.roomIndex
+    })
     const headers = Object.keys(report[0])
     const missing_headers = total_headers.filter(
       item => !headers.includes(item)
@@ -270,6 +295,7 @@
     total_headers.forEach(item => {
       if (missing_headers.includes(item)) {
         report.forEach(row => {
+          console.log(state.cycle[item.toLowerCase()])
           row[item] = '---'
         })
       }
@@ -336,10 +362,10 @@
           <div
             class="stats stats-horizontal rounded w-full border border-base-300"
           >
-            <div class="stat">
-              <div class="stat-title">Day</div>
+            <div v-if="state.cycle.overview.latest" class="stat">
+              <div class="stat-title">Latest record</div>
               <div class="stat-value">
-                {{ state.cycle.overview.day }}
+                {{ state.cycle.overview.latest }}
               </div>
             </div>
             <div class="stat">
@@ -349,27 +375,39 @@
               </div>
             </div>
             <div class="stat">
+              <div class="stat-title">Day</div>
+              <div class="stat-value">
+                {{ state.cycle.overview.day }}
+              </div>
+            </div>
+            <div class="stat">
               <div class="stat-title">Growth phase</div>
               <div class="stat-value">
                 {{ state.cycle.overview.growthPhase }}
               </div>
             </div>
             <div class="stat">
+              <div class="stat-title">Room</div>
+              <div class="stat-value">
+                {{ state.cycle.overview.room }}
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-title">Zone</div>
+              <div class="stat-value">
+                {{ state.cycle.overview.zone }}
+              </div>
+            </div>
+            <!-- <div class="stat">
               <div class="stat-title">Start date</div>
               <div class="stat-value">
                 {{ state.cycle.overview.startDate }}
               </div>
-            </div>
+            </div> -->
             <div class="stat">
               <div class="stat-title">Est. Harvest date</div>
               <div class="stat-value">
                 {{ state.cycle.overview.estHarvestDate }}
-              </div>
-            </div>
-            <div v-if="state.cycle.overview.latest" class="stat">
-              <div class="stat-title">Latest record</div>
-              <div class="stat-value">
-                {{ state.cycle.overview.latest }}
               </div>
             </div>
           </div>

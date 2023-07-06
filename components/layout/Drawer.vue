@@ -638,9 +638,17 @@
     })
   }
 
-  function submitZone(name) {
+  async function submitZone(name) {
+    const getZoneIndex = async () => {
+      const zones = await pb.get('zones', {
+        filter: `room = "${state.payload.cycle.room.value}"`,
+      })
+      console.log('zones: ', zones)
+      return zones.length + 1
+    }
     let payload = {
       name,
+      index: await getZoneIndex(),
       room: state.payload.cycle.room.value,
       facility: pb.api.authStore.model.facility,
     }
