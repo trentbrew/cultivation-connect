@@ -6,7 +6,7 @@
 
 1. Clone the repository
 
-- `git clone <https://github.com/trentbrew/cultivation-connect>`
+- `git clone https://github.com/trentbrew/cultivation-connect`
 
 2. Install dependencies
 
