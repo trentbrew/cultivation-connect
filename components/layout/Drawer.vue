@@ -241,6 +241,16 @@
     }
   })
 
+  const batchEntry = computed(() => global.getBatchEntry)
+
+  watch(
+    () => batchEntry,
+    val => {
+      console.log('a new batch entry was made... handling post: ', val)
+    },
+    { deep: true }
+  )
+
   watch(
     () => route.hash,
     async newHash => {
@@ -390,9 +400,6 @@
   }
 
   async function submitRecord() {
-    // instead of prompting the user for the day/night values, calculate them here
-    // If time of record is between 6am and 6pm, it's day. Otherwise, it's night.
-
     const date_recorded = new Date().toISOString()
 
     const timeOfDay = () => {
@@ -469,16 +476,10 @@
         pb.update('cycles', state.cycle.id, {
           active: true,
           latest_record,
+        }).catch(err => {
+          global.toast('error', 'Error submitting record')
+          console.log('error submitting record: ', err)
         })
-          .then(() => {
-            // setTimeout(() => {
-            //   global.toast('default', 'Successfully submitted record')
-            // }, 800)
-          })
-          .catch(err => {
-            global.toast('error', 'Error submitting record')
-            console.log('error submitting record: ', err)
-          })
       })
       .catch(err => {
         global.toast('error', 'Error submitting record')
@@ -493,7 +494,6 @@
     const blob = new Blob([file], { type: 'text/csv' })
 
     if (state.cycle.csv.origin.value == 'aroya') {
-      console.clear()
       global.beginCsvImport()
 
       const formData = new FormData()
@@ -517,6 +517,8 @@
           }
 
           const parsedData = JSON.parse(parsed)
+
+          console.log('parsedData: ', parsedData)
 
           if (parsedData.report) {
             global.handleCsvUploaded(parsedData.report, parsedData.entry_count)

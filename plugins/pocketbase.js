@@ -22,6 +22,7 @@ const pb = {
         return data
       })
     } else {
+      console.log('getting the full list: ', collection, params)
       return record
         .getFullList(batchSize || 200, {
           ...params,
@@ -35,16 +36,22 @@ const pb = {
 
   // Create a new record in the specified collection
 
-  post: async (collection, data) => {
+  post: async (collection, data, params) => {
     const formData = new FormData()
     Object.entries(data).forEach(entry => formData.append(entry[0], entry[1]))
-    return await pocketbase.collection(collection).create(formData)
+    return await pocketbase.collection(collection).create(formData, {
+      ...params,
+      $autoCancel: false,
+    })
   },
 
   // Update an existing record in the specified collection
 
-  update: async (collection, id, data) => {
-    return await pocketbase.collection(collection).update(id, data)
+  update: async (collection, id, data, params) => {
+    return await pocketbase.collection(collection).update(id, data, {
+      ...params,
+      $autoCancel: false,
+    })
   },
 
   // Delete an existing record in the specified collection

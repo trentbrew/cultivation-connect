@@ -13,7 +13,7 @@
     },
     hoverable: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     placeholderColumns: {
       type: Array,
@@ -164,7 +164,7 @@
           :key="index"
           class="w-full h-full hover"
         >
-          <th class="font-normal">{{ index }}</th>
+          <th class="font-normal">{{ index + 1 }}</th>
           <td
             v-for="(datum, datumIndex) in Object.entries(item)"
             :key="datumIndex"

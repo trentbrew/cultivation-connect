@@ -8,29 +8,40 @@
 
 const ranges = [
   /*
+
     {
       name: String,
         // `name` is the unique id of the sensor type.
-        // ⛔️ Do not change this value, as it is used to reference the sensor type in the UI.
+        // ⛔️ Do not change this value. It is used to reference the sensor type in the UI.
+
       title: String,
         // `title` is the title of the sensor type. This is displayed in the UI.
+
       relative_min: Integer,
         // `relative_min` is the lowest realistic value and will be set as the gauge's minimum.
+
       relative_max: Integer,
         // `relative_max` is the highest realistic value and will be set as the gauge's maximum.
+
       min: Integer Array,
         // `min` is the threshold for a reading that is too low. If the sensor reading is below this value minus `margin`, the gauge will be red.
         // Each index of the array corresponds to one of 6 growth stages. For example, if the sensor type is `air_temp`, the first index of the array is the minimum value for the `seedling` stage, the second index is the minimum value for the `vegetative` stage, and so on. This applies to `min`, `median`, `max`, and `margin`.
+
       median: Integer Array,
         // `median` is the optimal value for the sensor type. If the sensor reading is between the `min` and `median` values, the gauge will be green.
+
       max: Integer Array,
         // `max` is the threshold for a reading that is too high. If the sensor reading is above the sum of `max` and 'margin', the gauge will be red.
+
       margin: Integer Array,
         // `margin` is the range of values that are considered to be acceptable. If the sensor reading is greater than or equal to `min - margin`, or the reading is less than or equal to `max + margin`, the gauge will be yellow.
+
       unit: String,
         // `unit` is the unit of measurement for the sensor type. This is displayed in the UI.
     },
+
   */
+
   {
     name: 'air_temp',
     title: 'Air Temperature',

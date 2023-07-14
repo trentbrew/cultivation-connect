@@ -7,6 +7,7 @@
   const global = useGlobalStore()
 
   const state = reactive({
+    collectionsActive: true,
     steps: [
       {
         title: 'Create cycle',
@@ -37,11 +38,17 @@
     loading: false,
     missingCsvHeaders: [],
     csvStatus: {},
+    postingEntries: false,
+    relevantData: {},
     cycle: {
+      start_date: '',
       active: false,
       id: '',
       name: '',
+      room: '',
       roomIndex: 0,
+      zone: '',
+      zoneIndex: 0,
       latest_record: null,
       cultivar: '',
       plants: 0,
@@ -50,6 +57,7 @@
       root_zone_style: '',
       overview: {
         room: '',
+        zone: '',
         latest: '',
         plants: 0,
         day: 0,
@@ -143,11 +151,24 @@
   })
 
   onMounted(async () => {
+    console.clear()
     router.push({ hash: '' })
+    state.collectionsActive = global.getCollectionsActive
     await initCycle()
+    console.log('latest_record', state.cycle.latest_record)
   })
 
+  const collectionsActive = computed(() => global.getCollectionsActive)
+
   const csvStatus = computed(() => global.getCsvStatus)
+
+  watch(
+    () => collectionsActive.value,
+    val => {
+      state.collectionsActive = val
+    },
+    { deep: true }
+  )
 
   watch(
     () => csvStatus.value,
@@ -206,8 +227,8 @@
     })
 
     if (cycle) {
-      console.log(cycle)
       state.cycle.id = cycle.id
+      state.cycle.start_date = cycle.start_date
       state.cycle.name = cycle.name
       state.cycle.latest_record = cycle.latest_record
       state.cycle.cultivar = cycle.cultivar
@@ -219,10 +240,13 @@
         id: cycle.room,
       })
       state.cycle.roomIndex = room.index
+      state.cycle.room = room.id
       state.cycle.overview.room = room.name
       const zone = await pb.get('zones', {
         id: cycle.zone,
       })
+      state.cycle.zone = zone.id
+      state.cycle.zoneIndex = zone.index
       state.cycle.overview.zone = zone.name
       state.cycle.overview.plants = cycle.plants
       state.cycle.overview.day = Math.floor(
@@ -243,12 +267,13 @@
         const latest_record = await pb.get('records', {
           id: cycle.latest_record,
         })
+        console.log('latest_record', latest_record)
         state.cycle.overview.latest = formatDateTime(
-          latest_record.date_recorded
+          latest_record?.date_recorded
         )
         state.cycle.conditions.forEach((item, index) => {
-          if (latest_record.data[item.name]) {
-            state.cycle.conditions[index].value = latest_record.data[item.name]
+          if (latest_record?.data[item.name]) {
+            state.cycle.conditions[index].value = latest_record?.data[item.name]
           }
         })
         state.cycle.conditions.sort((a, b) => a.value - b.value)
@@ -272,8 +297,6 @@
   }
 
   function validateReport() {
-    console.log('validating report...')
-    // this function adds any missing data to the report, like cultivar, room, etc
     const total_headers = [
       'start_date',
       'zone',
@@ -286,15 +309,35 @@
       'root_zone_style',
     ]
     const report = state.csvStatus.report
-    console.log('report', report)
+
+    let recordsPayload = {}
+
+    report
+      .filter(
+        item => Number(item.zone.substring(4)) === state.cycle.zoneIndex
+      )[0]
+      .data.forEach(entry => {
+        if (!recordsPayload[entry.timestamp]) {
+          recordsPayload[entry.timestamp] = {}
+        }
+        recordsPayload[entry.timestamp][entry.name] = entry.value
+      })
+
+    state.relevantData = Object.keys(recordsPayload).map(key => {
+      return {
+        timestamp: key,
+        data: recordsPayload[key],
+      }
+    })
+
     const headers = Object.keys(report[0])
     const missing_headers = total_headers.filter(
       item => !headers.includes(item)
     )
+
     total_headers.forEach(item => {
       if (missing_headers.includes(item)) {
         report.forEach(row => {
-          // console.log(state.cycle[item.toLowerCase()])
           row[item] = '---'
         })
       }
@@ -313,22 +356,99 @@
     return missing_headers.length === 0
   })
 
-  function handleGenerateCycles() {
-    if (!csvIsValid.value) {
-      global.toast(
-        'default',
-        `Missing required headers: ${state.missingCsvHeaders.join(
-          ', '
-        )}. Click the item to edit and try again.`
-      )
-    } else {
-      console.log('generating cycles from csv')
-      // TODO: prompt user for cultivar
-      // TODO: create each new zone if it doesn't exist
-      // TODO: parse the growth stages
-      // TODO: create the cycle payloads
-      // TODO: trigger loading page & upload the cycles to the db
+  async function submitRecord(entry) {
+    const date_recorded = entry.timestamp
+
+    const timeOfDay = () => {
+      const hour = new Date(date_recorded).getHours()
+      if (hour >= 6 && hour < 18) return 'day'
+      else return 'night'
     }
+
+    const getCycleDay = () => {
+      const start = new Date(state.cycle.start_date)
+      const today = new Date()
+      const diff = today - start
+      const day = Math.floor(diff / (1000 * 60 * 60 * 24))
+      return day
+    }
+
+    const getCycleWeek = () => {
+      const start = new Date(state.cycle.start_date)
+      const today = new Date()
+      const diff = today - start
+      const week = Math.floor(diff / (1000 * 60 * 60 * 24 * 7))
+      return week
+    }
+
+    if (timeOfDay() == 'day') {
+      if (entry.name?.includes('pore_ec')) {
+        data.pore_ec = entry.value
+        data.day_time_pore_ec = entry.value
+      } else if (entry.name?.includes('soil_moisture')) {
+        data.day_time_soil_moisture = entry.value
+      } else if (entry.name?.includes('dry_back')) {
+        data.day_time_dry_back = entry.value
+      }
+    } else {
+      if (entry.name?.includes('pore_ec')) {
+        data.pore_ec = entry.value
+        data.night_time_pore_ec = entry.value
+      } else if (entry.name?.includes('soil_moisture')) {
+        data.night_time_soil_moisture = entry.value
+      } else if (entry.name?.includes('dry_back')) {
+        data.night_time_dry_back = entry.value
+      }
+    }
+
+    const payload = {
+      date_recorded,
+      recorded_by: pb.api.authStore.model.id,
+      facility: pb.api.authStore.model.facility,
+      room: state.cycle.room,
+      zone: entry.zone ?? state.cycle.zone,
+      cycle: state.cycle.id,
+      cultivar: state.cycle.cultivar,
+      growth_stage: entry.growth_stage ?? state.cycle.growth_stage,
+      cycle_day: await getCycleDay(),
+      cycle_week: await getCycleWeek(),
+      data: JSON.stringify(entry.data),
+    }
+
+    const latest_record = await pb.post('records', payload).then(res => {
+      console.log('entry submitted: ', res)
+      console.log('res: ', res)
+      return res.id
+    })
+
+    console.log('latest_record: ', latest_record)
+
+    await pb.update('cycles', state.cycle.id, {
+      active: true,
+      latest_record,
+    })
+  }
+
+  async function handleBatchEntryPost() {
+    state.postingEntries = true
+    setTimeout(() => {
+      let latest = ''
+      try {
+        state.relevantData.slice(0, 10).forEach(async (entry, entryIndex) => {
+          // console.log(`\nsubmitting entry #${entryIndex}...`)
+          await submitRecord(entry)
+        })
+        global.toast(
+          'primary',
+          `Successfully submitted ${state.relevantData?.length} entries 🎉`
+        )
+        setTimeout(() => {
+          location.reload()
+        }, 1000)
+      } catch {
+        global.toast('error', 'Something went wrong 😢')
+      }
+    }, 1000)
   }
 </script>
 
@@ -382,7 +502,10 @@
             <div class="stat">
               <div class="stat-title">Growth phase</div>
               <div class="stat-value">
-                {{ state.cycle.overview.growthPhase }}
+                {{
+                  state.relevantData.growth_stage ??
+                  state.cycle.overview.growthPhase
+                }}
               </div>
             </div>
             <div class="stat">
@@ -394,7 +517,7 @@
             <div class="stat">
               <div class="stat-title">Zone</div>
               <div class="stat-value">
-                {{ state.cycle.overview.zone }}
+                {{ state.relevantData.zone ?? state.cycle.overview.zone }}
               </div>
             </div>
             <!-- <div class="stat">
@@ -502,47 +625,81 @@
             class="w-full h-full p-8 pt-0"
           >
             <div class="w-full h-full" v-if="state.csvStatus.report">
-              <h1 class="text-3xl mt-6 mb-4">
-                {{ `${state.csvStatus.entry_count} entries found` }}
-              </h1>
-              <div class="flex justify-between items-end h-[60px]">
+              <div>
+                <h1 class="text-3xl mt-6 mb-4">
+                  {{
+                    `${
+                      state.relevantData?.length.toLocaleString() ?? 0
+                    } entries found for this zone`
+                  }}
+                </h1>
                 <div class="opacity-75 mb-8">
                   <p>
-                    <b>{{ state.csvStatus.entry_count ?? 0 }}</b>
-                    total entries have been uploaded across
-                    <b>{{ state.csvStatus.report.length }}</b>
-                    cycles.
+                    Showing
+                    <b>
+                      {{
+                        state.relevantData?.length > 50
+                          ? 50
+                          : state.relevantData?.length - 1
+                      }}
+                    </b>
+                    out of
+                    <b>{{ state.relevantData?.length.toLocaleString() }}</b>
+                    total records
                     <br />
                   </p>
                 </div>
                 <div class="flex gap-2 my-8">
                   <button
-                    @click="router.go(router.path)"
-                    class="btn btn-outline"
-                  >
-                    Re-upload
-                  </button>
-                  <button
-                    @click="handleGenerateCycles"
-                    class="btn btn-primary"
+                    @click="handleBatchEntryPost"
+                    class="btn btn-primary flex gap-3 px-4"
                     :class="
-                      !csvIsValid.value
-                        ? 'btn-disabled !pointer-events-auto'
+                      state.postingEntries
+                        ? 'btn-disabled pointer-events-none'
                         : ''
                     "
                   >
-                    {{ `Submit ${state.csvStatus.report.length} cycles` }}
+                    <Icon v-if="!state.postingEntries" name="upload" />
+                    <Loading v-else />
+                    {{
+                      state.postingEntries
+                        ? `Submitting entries...`
+                        : `Submit ${state.relevantData?.length.toLocaleString()} entries`
+                    }}
+                  </button>
+                  <button
+                    @click="router.go(router.path)"
+                    class="btn btn-outline flex gap-3 px-4"
+                  >
+                    <Icon name="refresh" />
+                    Re-upload
                   </button>
                 </div>
               </div>
+              <!-- TODO: show all entries for this zone. If something doesn't look right, the user will have to adjust the CSV themselves -->
               <Table
                 drawer
-                :data="state.csvStatus.report"
-                :missing="state.missingCsvHeaders"
-                class="w-full h-fit max-h-[450px] border-none"
+                :data="
+                  state.relevantData
+                    .map(item => {
+                      let entry = {}
+                      Object.entries(item.data).forEach(i => {
+                        entry[i[0]] = i[1]
+                      })
+                      return {
+                        timestamp: item.timestamp,
+                        ...entry,
+                      }
+                    })
+                    .slice(
+                      0,
+                      state.relevantData?.length > 50
+                        ? 50
+                        : state.relevantData?.length - 1
+                    )
+                "
+                class="w-full h-full border-none"
               />
-              <!-- TODO: display overview: (total records, entries per zone, growth stage per zone) -->
-              <!-- TODO: prompt for missing data: (cultivar, room) -->
             </div>
             <div
               v-else
@@ -564,11 +721,14 @@
             <WIP
               v-if="!state.csvStatus.active"
               img="growth"
-              class="mb-12 -translate-x-8 w-[220px] -mt-12 brightness-[0.915] opacity-75"
+              class="mb-16 -translate-x-8 w-[220px] -mt-36 brightness-[0.915] opacity-75"
             />
 
             <Loading
-              v-if="state.csvStatus.active && !state.csvStatus.reviewing"
+              v-if="
+                (state.csvStatus.active && !state.csvStatus.reviewing) ||
+                state.csvStatus.posting
+              "
               size="80"
             />
 
@@ -626,11 +786,28 @@
           </div>
         </div>
         <div
+          class="z-40 fixed bottom-0 h-[140px] w-full bg-base-100"
           v-show="
             (!state.cycle.active && !state.loading) || state.csvStatus.reviewing
           "
-        >
-          <Stepper :steps="state.steps" class="mb-8" />
+        ></div>
+        <div
+          class="z-40 fixed bottom-[140px] h-[80px] w-full"
+          style="background: linear-gradient(transparent, hsl(var(--b1)))"
+          v-show="
+            (!state.cycle.active && !state.loading) || state.csvStatus.reviewing
+          "
+        ></div>
+        <div class="w-full flex justify-center">
+          <div
+            class="w-[60vw] py-8 z-50 fixed bottom-0 flex justify-center items-center"
+            v-show="
+              (!state.cycle.active && !state.loading) ||
+              state.csvStatus.reviewing
+            "
+          >
+            <Stepper :steps="state.steps" class="w-full" />
+          </div>
         </div>
       </div>
     </div>

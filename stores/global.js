@@ -30,6 +30,9 @@ export const useGlobalStore = defineStore('global', {
       ready: false,
       report: [],
     },
+    batchEntry: {
+      data: null,
+    },
     ui: {
       currentItem: null,
       details: {
@@ -71,6 +74,7 @@ export const useGlobalStore = defineStore('global', {
     },
   }),
   getters: {
+    getBatchEntry: state => state.batchEntry.data,
     getCsvStatus: state => state.csv,
     getCache: state => key => state.cache[key],
     getDetailsContext: state => state.ui.details.context,
@@ -88,6 +92,10 @@ export const useGlobalStore = defineStore('global', {
     },
   },
   actions: {
+    handleEntryPost(data) {
+      console.log('handleEntryPost', data)
+      this.batchEntry.data = data
+    },
     setCsvMessage(msg) {
       this.csv.message = msg
     },
@@ -120,6 +128,13 @@ export const useGlobalStore = defineStore('global', {
       this.csv.active = true
       this.csv.reviewing = true
       this.csv.report = report
+    },
+    beginCsvPost() {
+      this.csv.message = 'Uploading entries...'
+      this.csv.ready = false
+      this.csv.done = false
+      this.csv.active = true
+      this.csv.cancelled = false
     },
     completeCsvImport(report) {
       if (this.csv.cancelled) return
