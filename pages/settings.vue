@@ -22,6 +22,19 @@
   onMounted(async () => {
     state.facility = await getFacilityName()
     state.avatarUrl = await pb.getAvatarUrl()
+    const contactEmail = pb.api.authStore.model.contact_email
+    if (!contactEmail) {
+      await pb
+        .update('users', pb.api.authStore.model.id, {
+          contact_email: pb.api.authStore.model.email,
+        })
+        .then(() => {
+          console.log('contact_email updated')
+        })
+        .catch(err => {
+          console.log('error updating contact_email: ', err)
+        })
+    }
   })
 
   function edit(context) {
