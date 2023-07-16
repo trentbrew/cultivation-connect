@@ -1,7 +1,7 @@
 <script setup>
-  const router = useRouter();
-  const global = useGlobalStore();
-  const pb = usePocketbase();
+  const router = useRouter()
+  const global = useGlobalStore()
+  const pb = usePocketbase()
 
   const state = reactive({
     loading: false,
@@ -15,32 +15,48 @@
       last_name: null,
       facility: '',
     },
-  });
+  })
 
   function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+    return str.charAt(0).toUpperCase() + str.slice(1)
   }
 
   async function handleSignup() {
-    state.loading = true;
+    state.loading = true
     pb.signup({
       ...state.payload,
       first_name: capitalize(state.payload.first_name ?? ''),
       last_name: capitalize(state.payload.last_name ?? ''),
       email: (state.payload.email ?? '').toLowerCase(),
+      contact_email: (state.payload.email ?? '').toLowerCase(),
     })
       .then(() => {
         setTimeout(() => {
-          global.toast('primary', 'Signup successful! Login to continue.');
-          router.push('/auth/login');
-        }, 3000);
+          global.toast('primary', 'Signup successful! Login to continue.')
+          router.push('/auth/login')
+        }, 3000)
       })
       .catch(err => {
-        const errorContext = Object.entries(err.data.data)[0];
-        const message = `${capitalize(errorContext[0])}: ${errorContext[1].message.toLowerCase()}`;
-        global.toast('error', message);
-        state.loading = false;
-      });
+        console.log('ope...', { err })
+        if (err.data?.data[0]) {
+          const errorContext = Object.entries(err.data?.data)[0]
+          console.log('errorContext: ', errorContext)
+          const message = `${capitalize(
+            errorContext[0]
+          )}: ${errorContext[1].message.toLowerCase()}`
+          console.log('message:', message)
+          global.toast('error', message)
+          state.loading = false
+        } else {
+          const errorContext = Object.entries(err.data?.data)[0]
+          console.log('err.data?.data: ', errorContext)
+          global.toast(
+            'error',
+            `${capitalize(errorContext[0])}: ${errorContext[1].message}`
+          )
+          state.loading = false
+        }
+      })
   }
 </script>
 
@@ -102,12 +118,18 @@
               autocomplete="off"
             />
           </div>
-          <button @click.prevent="handleSignup" class="btn btn-primary" :disabled="state.loading">
+          <button
+            @click.prevent="handleSignup"
+            class="btn btn-primary"
+            :disabled="state.loading"
+          >
             {{ state.loading ? 'Creating account...' : 'Create account' }}
           </button>
           <span class="font-medium text-sm w-full text-center mt-12">
             Already a user?
-            <nuxt-link class="text-primary hover:underline" to="/auth/login">Login</nuxt-link>
+            <nuxt-link class="text-primary hover:underline" to="/auth/login">
+              Login
+            </nuxt-link>
           </span>
         </form>
       </div>
