@@ -115,28 +115,28 @@
           <div class="w-full h-full gap-4 flex flex-col">
             <!-- CYCLE CONDITIONS -->
             <div
-              class="w-full h-[60vh] rounded-[8px] p-4 border-[1px] border-base-300"
+              class="w-full h-full rounded-[8px] p-4 border-[1px] border-base-300"
             >
               <MultiLineGraph />
             </div>
             <!-- ROOMS & ZONES -->
-            <div class="flex gap-4 h-full">
+            <!-- <div class="flex gap-4 h-full">
               <div
                 class="w-full h-96 border-[1px] border-base-300 rounded-[8px] p-4 bg-base-100"
               ></div>
               <div
                 class="w-full h-96 border-[1px] border-base-300 rounded-[8px] p-4 bg-base-100"
               ></div>
-            </div>
+            </div> -->
             <!-- CULTIVARS & SENSORS -->
-            <div class="flex gap-4 h-full">
+            <!-- <div class="flex gap-4 h-full">
               <div
                 class="w-full h-96 border-[1px] border-base-300 rounded-[8px] p-4 bg-base-100"
               ></div>
               <div
                 class="w-full h-96 border-[1px] border-base-300 rounded-[8px] p-4 bg-base-100"
               ></div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>

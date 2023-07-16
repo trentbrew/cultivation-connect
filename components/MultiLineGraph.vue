@@ -20,7 +20,7 @@
             },
           },
           smooth: true,
-          name: 'Category 1',
+          name: 'Air Temperature',
           type: 'line',
           stack: 'Total',
           data: [120, 132, 101, 134, 90, 230, 210],
@@ -32,7 +32,7 @@
             },
           },
           smooth: true,
-          name: 'Category 2',
+          name: 'Air Humidity',
           type: 'line',
           stack: 'Total',
           data: [220, 182, 191, 234, 290, 330, 310],
@@ -44,7 +44,7 @@
             },
           },
           smooth: true,
-          name: 'Category 3',
+          name: 'Solar PPFD',
           type: 'line',
           stack: 'Total',
           data: [150, 232, 201, 154, 190, 330, 410],
@@ -56,7 +56,7 @@
             },
           },
           smooth: true,
-          name: 'Category 4',
+          name: 'VPD',
           type: 'line',
           stack: 'Total',
           data: [320, 332, 301, 334, 390, 330, 320],
@@ -68,7 +68,79 @@
             },
           },
           smooth: true,
-          name: 'Category 5',
+          name: 'DLI',
+          type: 'line',
+          stack: 'Total',
+          data: [820, 932, 901, 934, 1290, 1330, 1320],
+        },
+        {
+          lineStyle: {
+            normal: {
+              width: 3,
+            },
+          },
+          smooth: true,
+          name: 'CO2',
+          type: 'line',
+          stack: 'Total',
+          data: [820, 932, 901, 934, 1290, 1330, 1320],
+        },
+        {
+          lineStyle: {
+            normal: {
+              width: 3,
+            },
+          },
+          smooth: true,
+          name: 'Pore EC',
+          type: 'line',
+          stack: 'Total',
+          data: [820, 932, 901, 934, 1290, 1330, 1320],
+        },
+        {
+          lineStyle: {
+            normal: {
+              width: 3,
+            },
+          },
+          smooth: true,
+          name: 'Substrate Moisture',
+          type: 'line',
+          stack: 'Total',
+          data: [820, 932, 901, 934, 1290, 1330, 1320],
+        },
+        {
+          lineStyle: {
+            normal: {
+              width: 3,
+            },
+          },
+          smooth: true,
+          name: 'Dry Back',
+          type: 'line',
+          stack: 'Total',
+          data: [820, 932, 901, 934, 1290, 1330, 1320],
+        },
+        {
+          lineStyle: {
+            normal: {
+              width: 3,
+            },
+          },
+          smooth: true,
+          name: 'Substrate Temperature',
+          type: 'line',
+          stack: 'Total',
+          data: [820, 932, 901, 934, 1290, 1330, 1320],
+        },
+        {
+          lineStyle: {
+            normal: {
+              width: 3,
+            },
+          },
+          smooth: true,
+          name: 'PH',
           type: 'line',
           stack: 'Total',
           data: [820, 932, 901, 934, 1290, 1330, 1320],
@@ -92,17 +164,20 @@
     },
     legend: {
       data: [
-        'Category 1',
-        'Category 2',
-        'Category 3',
-        'Category 4',
-        'Category 5',
+        'Air Temperature',
+        'Air Humidity',
+        'Solar PPFD',
+        'VPD',
+        'DLI',
+        'CO2',
+        'Pore EC',
+        'Substrate Moisture, Dry Back, Substrate Temperature, PH',
       ],
     },
     grid: {
       left: '2%',
       right: '2%',
-      bottom: '10%',
+      bottom: '4%',
       containLabel: true,
     },
     toolbox: {
