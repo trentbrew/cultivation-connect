@@ -76,9 +76,9 @@
 <template>
   <div class="w-full h-full flex flex-col justify-center items-center gap-32">
     <div class="range-slider">
-      <div class="mb-2 gap-2 flex w-full justify-center">
+      <div class="mb-2 gap-2 flex flex-col w-full justify-center">
         <input
-          class="bg-green-600/10 text-center"
+          class="px-1"
           type="number"
           min="0"
           max="100"
@@ -86,7 +86,7 @@
           v-model="sliderMin"
         />
         <input
-          class="bg-green-600/10 text-center"
+          class="px-1"
           type="number"
           min="0"
           max="100"
@@ -94,10 +94,9 @@
           v-model="sliderMax"
         />
       </div>
-
-      <div class="mb-12 gap-2 flex w-full justify-center">
+      <div class="mb-12 gap-2 flex flex-col w-full justify-center">
         <input
-          class="bg-yellow-500/10 text-center"
+          class="px-1"
           type="number"
           min="0"
           max="100"
@@ -105,7 +104,7 @@
           v-model="sliderRelativeMin"
         />
         <input
-          class="bg-yellow-500/10 text-center"
+          class="px-1"
           type="number"
           min="0"
           max="100"
