@@ -13,7 +13,9 @@
     },
     set: val => {
       val = parseInt(val)
+      if (val < state.relativeMinAngle) state.relativeMinAngle = val
       if (val > state.maxAngle) state.maxAngle = val
+      if (val > state.relativeMaxAngle) state.relativeMaxAngle = val
       state.minAngle = val
     },
   })
@@ -26,6 +28,8 @@
     set: val => {
       val = parseInt(val)
       if (val < state.minAngle) state.minAngle = val
+      if (val < state.relativeMinAngle) state.relativeMinAngle = val
+      if (val > state.relativeMaxAngle) state.relativeMaxAngle = val
       state.maxAngle = val
     },
   })
@@ -37,6 +41,8 @@
     },
     set: val => {
       val = parseInt(val)
+      if (val > state.minAngle) state.minAngle = val
+      if (val > state.maxAngle) state.maxAngle = val
       if (val > state.relativeMaxAngle) state.relativeMaxAngle = val
       state.relativeMinAngle = val
     },
@@ -49,6 +55,8 @@
     },
     set: val => {
       val = parseInt(val)
+      if (val < state.maxAngle) state.maxAngle = val
+      if (val < state.minAngle) state.minAngle = val
       if (val < state.relativeMinAngle) state.relativeMinAngle = val
       state.relativeMaxAngle = val
     },
@@ -60,7 +68,7 @@
     <div class="range-slider">
       <div class="mb-2 gap-2 flex w-full justify-center">
         <input
-          class="bg-green-600"
+          class="bg-green-600/50 text-center"
           type="number"
           min="0"
           max="100"
@@ -68,7 +76,7 @@
           v-model="sliderMin"
         />
         <input
-          class="bg-green-600"
+          class="bg-green-600/50 text-center"
           type="number"
           min="0"
           max="100"
@@ -79,7 +87,7 @@
 
       <div class="mb-12 gap-2 flex w-full justify-center">
         <input
-          class="bg-yellow-500"
+          class="bg-yellow-500/50 text-center"
           type="number"
           min="0"
           max="100"
@@ -87,7 +95,7 @@
           v-model="sliderRelativeMin"
         />
         <input
-          class="bg-yellow-500"
+          class="bg-yellow-500/50 text-center"
           type="number"
           min="0"
           max="100"
