@@ -22,7 +22,6 @@ const pb = {
         return data
       })
     } else {
-      console.log('getting the full list: ', collection, params)
       return record
         .getFullList(batchSize || 200, {
           ...params,
