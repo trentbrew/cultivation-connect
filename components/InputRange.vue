@@ -1,7 +1,9 @@
 <script setup>
   const state = reactive({
-    minAngle: 10,
-    maxAngle: 30,
+    minAngle: 40,
+    maxAngle: 60,
+    relativeMinAngle: 15,
+    relativeMaxAngle: 84,
   })
 
   const sliderMin = computed({
@@ -27,26 +29,104 @@
       state.maxAngle = val
     },
   })
+
+  const sliderRelativeMin = computed({
+    get: () => {
+      var val = parseInt(state.relativeMinAngle)
+      return val
+    },
+    set: val => {
+      val = parseInt(val)
+      if (val > state.relativeMaxAngle) state.relativeMaxAngle = val
+      state.relativeMinAngle = val
+    },
+  })
+
+  const sliderRelativeMax = computed({
+    get: () => {
+      var val = parseInt(state.relativeMaxAngle)
+      return val
+    },
+    set: val => {
+      val = parseInt(val)
+      if (val < state.relativeMinAngle) state.relativeMinAngle = val
+      state.relativeMaxAngle = val
+    },
+  })
 </script>
 
 <template>
   <div class="w-full h-full flex flex-col justify-center items-center gap-32">
     <div class="range-slider">
-      <input type="range" min="0" max="180" step="1" v-model="sliderMin" />
-      <input type="number" min="0" max="180" step="1" v-model="sliderMin" />
-      <input type="range" min="0" max="180" step="1" v-model="sliderMax" />
-      <input type="number" min="0" max="180" step="1" v-model="sliderMax" />
+      <div class="mb-2 gap-2 flex w-full justify-center">
+        <input
+          class="bg-green-600"
+          type="number"
+          min="0"
+          max="100"
+          step="1"
+          v-model="sliderMin"
+        />
+        <input
+          class="bg-green-600"
+          type="number"
+          min="0"
+          max="100"
+          step="1"
+          v-model="sliderMax"
+        />
+      </div>
+
+      <div class="mb-12 gap-2 flex w-full justify-center">
+        <input
+          class="bg-yellow-500"
+          type="number"
+          min="0"
+          max="100"
+          step="1"
+          v-model="sliderRelativeMin"
+        />
+        <input
+          class="bg-yellow-500"
+          type="number"
+          min="0"
+          max="100"
+          step="1"
+          v-model="sliderRelativeMax"
+        />
+      </div>
+
+      <input type="range" min="0" max="100" step="1" v-model="sliderMin" />
+      <input type="range" min="0" max="100" step="1" v-model="sliderMax" />
+
+      <input
+        type="range"
+        min="0"
+        max="100"
+        step="1"
+        v-model="sliderRelativeMin"
+      />
+      <input
+        type="range"
+        min="0"
+        max="100"
+        step="1"
+        v-model="sliderRelativeMax"
+      />
+
+      <!-- TODO: put the dynamic color gradient backdrop here -->
+
+      <div class="bg-base-300 h-4 w-full rounded-[16px]"></div>
     </div>
   </div>
 </template>
 
 <style scoped>
   .range-slider {
-    width: 300px;
+    width: 700px;
     margin: auto;
     text-align: center;
     position: relative;
-    height: 6em;
   }
 
   .range-slider input[type='range'] {
@@ -54,67 +134,30 @@
     left: 0;
     bottom: 0;
   }
-
-  input[type='number'] {
-    border: 1px solid #ddd;
-    text-align: center;
-    font-size: 1.6em;
-    -moz-appearance: textfield;
-  }
-
-  input[type='number']::-webkit-outer-spin-button,
-  input[type='number']::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-  }
-
-  input[type='number']:invalid,
-  input[type='number']:out-of-range {
-    border: 2px solid #ff6347;
-  }
-
   input[type='range'] {
     -webkit-appearance: none;
+    background: transparent;
     width: 100%;
-  }
-
-  input[type='range']:focus {
-    outline: none;
-  }
-
-  input[type='range']:focus::-webkit-slider-runnable-track {
-    background: #2497e3;
-  }
-
-  input[type='range']:focus::-ms-fill-lower {
-    background: #2497e3;
-  }
-
-  input[type='range']:focus::-ms-fill-upper {
-    background: #2497e3;
-  }
-
-  input[type='range']::-webkit-slider-runnable-track {
-    width: 100%;
-    height: 5px;
-    cursor: pointer;
-    animate: 0.2s;
-    background: #2497e3;
-    border-radius: 1px;
-    box-shadow: none;
-    border: 0;
   }
 
   input[type='range']::-webkit-slider-thumb {
     z-index: 2;
     position: relative;
-    box-shadow: 0px 0px 0px #000;
-    border: 1px solid #2497e3;
-    height: 18px;
-    width: 18px;
-    border-radius: 25px;
-    background: #a1d0ff;
-    cursor: pointer;
     -webkit-appearance: none;
-    margin-top: -7px;
+    background: black;
+    width: 16px;
+    height: 16px;
+    border-radius: 100%;
+  }
+
+  input[type='range']::-webkit-slider-runnable-track {
+    /* @apply bg-base-300; */
+    width: 100%;
+    height: 16px;
+    border-radius: 16px;
+    cursor: pointer;
+    border-radius: 16px;
+    box-shadow: none;
+    border: none;
   }
 </style>
