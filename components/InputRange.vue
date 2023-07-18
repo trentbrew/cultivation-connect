@@ -1,58 +1,120 @@
 <script setup>
   const state = reactive({
-    l: {
-      active: false,
-      value: 40,
+    minAngle: 10,
+    maxAngle: 30,
+  })
+
+  const sliderMin = computed({
+    get: () => {
+      var val = parseInt(state.minAngle)
+      return val
     },
-    r: {
-      active: false,
-      value: 60,
+    set: val => {
+      val = parseInt(val)
+      if (val > state.maxAngle) state.maxAngle = val
+      state.minAngle = val
     },
   })
 
-  watch(
-    () => state.l.value,
-    val => {
-      state.l.active = true
-      state.r.active = false
-    }
-  )
-
-  watch(
-    () => state.r.active,
-    val => {
-      state.r.active = true
-      state.l.active = false
-    }
-  )
+  const sliderMax = computed({
+    get: () => {
+      var val = parseInt(state.maxAngle)
+      return val
+    },
+    set: val => {
+      val = parseInt(val)
+      if (val < state.minAngle) state.minAngle = val
+      state.maxAngle = val
+    },
+  })
 </script>
 
 <template>
   <div class="w-full h-full flex flex-col justify-center items-center gap-32">
-    <div class="w-[600px] flex justify-center items-center gap-60">
-      <h1 class="text-5xl text-error">{{ state.l.value * -1 }}</h1>
-      <h1 class="text-5xl text-success">{{ state.r.value }}</h1>
-    </div>
-    <div class="w-[600px] flex justify-center pl-[16px]">
-      <input
-        v-model="state.l.value"
-        type="range"
-        min="0"
-        max="100"
-        class="range range-xs range-error rotate-180"
-        :class="state.l.value == 0 ? 'z-50' : ''"
-      />
-      <div
-        class="min-w-[16px] min-h-[16px] z-10 rounded-full translate-x-[-16px] bg-blend-difference border-base-100 border-[3px] bg-base-content"
-      ></div>
-      <input
-        v-model="state.r.value"
-        type="range"
-        min="0"
-        max="100"
-        class="range range-xs range-success translate-x-[-32px]"
-        :class="state.r.value == 0 ? 'z-50' : ''"
-      />
+    <div class="range-slider">
+      <input type="range" min="0" max="180" step="1" v-model="sliderMin" />
+      <input type="number" min="0" max="180" step="1" v-model="sliderMin" />
+      <input type="range" min="0" max="180" step="1" v-model="sliderMax" />
+      <input type="number" min="0" max="180" step="1" v-model="sliderMax" />
     </div>
   </div>
 </template>
+
+<style scoped>
+  .range-slider {
+    width: 300px;
+    margin: auto;
+    text-align: center;
+    position: relative;
+    height: 6em;
+  }
+
+  .range-slider input[type='range'] {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+  }
+
+  input[type='number'] {
+    border: 1px solid #ddd;
+    text-align: center;
+    font-size: 1.6em;
+    -moz-appearance: textfield;
+  }
+
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  input[type='number']:invalid,
+  input[type='number']:out-of-range {
+    border: 2px solid #ff6347;
+  }
+
+  input[type='range'] {
+    -webkit-appearance: none;
+    width: 100%;
+  }
+
+  input[type='range']:focus {
+    outline: none;
+  }
+
+  input[type='range']:focus::-webkit-slider-runnable-track {
+    background: #2497e3;
+  }
+
+  input[type='range']:focus::-ms-fill-lower {
+    background: #2497e3;
+  }
+
+  input[type='range']:focus::-ms-fill-upper {
+    background: #2497e3;
+  }
+
+  input[type='range']::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 5px;
+    cursor: pointer;
+    animate: 0.2s;
+    background: #2497e3;
+    border-radius: 1px;
+    box-shadow: none;
+    border: 0;
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+    z-index: 2;
+    position: relative;
+    box-shadow: 0px 0px 0px #000;
+    border: 1px solid #2497e3;
+    height: 18px;
+    width: 18px;
+    border-radius: 25px;
+    background: #a1d0ff;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -7px;
+  }
+</style>

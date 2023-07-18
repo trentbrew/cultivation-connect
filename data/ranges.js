@@ -45,8 +45,8 @@ const ranges = [
   {
     name: 'air_temp',
     title: 'Air Temperature',
-    relative_min: 20,
-    relative_max: 140,
+    relative_min: 20, // constant
+    relative_max: 140, // constant
     min: [50],
     median: [81.5],
     max: [113],
