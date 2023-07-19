@@ -11,6 +11,21 @@
     loading: true,
     facility: '',
     avatar_url: '',
+    payload: {
+      avatar: null,
+      username: {
+        editing: false,
+        value: '',
+      },
+      email: {
+        editing: false,
+        value: '',
+      },
+    },
+    data: {
+      sensors: [],
+      cultivars: [],
+    },
     settings: {
       account: {
         collection: 'users',
@@ -112,6 +127,22 @@
     },
   })
 
+  async function fetchData() {
+    console.log('fetching data...')
+    state.data.sensors = await pbFetch('sensors')
+    state.data.cultivars = await pbFetch('cultivars')
+    console.log(state.data.sensors)
+  }
+
+  function pbFetch(collection, options) {
+    return pb.get(collection, {
+      filter: `facility.id = "${pb.api.authStore.model.facility}"${
+        options?.filter ? ` && ${options.filter}` : ''
+      }`,
+      ...options,
+    })
+  }
+
   onBeforeMount(async () => {
     console.log('settings created')
     state.loading = true
@@ -119,6 +150,7 @@
 
   onMounted(async () => {
     console.log('settings mounted')
+    fetchData()
     state.loading = false
     state.facility = await getFacilityName()
     state.avatarUrl = await pb.getAvatarUrl()
@@ -160,21 +192,39 @@
     state.avatarUrl = await pb.getAvatarUrl()
   }
 
-  async function update(id, payload) {
-    const category = categories.find(c => c.name == settingsContext.value)
-    if (category?.name != 'ranges') {
-      await pb.update(category.collection, id, payload)
-    } else {
-      // TODO: update ranges.js
-      console.log('handling local range update...')
-    }
+  async function updateUsername() {
+    await pb.update('users', pb.api.authStore.model.id, {
+      username: state.payload.username.value,
+    })
     refresh()
-    global.toast(
-      'primary',
-      `${utils.capitalize(category.name)} data has been updated`
-    )
-    state.payload.account[Object.entries(payload)[0][0]].editing = false
+    global.toast('default', 'Username has been updated')
+    state.payload.username.editing = false
   }
+
+  async function updateEmail() {
+    await pb.update('users', pb.api.authStore.model.id, {
+      contact_email: state.payload.email.value,
+    })
+    refresh()
+    global.toast('default', 'Email has been updated')
+    state.payload.email.editing = false
+  }
+
+  // async function update(id, payload) {
+  //   const category = categories.find(c => c.name == settingsContext.value)
+  //   if (category?.name != 'ranges') {
+  //     await pb.update(category.collection, id, payload)
+  //   } else {
+  //     // TODO: update ranges.js
+  //     console.log('handling local range update...')
+  //   }
+  //   refresh()
+  //   global.toast(
+  //     'primary',
+  //     `${utils.capitalize(category.name)} data has been updated`
+  //   )
+  //   state.payload.account[Object.entries(payload)[0][0]].editing = false
+  // }
 
   function handleCancel() {
     state.payload.account.username.editing = false
@@ -185,17 +235,149 @@
 <template>
   <div class="w-full h-screen flex flex-col">
     <!-- HEADER -->
-    <!-- <div class="flex justify-start items-center gap-6 p-4 pl-6">
-      <h1 class="text-lg">
-        <span class="text-base-content/30">Settings</span>
-        <span class="text-base-300 mx-4">/</span>
-        <span class="font-bold">
+    <div class="flex justify-start items-center gap-6 p-8 pb-0 pl-10">
+      <h1 class="text-3xl">
+        <!-- <span class="text-base-content/30">Settings</span> -->
+        <!-- <span class="text-base-300 mx-4">/</span> -->
+        <span class="font-normal">
           {{ utils.capitalize(route.path.split('/')[2]) }}
         </span>
       </h1>
-    </div> -->
+    </div>
     <div class="w-full h-full !pt-0 flex justify-center items-center">
-      <Loading size="64" class="absolute" />
+      <!-- ACCOUNT SETTINGS -->
+      <div
+        v-if="settingsContext == 'account'"
+        class="w-full flex flex-col justify-between items-end h-full p-8 bg-base-200/10 z-50"
+      >
+        <div class="stats stats-vertical rounded w-full border border-base-300">
+          <div class="stat">
+            <div class="stat-title">Facility</div>
+            <div class="stat-value text-xl">
+              {{ state.facility }}
+            </div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Username</div>
+            <div class="stat-value text-xl flex justify-between">
+              <span v-show="!state.payload.username.editing">
+                {{ pb.api.authStore.model.username }}
+              </span>
+              <Icon
+                @click="edit('username')"
+                v-show="!state.payload.username.editing"
+                name="edit"
+                class="hover:opacity-50 cursor-pointer"
+              />
+              <input
+                class="bg-base-200/50 h-[32px] w-full mr-2 rounded-[8px]"
+                v-show="state.payload.username.editing"
+                v-model="state.payload.username.value"
+                type="text"
+              />
+              <div v-show="state.payload.username.editing" class="flex gap-2">
+                <button @click="handleCancel" class="btn btn-ghost btn-sm">
+                  Cancel
+                </button>
+                <button @click="updateUsername" class="btn btn-primary btn-sm">
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Email</div>
+            <div class="stat-value text-xl flex justify-between">
+              <span v-show="!state.payload.email.editing">
+                {{
+                  pb.api.authStore.model.contact_email ??
+                  pb.api.authStore.model.email
+                }}
+              </span>
+              <Icon
+                @click="edit('email')"
+                v-show="!state.payload.email.editing"
+                name="edit"
+                class="hover:opacity-50 cursor-pointer"
+              />
+              <input
+                class="bg-base-200/50 h-[32px] w-full mr-2 rounded-[8px]"
+                v-show="state.payload.email.editing"
+                v-model="state.payload.email.value"
+                type="text"
+              />
+              <div v-show="state.payload.email.editing" class="flex gap-2">
+                <button @click="handleCancel" class="btn btn-ghost btn-sm">
+                  Cancel
+                </button>
+                <button @click="updateEmail" class="btn btn-primary btn-sm">
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- CULTIVAR SETTINGS -->
+      <div
+        v-if="settingsContext == 'cultivars'"
+        class="w-full flex flex-col justify-between items-end h-full p-8 bg-base-200/10 z-50"
+      >
+        <Table
+          class="w-full rounded-b-none"
+          :placeholder-columns="['name', 'phenotype', 'genetic acquisition']"
+          :data="state.data.cultivars"
+          :class="state.data.cultivars.length == 0 ? 'border-none' : ''"
+        />
+        <div
+          v-if="state.data.sensors.length == 0"
+          class="bg-base-100 border border-base-300 w-full h-60 flex justify-center items-center rounded-b"
+        >
+          <DrawerToggle
+            icon="plus"
+            for="new-cultivar"
+            label="Add cultivars"
+            class="btn-outline !w-fit !px-4"
+          />
+        </div>
+        <DrawerToggle
+          v-else
+          icon="plus"
+          for="new-cultivar"
+          label="Add cultivars"
+          class="btn-outline !w-fit !px-4 absolute top-6 right-8"
+        />
+      </div>
+      <!-- SENSOR SETTINGS -->
+      <div
+        v-if="settingsContext == 'sensors'"
+        class="w-full flex flex-col justify-start items-end h-full p-8 bg-base-200/10 z-50"
+      >
+        <Table
+          class="w-full rounded-b-none"
+          :placeholder-columns="['brand', 'type', 'model', 'serial number']"
+          :data="state.data.sensors"
+          :class="state.data.sensors.length == 0 ? 'border-none' : ''"
+        />
+        <div
+          v-if="state.data.sensors.length == 0"
+          class="bg-base-100 border border-base-300 w-full h-60 flex justify-center items-center rounded-b"
+        >
+          <DrawerToggle
+            icon="plus"
+            for="new-sensor"
+            label="Add a new sensor"
+            class="btn-outline !w-fit !px-4"
+          />
+        </div>
+        <DrawerToggle
+          v-else
+          for="new-sensor"
+          icon="plus"
+          label="Add a new sensor"
+          class="btn-outline !w-fit !px-4 absolute top-6 right-8"
+        />
+      </div>
       <!-- RANGE SETTINGS -->
       <div
         v-if="settingsContext == 'ranges'"
@@ -209,7 +391,7 @@
           {{ pb.api.authStore.model.last_name }}
         </h1> -->
         <div
-          class="overflow-y-scroll border border-1 border-base-300 max-h-[calc(100vh-64px)]"
+          class="overflow-y-scroll border border-1 border-base-300 max-h-[calc(100vh-130px)] rounded-[16px]"
         >
           <Accordion>
             <AccordionItem

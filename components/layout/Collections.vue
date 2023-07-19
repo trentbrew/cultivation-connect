@@ -17,10 +17,15 @@
       name: 'Account',
       icon: 'user',
     },
+    // {
+    //   id: 'facility',
+    //   name: 'Facility',
+    //   icon: 'home',
+    // },
     {
-      id: 'facility',
-      name: 'Facility',
-      icon: 'home',
+      id: 'cultivars',
+      name: 'Cultivars',
+      icon: 'flower',
     },
     {
       id: 'sensors',

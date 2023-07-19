@@ -226,7 +226,7 @@
 
 <style scoped>
   .range-slider {
-    min-width: 97%;
+    min-width: 90%;
     margin: auto;
     text-align: center;
     position: relative;
