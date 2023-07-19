@@ -107,45 +107,7 @@
       },
       ranges: {
         collection: 'ranges',
-        data: null,
-        fields: [
-          {
-            name: 'abs_min',
-            label: 'Absolute Min',
-            type: 'number',
-            value: '',
-          },
-          {
-            name: 'rel_min',
-            label: 'Relative Min',
-            type: 'number',
-            value: '',
-          },
-          {
-            name: 'min',
-            label: 'Min',
-            type: 'number',
-            value: '',
-          },
-          {
-            name: 'max',
-            label: 'Max',
-            type: 'number',
-            value: '',
-          },
-          {
-            name: 'rel_max',
-            label: 'Relative Max',
-            type: 'number',
-            value: '',
-          },
-          {
-            name: 'abs_max',
-            label: 'Absolute Max',
-            type: 'number',
-            value: '',
-          },
-        ],
+        payload: null,
       },
     },
   })
@@ -233,7 +195,7 @@
       </h1>
     </div> -->
     <div class="w-full h-full !pt-0 flex justify-center items-center">
-      <Loading class="absolute" />
+      <Loading size="64" class="absolute" />
       <!-- RANGE SETTINGS -->
       <div
         v-if="settingsContext == 'ranges'"
@@ -256,7 +218,17 @@
               :title="field.title"
               class="font-bold"
             >
-              {{ field }}
+              <InputRange
+                :data="{
+                  step: field.step,
+                  abs_min: field.relative_min,
+                  rel_min: field.min[0] - field.margin[0],
+                  min: field.min[0],
+                  max: field.max[0],
+                  rel_max: field.max[0] + field.margin[0],
+                  abs_max: field.relative_max,
+                }"
+              />
             </AccordionItem>
           </Accordion>
         </div>

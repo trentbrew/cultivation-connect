@@ -53,7 +53,11 @@
     >
       <div
         class="flex w-full items-center justify-between"
-        :class="state.expanded ? 'text-primary' : 'group-hover:text-primary'"
+        :class="
+          state.expanded
+            ? 'text-base-content'
+            : 'group-hover:text-base-content/40'
+        "
       >
         <span>{{ props.title }}</span>
         <Icon

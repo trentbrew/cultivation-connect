@@ -52,6 +52,7 @@ const ranges = [
     max: [113],
     margin: [10],
     unit: '°F',
+    step: 1,
   },
   {
     name: 'air_humidity',
@@ -63,6 +64,7 @@ const ranges = [
     max: [0.91],
     margin: [0.05],
     unit: '%',
+    step: 0.01,
   },
   {
     name: 'solar',
@@ -74,6 +76,7 @@ const ranges = [
     max: [275, 1150],
     margin: [50, 50],
     unit: 'W/m²',
+    step: 5,
   },
   {
     name: 'vpd',
@@ -85,6 +88,7 @@ const ranges = [
     max: [0.8],
     margin: [0.15],
     unit: 'kPa',
+    step: 0.01,
   },
   {
     name: 'dli',
@@ -96,6 +100,7 @@ const ranges = [
     max: [46],
     margin: [26],
     unit: '', // µmol/m²/s ?
+    step: 1,
   },
   {
     name: 'co2',
@@ -107,6 +112,7 @@ const ranges = [
     max: [1500],
     margin: [200],
     unit: 'ppm',
+    step: 50,
   },
   {
     name: 'pore_ec',
@@ -118,6 +124,7 @@ const ranges = [
     max: [0.8],
     margin: [0.05],
     unit: '%',
+    step: 0.01,
   },
   {
     name: 'day_time_pore_ec',
@@ -129,6 +136,7 @@ const ranges = [
     max: [0.25],
     margin: [0.05],
     unit: '%',
+    step: 0.01,
   },
   {
     name: 'day_time_soil_moisture',
@@ -140,6 +148,7 @@ const ranges = [
     max: [0.5],
     margin: [0.06],
     unit: '%',
+    step: 0.01,
   },
   {
     name: 'day_time_dry_back',
@@ -151,6 +160,7 @@ const ranges = [
     max: [0.1],
     margin: [0.049],
     unit: '%',
+    step: 0.01,
   },
   {
     name: 'night_time_pore_ec',
@@ -162,6 +172,7 @@ const ranges = [
     max: [0.1],
     margin: [0.01],
     unit: '%',
+    step: 0.01,
   },
   {
     name: 'night_time_soil_moisture',
@@ -173,6 +184,7 @@ const ranges = [
     max: [0.49],
     margin: [0.05],
     unit: '%',
+    step: 0.01,
   },
   {
     name: 'night_time_dry_back',
@@ -184,6 +196,7 @@ const ranges = [
     max: [0.35, 0.4],
     margin: [0.1, 0.1],
     unit: '%',
+    step: 0.01,
   },
   {
     name: 'grow_medium_temp',
@@ -195,6 +208,7 @@ const ranges = [
     max: [76],
     margin: [4],
     unit: '°F',
+    step: 1,
   },
   {
     name: 'ph',
@@ -206,6 +220,7 @@ const ranges = [
     max: [6.2],
     margin: [0.3],
     unit: '',
+    step: 0.01,
   },
   {
     name: 'yield',
@@ -217,6 +232,7 @@ const ranges = [
     max: [1000],
     margin: [20],
     unit: 'g/sqft',
+    step: 1,
   },
 ]
 
