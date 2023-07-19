@@ -46,10 +46,17 @@
   }
 
   const filteredData = computed(() => {
-    if (state.search == '') return state.data
-    return state.data.filter(record => {
-      return record.name.toLowerCase().includes(state.search.toLowerCase())
-    })
+    if (route.name.includes('settings')) {
+      if (state.search == '') return settings
+      return settings.filter(record => {
+        return record.name.toLowerCase().includes(state.search.toLowerCase())
+      })
+    } else {
+      if (state.search == '') return state.data
+      return state.data.filter(record => {
+        return record.name.toLowerCase().includes(state.search.toLowerCase())
+      })
+    }
   })
 
   function handleNewCycle() {
@@ -68,11 +75,7 @@
   <div
     class="bg-base-100 h-screen w-[400px] border border-r-base-300 flex flex-col"
   >
-    <div
-      v-if="!route.name.includes('settings')"
-      id="search"
-      class="!h-16 mt-[-1px] w-full border-b border-base-300"
-    >
+    <div id="search" class="!h-16 mt-[-1px] w-full border-b border-base-300">
       <Icon
         name="search"
         size="24"
@@ -87,7 +90,7 @@
     </div>
 
     <div
-      v-if="filteredData.length == 0 && !route.name.includes('settings')"
+      v-if="filteredData.length == 0"
       class="flex-grow w-full translate-y-[40vh]"
       :class="'flex justify-center items-center px-6'"
     >
@@ -115,7 +118,7 @@
         </li>
       </ul>
       <ul v-else class="w-full">
-        <li v-for="(record, index) in settings" :key="index">
+        <li v-for="(record, index) in filteredData" :key="index">
           <router-link
             :to="`/settings/${record.id}`"
             class="font-medium h-16 w-full p-8 flex justify-start gap-4 items-center cursor-pointer hover:bg-base-200 active:bg-base-300 duration-150"
