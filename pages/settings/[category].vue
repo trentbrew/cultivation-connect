@@ -172,12 +172,13 @@
   const settingsContext = computed(() => route.path.split('/')[2])
 
   function edit(context) {
-    state.payload.account[context].editing = true
+    console.log('editing: ', context)
+    state.payload[context].editing = true
   }
 
   function handleFileInput(event) {
     if (event.target.files[0]) {
-      state.payload.account.avatar = event.target.files[0]
+      state.payload.avatar = event.target.files[0]
     }
   }
 
@@ -227,8 +228,8 @@
   // }
 
   function handleCancel() {
-    state.payload.account.username.editing = false
-    state.payload.account.email.editing = false
+    state.payload.username.editing = false
+    state.payload.email.editing = false
   }
 </script>
 
@@ -383,13 +384,6 @@
         v-if="settingsContext == 'ranges'"
         class="w-full flex flex-col justify-start h-full p-8 bg-base-200/10 z-50"
       >
-        <!-- <div class="h-32 w-32 rounded-full mb-8">
-          <img :src="state.avatarUrl" alt="Avatar" class="rounded-full" />
-        </div>
-        <h1 class="text-3xl font-bold mb-10">
-          {{ pb.api.authStore.model.first_name }}
-          {{ pb.api.authStore.model.last_name }}
-        </h1> -->
         <div
           class="overflow-y-scroll border border-1 border-base-300 max-h-[calc(100vh-130px)] rounded-[16px]"
         >

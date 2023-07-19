@@ -13,7 +13,7 @@
     },
     hoverable: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     placeholderColumns: {
       type: Array,
