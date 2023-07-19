@@ -1,5 +1,5 @@
 <script setup>
-  const router = useRouter();
+  const router = useRouter()
   const props = defineProps({
     page: {
       type: String,
@@ -9,7 +9,7 @@
       type: Object,
       default: 'Untitled cycle',
     },
-  });
+  })
 </script>
 
 <template>
@@ -20,7 +20,6 @@
         <span class="text-base-300 mx-4">/</span>
         <span class="font-bold">{{ props.cycle.name }}</span>
       </h1>
-      <!-- TODO: link to cultivar settings based on hash -->
       <DrawerToggle
         @click="router.push({ hash: `#edit–${props.cycle.id}` })"
         :for="`edit-cultivar`"

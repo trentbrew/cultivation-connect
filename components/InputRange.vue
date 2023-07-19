@@ -1,4 +1,8 @@
 <script setup>
+  const emit = defineEmits(['update:modelValue'])
+
+  const props = defineProps(['modelValue'])
+
   const state = reactive({
     minAngle: 40,
     maxAngle: 60,

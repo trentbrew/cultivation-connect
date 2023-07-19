@@ -36,7 +36,7 @@
     'facility',
     'cycles',
     'plants',
-    'settings',
+    // 'settings',
     'account-username',
     'auth-login',
     'auth-signup',

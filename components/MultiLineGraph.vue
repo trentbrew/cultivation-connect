@@ -8,7 +8,7 @@
     title: {
       type: String,
       required: false,
-      default: 'Multi-line chart',
+      default: 'Grow Conditions',
     },
     series: {
       type: [Array, Object],

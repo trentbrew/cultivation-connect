@@ -13,9 +13,9 @@
 
   const pages = [
     {
-      name: 'Facility',
+      name: 'Overview',
       path: '/facility',
-      icon: 'home',
+      icon: 'analytics',
     },
     {
       name: 'Cycles',
@@ -24,8 +24,8 @@
     },
     {
       name: 'Settings',
-      path: '/settings',
-      icon: 'configure',
+      path: '/settings/account',
+      icon: 'settings',
     },
   ]
 
@@ -123,9 +123,9 @@
           :data-tip="page.name"
           :to="page.path"
           :class="
-            (state.ui.context == 'cycles' ||
-              state.ui.context == 'cycles-cycle') &&
-            index == 1
+            state.ui.context.includes('cycles') && index == 1
+              ? 'router-link-active router-link-exact-active'
+              : state.ui.context.includes('settings') && index == 2
               ? 'router-link-active router-link-exact-active'
               : ''
           "

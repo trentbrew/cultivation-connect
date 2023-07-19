@@ -11,11 +11,35 @@
     data: [],
   })
 
+  const settings = [
+    {
+      id: 'account',
+      name: 'Account',
+      icon: 'user',
+    },
+    {
+      id: 'facility',
+      name: 'Facility',
+      icon: 'home',
+    },
+    {
+      id: 'sensors',
+      name: 'Sensors',
+      icon: 'thermometer',
+    },
+    {
+      id: 'ranges',
+      name: 'Ranges',
+      icon: 'metrics',
+    },
+  ]
+
   onMounted(() => {
     fetchData()
   })
 
   async function fetchData() {
+    if (route.name.includes('settings')) return
     state.data = await pb.get(context.value, {
       filter: `facility.id = "${pb.api.authStore.model.facility}"`,
     })
@@ -44,7 +68,11 @@
   <div
     class="bg-base-100 h-screen w-[400px] border border-r-base-300 flex flex-col"
   >
-    <div id="search" class="!h-16 mt-[-1px] w-full border-b border-base-300">
+    <div
+      v-if="!route.name.includes('settings')"
+      id="search"
+      class="!h-16 mt-[-1px] w-full border-b border-base-300"
+    >
       <Icon
         name="search"
         size="24"
@@ -59,18 +87,17 @@
     </div>
 
     <div
-      v-if="filteredData.length == 0"
+      v-if="filteredData.length == 0 && !route.name.includes('settings')"
       class="flex-grow w-full translate-y-[40vh]"
       :class="'flex justify-center items-center px-6'"
     >
-      <!-- TODO: Only display this is there are no search results -->
       <p class="text-base-300 text-center text-lg">
         {{ `No ${context.split('-')[0]} found` }}
       </p>
     </div>
 
     <div class="h-full flex flex-col justify-between items-start">
-      <ul class="w-full">
+      <ul v-if="!route.name.includes('settings')" class="w-full">
         <li v-for="(record, index) in filteredData" :key="index">
           <router-link
             :to="`/cycles/${record.id}`"
@@ -87,7 +114,21 @@
           </router-link>
         </li>
       </ul>
-      <div class="p-4 w-full">
+      <ul v-else class="w-full">
+        <li v-for="(record, index) in settings" :key="index">
+          <router-link
+            :to="`/settings/${record.id}`"
+            class="font-medium h-16 w-full p-8 flex justify-start gap-4 items-center cursor-pointer hover:bg-base-200 active:bg-base-300 duration-150"
+            :class="index == 0 ? 'pt-8' : ''"
+          >
+            <Icon :name="record.icon" />
+            <span>
+              {{ record.name }}
+            </span>
+          </router-link>
+        </li>
+      </ul>
+      <div v-if="!route.name.includes('settings')" class="p-4 w-full">
         <DrawerToggle
           @click="handleNewCycle"
           for="new-cycle"
