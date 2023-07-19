@@ -148,21 +148,21 @@
 
       <!-- TODO: put the dynamic color gradient backdrop here -->
 
-      <div class="bg-base-200 h-2 w-full flex justify-end">
+      <div class="bg-base-200 h-1 w-full flex justify-end">
         <div
-          class="absolute w-full h-2 bg-yellow-500"
+          class="absolute w-full h-1 bg-yellow-500"
           :style="getWidth('a')"
         ></div>
         <div
-          class="absolute w-full h-2 bg-green-500"
+          class="absolute w-full h-1 bg-green-500"
           :style="getWidth('b')"
         ></div>
         <div
-          class="absolute w-full h-2 bg-yellow-500"
+          class="absolute w-full h-1 bg-yellow-500"
           :style="getWidth('c')"
         ></div>
         <div
-          class="absolute w-full h-2 rounded-[24px] bg-red-500"
+          class="absolute w-full h-1 rounded-[24px] bg-red-500"
           :style="getWidth('d')"
         ></div>
       </div>
@@ -192,8 +192,8 @@
 
   input[type='range']::-webkit-slider-thumb {
     @apply bg-base-100;
-    border: 6px solid;
-    margin-top: -8px;
+    border: 4px solid;
+    margin-top: -10px;
     z-index: 2;
     position: relative;
     border-radius: 100%;
@@ -228,7 +228,7 @@
   input[type='range']::-webkit-slider-runnable-track {
     @apply bg-red-500;
     width: 100%;
-    height: 8px;
+    height: 4px;
     border-radius: 24px;
     cursor: pointer;
     box-shadow: none;
