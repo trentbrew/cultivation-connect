@@ -389,13 +389,18 @@
         >
           <Accordion>
             <AccordionItem
-              v-for="(field, fieldIndex) in ranges"
+              v-for="(field, fieldIndex) in ranges.sort((a, b) => {
+                if (a.title < b.title) return -1
+                if (a.title > b.title) return 1
+                return 0
+              })"
               :key="fieldIndex"
               :title="field.title"
               class="font-bold"
             >
               <InputRange
                 :data="{
+                  unit: field.unit,
                   step: field.step,
                   abs_min: field.relative_min,
                   rel_min: field.min[0] - field.margin[0],

@@ -18,12 +18,20 @@
   })
 
   onMounted(() => {
-    state.min_value = props.data.min
-    state.max_value = props.data.max
-    state.rel_min_value = props.data.rel_min
-    state.rel_max_value = props.data.rel_max
-    state.abs_min_value = props.data.abs_min
-    state.abs_max_value = props.data.abs_max
+    console.log('props.data', props.data)
+    state.min_value =
+      props.data.unit == '%' ? props.data.min * 100 : props.data.min
+    state.max_value =
+      props.data.unit == '%' ? props.data.max * 100 : props.data.max
+    state.rel_min_value =
+      props.data.unit == '%' ? props.data.rel_min * 100 : props.data.rel_min
+    state.rel_max_value =
+      props.data.unit == '%' ? props.data.rel_max * 100 : props.data.rel_max
+    state.abs_min_value =
+      props.data.unit == '%' ? props.data.abs_min * 100 : props.data.abs_min
+    state.abs_max_value =
+      props.data.unit == '%' ? props.data.abs_max * 100 : props.data.abs_max
+
     console.log('state: ', state)
   })
 
@@ -122,7 +130,6 @@
           type="range"
           :min="state.abs_min_value"
           :max="state.abs_max_value"
-          :step="props.data.step"
           v-model="rel_min"
         />
         <input
@@ -130,7 +137,6 @@
           type="range"
           :min="state.abs_min_value"
           :max="state.abs_max_value"
-          :step="props.data.step"
           v-model="min"
         />
         <input
@@ -138,7 +144,6 @@
           type="range"
           :min="state.abs_min_value"
           :max="state.abs_max_value"
-          :step="props.data.step"
           v-model="max"
         />
         <input
@@ -146,7 +151,6 @@
           type="range"
           :min="state.abs_min_value"
           :max="state.abs_max_value"
-          :step="props.data.step"
           v-model="rel_max"
         />
         <div class="bg-base-200 h-1 w-full flex justify-end">
@@ -173,7 +177,6 @@
           <input
             class="px-1 input input-sm bg-base-100 font-normal w-full border-2 border-red-500"
             type="number"
-            :step="props.data.step"
             v-model="state.abs_min_value"
           />
           <input
@@ -181,7 +184,6 @@
             type="number"
             :min="state.abs_min_value"
             :max="state.abs_max_value"
-            :step="props.data.step"
             v-model="rel_min"
           />
           <input
@@ -189,7 +191,6 @@
             type="number"
             :min="state.abs_min_value"
             :max="state.abs_max_value"
-            :step="props.data.step"
             v-model="min"
           />
           <input
@@ -197,7 +198,6 @@
             type="number"
             :min="state.abs_min_value"
             :max="state.abs_max_value"
-            :step="props.data.step"
             v-model="max"
           />
           <input
@@ -205,13 +205,11 @@
             type="number"
             :min="state.abs_min_value"
             :max="state.abs_max_value"
-            :step="props.data.step"
             v-model="rel_max"
           />
           <input
             class="px-1 input input-sm bg-base-100 font-normal w-full border-2 border-red-500"
             type="number"
-            :step="props.data.step"
             v-model="state.abs_max_value"
           />
           <div></div>
