@@ -195,11 +195,11 @@
 
 <style lang="scss">
   #nav-items {
-    @apply text-base-300;
+    @apply text-base-300/75;
   }
 
   #nav-items .router-link-active,
   #nav-items .router-link-exact-active {
-    @apply text-base-content;
+    @apply text-primary;
   }
 </style>
