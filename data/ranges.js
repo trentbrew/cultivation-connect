@@ -191,7 +191,7 @@ const ranges = [
     title: 'Dry Back (Night)',
     relative_min: 0,
     relative_max: 0.6,
-    min: [0, 0.3],
+    min: [0.05, 0.3],
     median: [0.175, 0.35],
     max: [0.35, 0.4],
     margin: [0.1, 0.1],

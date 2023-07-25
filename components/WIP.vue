@@ -4,7 +4,7 @@
       type: String,
       default: 'growth',
     },
-  });
+  })
 
   const images = {
     growth:
@@ -17,7 +17,7 @@
       'https://cultivationconnect.fly.dev/api/files/dsgp80sss2cymxu/udrtfkvs8nlb691/static_records_xhGAfA1iv5.webp',
     data: 'https://cultivationconnect.fly.dev/api/files/dsgp80sss2cymxu/ljtug7x87rixmvo/datatable_7Yf1hCCV2K.gif',
     grow: 'https://cultivationconnect.fly.dev/api/files/dsgp80sss2cymxu/ewpximjizqf5n3e/grow_jZc9gFF3Jo.gif',
-  };
+  }
 </script>
 
 <template>
@@ -27,6 +27,6 @@
       ['growth', 'dandelion'].includes(props.img) ? 'brightness-[0.91]' : ''
     "
     :src="images[props.img]"
-    alt="You got this <3"
+    alt="Image not found"
   />
 </template>
