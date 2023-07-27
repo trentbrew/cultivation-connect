@@ -171,7 +171,10 @@
         'DLI',
         'CO2',
         'Pore EC',
-        'Substrate Moisture, Dry Back, Substrate Temperature, PH',
+        'Substrate Moisture',
+        'Dry Back',
+        'Substrate Temperature',
+        'PH',
       ],
     },
     grid: {
@@ -186,13 +189,99 @@
       },
     },
     xAxis: {
-      type: 'category',
+      type: 'time',
       boundaryGap: false,
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     },
-    yAxis: {
-      type: 'value',
-    },
+    yAxis: [
+      {
+        type: 'value',
+        name: 'Air Temperature',
+        // min: 0,
+        // max: 100,
+        // interval: 20,
+        axisLabel: {
+          formatter: '{value} °F',
+        },
+        show: false,
+      },
+      {
+        type: 'value',
+        name: 'Air Humidity',
+        // min: 0,
+        // max: 100,
+        // interval: 20,
+        axisLabel: {
+          formatter: '{value} %',
+        },
+        show: false,
+      },
+      {
+        type: 'value',
+        name: 'Solar PPFD',
+        // min: 0,
+        // max: 100,
+        // interval: 20,
+        axisLabel: {
+          formatter: '{value} umol/m2/s',
+        },
+        show: false,
+      },
+      {
+        type: 'value',
+        name: 'VPD',
+        // min: 0,
+        // max: 100,
+        // interval: 20,
+        axisLabel: {
+          formatter: '{value} kPa',
+        },
+        show: false,
+      },
+      {
+        type: 'value',
+        name: 'DLI',
+        // min: 0,
+        // max: 100,
+        // interval: 20,
+        axisLabel: {
+          formatter: '{value} mol/m2/d',
+        },
+        show: false,
+      },
+      {
+        type: 'value',
+        name: 'CO2',
+        // min: 0,
+        // max: 100,
+        // interval: 20,
+        axisLabel: {
+          formatter: '{value} ppm',
+        },
+        show: false,
+      },
+      {
+        type: 'value',
+        name: 'Pore EC',
+        // min: 0,
+        // max: 100,
+        // interval: 20,
+        axisLabel: {
+          formatter: '{value} mS/cm',
+        },
+        show: false,
+      },
+      {
+        type: 'value',
+        name: 'Substrate Moisture, Dry Back, Substrate Temperature, PH',
+        // min: 0,
+        // max: 100,
+        // interval: 20,
+        axisLabel: {
+          formatter: '{value} %, %, °F, pH',
+        },
+        show: false,
+      },
+    ],
     series,
   }
 
