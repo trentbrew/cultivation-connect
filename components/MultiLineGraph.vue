@@ -1,5 +1,12 @@
 <script setup>
   import * as echarts from 'echarts'
+  // let base = +new Date(2020, 12, 1);
+  // let oneDay = 24 * 3600 * 1000;
+  // let data = [[base, Math.random() * 30]];
+  // for (let i = 1; i < 1000; i++) {
+  //   let now = new Date((base += oneDay));
+  //   data.push([+now, Math.round((Math.random() - 0.5) * 20 + data[i - 1][1])]);
+  // }
   const global = useGlobalStore()
 
   const collectionsState = computed(() => global.getCollectionsState)
@@ -22,8 +29,8 @@
           smooth: true,
           name: 'Air Temperature',
           type: 'line',
-          stack: 'Total',
-          data: [120, 132, 101, 134, 90, 230, 210],
+          // stack: 'Total',
+          data: [40,50,60,70,84,68, 55],
         },
         {
           lineStyle: {
@@ -34,7 +41,7 @@
           smooth: true,
           name: 'Air Humidity',
           type: 'line',
-          stack: 'Total',
+          // stack: 'Total',
           data: [220, 182, 191, 234, 290, 330, 310],
         },
         {
@@ -46,7 +53,7 @@
           smooth: true,
           name: 'Solar PPFD',
           type: 'line',
-          stack: 'Total',
+          // stack: 'Total',
           data: [150, 232, 201, 154, 190, 330, 410],
         },
         {
@@ -58,7 +65,7 @@
           smooth: true,
           name: 'VPD',
           type: 'line',
-          stack: 'Total',
+          // stack: 'Total',
           data: [320, 332, 301, 334, 390, 330, 320],
         },
         {
@@ -70,7 +77,7 @@
           smooth: true,
           name: 'DLI',
           type: 'line',
-          stack: 'Total',
+          // stack: 'Total',
           data: [820, 932, 901, 934, 1290, 1330, 1320],
         },
         {
@@ -82,7 +89,7 @@
           smooth: true,
           name: 'CO2',
           type: 'line',
-          stack: 'Total',
+          // stack: 'Total',
           data: [820, 932, 901, 934, 1290, 1330, 1320],
         },
         {
@@ -94,7 +101,7 @@
           smooth: true,
           name: 'Pore EC',
           type: 'line',
-          stack: 'Total',
+          // stack: 'Total',
           data: [820, 932, 901, 934, 1290, 1330, 1320],
         },
         {
@@ -106,7 +113,7 @@
           smooth: true,
           name: 'Substrate Moisture',
           type: 'line',
-          stack: 'Total',
+          // stack: 'Total',
           data: [820, 932, 901, 934, 1290, 1330, 1320],
         },
         {
@@ -118,7 +125,7 @@
           smooth: true,
           name: 'Dry Back',
           type: 'line',
-          stack: 'Total',
+          // stack: 'Total',
           data: [820, 932, 901, 934, 1290, 1330, 1320],
         },
         {
@@ -130,7 +137,7 @@
           smooth: true,
           name: 'Substrate Temperature',
           type: 'line',
-          stack: 'Total',
+          // stack: 'Total',
           data: [820, 932, 901, 934, 1290, 1330, 1320],
         },
         {
@@ -142,7 +149,7 @@
           smooth: true,
           name: 'PH',
           type: 'line',
-          stack: 'Total',
+          // stack: 'Total',
           data: [820, 932, 901, 934, 1290, 1330, 1320],
         },
       ],
@@ -196,9 +203,9 @@
       {
         type: 'value',
         name: 'Air Temperature',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
+        min: 50,
+        max: 113,
+        interval: 10,
         axisLabel: {
           formatter: '{value} °F',
         },
@@ -207,9 +214,9 @@
       {
         type: 'value',
         name: 'Air Humidity',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
+        min: 0.11,
+        max: 0.91,
+        interval: 0.05,
         axisLabel: {
           formatter: '{value} %',
         },
@@ -218,20 +225,20 @@
       {
         type: 'value',
         name: 'Solar PPFD',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
+        min: 150,
+        max: 1150,
+        interval: 50,
         axisLabel: {
-          formatter: '{value} umol/m2/s',
+          formatter: '{value} W/m²',
         },
         show: false,
       },
       {
         type: 'value',
         name: 'VPD',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
+        min: 0.6,
+        max: 0.8,
+        interval: 0.01,
         axisLabel: {
           formatter: '{value} kPa',
         },
@@ -240,20 +247,20 @@
       {
         type: 'value',
         name: 'DLI',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
+        min: 21,
+        max: 46,
+        interval: 1,
         axisLabel: {
-          formatter: '{value} mol/m2/d',
+          formatter: '{value} µmol/m²/s',
         },
         show: false,
       },
       {
         type: 'value',
         name: 'CO2',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
+        min: 1100,
+        max: 1599,
+        interval: 50,
         axisLabel: {
           formatter: '{value} ppm',
         },
@@ -262,22 +269,55 @@
       {
         type: 'value',
         name: 'Pore EC',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
+        min: 0.1,
+        max: 0.8,
+        interval: 0.05,
         axisLabel: {
-          formatter: '{value} mS/cm',
+          formatter: '{value} %',
         },
         show: false,
       },
       {
         type: 'value',
-        name: 'Substrate Moisture, Dry Back, Substrate Temperature, PH',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
+        name: 'Substrate Moisture',
+        min: 0.1,
+        max: 0.75,
+        interval: 0.01,
         axisLabel: {
-          formatter: '{value} %, %, °F, pH',
+          formatter: '{value} %',
+        },
+        show: false,
+      },
+      {
+        type: 'value',
+        name: 'Dry Back',
+        min: 0.05,
+        max: 0.1,
+        interval: 0.01,
+        axisLabel: {
+          formatter: '{value} %',
+        },
+        show: false,
+      },
+      {
+        type: 'value',
+        name: 'Substrate Temperature',
+        min: 40,
+        max: 90,
+        interval: 4,
+        axisLabel: {
+          formatter: '{value} °F',
+        },
+        show: false,
+      },
+      {
+        type: 'value',
+        name: 'PH',
+        min: 5,
+        max: 7,
+        interval: 0.3,
+        axisLabel: {
+          formatter: '{value} pH',
         },
         show: false,
       },

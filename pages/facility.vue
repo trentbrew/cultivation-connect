@@ -2,7 +2,13 @@
   const pb = usePocketbase()
   const global = useGlobalStore()
   const router = useRouter()
-
+  let base = +new Date(2020, 12, 1);
+  let oneDay = 24 * 3600 * 1000;
+  let data = [[base, Math.random() * 30]];
+  for (let i = 1; i < 1000; i++) {
+    let now = new Date((base += oneDay));
+    data.push([+now, Math.round((Math.random() - 0.5) * 20 + data[i - 1][1])]);
+  }
   const state = reactive({
     loading: false,
     data: {
@@ -117,7 +123,7 @@
             <div
               class="w-full h-full rounded-[8px] p-4 border-[1px] border-base-300"
             >
-              <MultiLineGraph />
+              <MultiLineGraph/>
             </div>
             <!-- ROOMS & ZONES -->
             <!-- <div class="flex gap-4 h-full">
