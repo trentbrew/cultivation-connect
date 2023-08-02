@@ -422,23 +422,27 @@
         class="w-full flex flex-col justify-start h-full p-8 bg-base-200/10 z-50"
       >
         <div
-          class="overflow-y-scroll border border-1 border-base-300 max-h-[calc(100vh-130px)] rounded-[16px]"
+          class="overflow-y-scroll border border-1 border-base-300 max-h-[calc(100vh-140px)] rounded-[16px]"
         >
           <Accordion>
             <AccordionItem
-              v-for="(field, fieldIndex) in ranges.sort((a, b) => {
-                if (a.title < b.title) return -1
-                if (a.title > b.title) return 1
-                return 0
-              })"
+              v-for="(field, fieldIndex) in ranges
+                .sort((a, b) => {
+                  if (a.title < b.title) return -1
+                  if (a.title > b.title) return 1
+                  return 0
+                })
+                .filter(field => field.name != 'yield')"
               :key="fieldIndex"
               :title="field.title"
               class="font-bold"
             >
               <InputRange
                 :data="{
+                  name: field.name,
                   unit: field.unit,
                   step: field.step,
+                  margin: field.margin[0],
                   abs_min: field.relative_min,
                   rel_min: field.min[0] - field.margin[0],
                   min: field.min[0],

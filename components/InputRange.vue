@@ -18,18 +18,27 @@
   })
 
   onMounted(() => {
+    state.margin =
+      props.data.unit == '%' ? props.data.margin * 100 : props.data.margin
+
     state.min_value =
       props.data.unit == '%' ? props.data.min * 100 : props.data.min
+
     state.max_value =
       props.data.unit == '%' ? props.data.max * 100 : props.data.max
+
     state.rel_min_value =
       props.data.unit == '%' ? props.data.rel_min * 100 : props.data.rel_min
+
     state.rel_max_value =
       props.data.unit == '%' ? props.data.rel_max * 100 : props.data.rel_max
-    state.abs_min_value =
-      props.data.unit == '%' ? props.data.abs_min * 100 : props.data.abs_min
-    state.abs_max_value =
-      props.data.unit == '%' ? props.data.abs_max * 100 : props.data.abs_max
+
+    state.abs_min_value = props.data.unit == '%' ? 0 : props.data.abs_min
+
+    state.abs_max_value = props.data.unit == '%' ? 100 : props.data.abs_max
+    ;[Object.entries(props.data)].forEach(item => {
+      console.log(item[0][1], state)
+    })
   })
 
   const min = computed({
@@ -71,6 +80,7 @@
       if (val > state.max_value) state.max_value = val
       if (val > state.rel_max_value) state.rel_max_value = val
       state.rel_min_value = val
+      // state.rel_max_value = state.max_value + state.margin
     },
   })
 
@@ -85,6 +95,7 @@
       if (val < state.min_value) state.min_value = val
       if (val < state.rel_min_value) state.rel_min_value = val
       state.rel_max_value = val
+      // state.rel_min_value = state.min_value - state.margin
     },
   })
 
@@ -96,8 +107,8 @@
     const d = (rel_max.value - state.abs_min_value) / range
     const values = { a, b, c, d }
     const w = values[context] * 100
-    console.log(values)
-    return `width: ${100 - w}%`
+    const result = `width: ${100 - w}%`
+    return result
   }
 </script>
 
@@ -111,6 +122,9 @@
           :min="state.abs_min_value"
           :max="state.abs_max_value"
           v-model="rel_min"
+          :step="
+            props.data.unit == '%' ? props.data.step * 100 : props.data.step
+          "
         />
         <input
           id="input1"
@@ -118,6 +132,9 @@
           :min="state.abs_min_value"
           :max="state.abs_max_value"
           v-model="min"
+          :step="
+            props.data.unit == '%' ? props.data.step * 100 : props.data.step
+          "
         />
         <input
           id="input2"
@@ -125,6 +142,9 @@
           :min="state.abs_min_value"
           :max="state.abs_max_value"
           v-model="max"
+          :step="
+            props.data.unit == '%' ? props.data.step * 100 : props.data.step
+          "
         />
         <input
           id="input4"
@@ -132,6 +152,9 @@
           :min="state.abs_min_value"
           :max="state.abs_max_value"
           v-model="rel_max"
+          :step="
+            props.data.unit == '%' ? props.data.step * 100 : props.data.step
+          "
         />
         <div class="bg-base-200 h-1 w-full flex justify-end">
           <div
