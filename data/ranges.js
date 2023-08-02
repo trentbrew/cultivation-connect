@@ -207,7 +207,7 @@ const ranges = [
     median: [6.0],
     max: [6.2],
     margin: [0.3],
-    unit: '',
+    unit: 'pH',
     step: 0.01,
   },
   {

@@ -251,7 +251,9 @@
 <template>
   <div class="w-full h-screen flex flex-col">
     <!-- HEADER -->
-    <div class="flex justify-between items-center gap-6 pt-8 pr-24 pb-0 pl-10">
+    <div
+      class="flex justify-between items-center gap-6 pt-8 pr-[88px] pb-0 pl-10"
+    >
       <h1 class="text-3xl">
         <!-- <span class="text-base-content/30">Settings</span> -->
         <!-- <span class="text-base-300 mx-4">/</span> -->
