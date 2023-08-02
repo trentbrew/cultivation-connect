@@ -1,6 +1,7 @@
 import ranges from '@/data/ranges'
 
 const parse = {
+  default: csv => {},
   aroya: csv => {
     const stretch = arr => {
       let result = []

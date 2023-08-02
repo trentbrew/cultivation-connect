@@ -17,9 +17,6 @@ export const useGlobalStore = defineStore('global', {
       cultivars: [],
       notifications: [],
     },
-    constants: {
-      ranges,
-    },
     csv: {
       done: false,
       active: false,
@@ -55,9 +52,20 @@ export const useGlobalStore = defineStore('global', {
       },
     },
     settings: {
-      appearance: {
-        theme: 'garden',
+      ranges: {
+        activeProfile: 'default',
+        profiles: [
+          {
+            name: 'default',
+            data: ranges,
+          },
+          {
+            name: 'custom',
+            data: ranges,
+          },
+        ],
       },
+      theme: 'garden',
       localization: {
         language: 'en',
         units: 'imperial', // metric, imperial (check with Matt)
@@ -68,30 +76,43 @@ export const useGlobalStore = defineStore('global', {
         email: true,
         native: false,
       },
-      integrations: {
-        // ...
-      },
+      integrations: {},
     },
   }),
   getters: {
+    // ------------ RANGES ------------
+    getActiveRangesProfile: state => state.settings.ranges.activeProfile,
+    getRange: state => name =>
+      state.settings.ranges.profiles
+        .find(profile => profile.name == state.settings.ranges.activeProfile)
+        .data.find(range => range.name == name),
+    // ------------ CSV ------------
     getBatchEntry: state => state.batchEntry.data,
     getCsvStatus: state => state.csv,
+    // ------------ CACHE ------------
     getCache: state => key => state.cache[key],
+    // ------------ UI ------------
+    getTheme: state => state.settings.theme,
+    getToast: state => state.ui.toast,
+    getTitle: state => state.window.title,
+    getContext: state => state.window.context,
     getDetailsContext: state => state.ui.details.context,
     getCurrentItem: state => state.ui.currentItem,
     getDrawerContext: state => state.ui.drawer.context,
-    getTitle: state => state.window.title,
-    getContext: state => state.window.context,
-    getTheme: state => state.settings.appearance.theme,
-    getNotifications: state => state.cache.notifications,
-    getToast: state => state.ui.toast,
-    getAvatarUrl: state => state.cache.avatar,
     getCollectionsState: state => state.ui.collections.active,
-    getRange: state => name => {
-      return state.constants.ranges.find(range => range.name == name)
-    },
+    getNotifications: state => state.cache.notifications,
+    // ------------ AUTH ------------
+    getAvatarUrl: state => state.cache.avatar,
   },
   actions: {
+    // ------------ RANGES ------------
+    updateRange(profile, name, payload) {},
+    setActiveRangesProfile(profile) {
+      this.settings.ranges.activeProfile = profile
+    },
+    createRangesProfile(payload) {},
+    deleteRangesProfile(id) {},
+    // ------------ CSV ------------
     handleEntryPost(data) {
       console.log('handleEntryPost', data)
       this.batchEntry.data = data
@@ -143,9 +164,11 @@ export const useGlobalStore = defineStore('global', {
       this.csv.active = true
       this.csv.reviewing = true
     },
+    // ------------ CSV ------------
     updateCache(key, data) {
       this.cache[key] = data
     },
+    // ------------ UI ------------
     closeDetails(context) {
       this.ui.details.active = false
       this.ui.details.context = null
@@ -185,7 +208,7 @@ export const useGlobalStore = defineStore('global', {
       this.window.title = title
     },
     setTheme(theme) {
-      this.settings.appearance.theme = theme
+      this.settings.theme = theme
     },
     toast(type, message, duration) {
       this.ui.toast = {

@@ -195,6 +195,12 @@
           value: null,
         },
       ],
+      ranges: {
+        profile_name: {
+          value: null,
+          valid: false,
+        },
+      },
     },
     data: {
       cultivars: [],
@@ -228,6 +234,8 @@
     if (drawerContext.value == 'edit-sensor') return 'Edit sensor'
     if (drawerContext.value == 'new-cycle') return 'Create a new cycle'
     if (drawerContext.value == 'edit-data') return 'Edit cycle data'
+    if (drawerContext.value == 'new-ranges-profile')
+      return 'Create a new range preset'
     if (drawerContext.value == 'new-record') {
       return `New record (${new Date()
         .toLocaleString('en-US', {
@@ -353,10 +361,12 @@
 
   function handleValidation(e) {
     state['payload'][e.group][e.id].valid = e.valid
+    // console.log(`state['payload']['${e.group}']['${e.id}'].valid: `, e.valid)
     const groupValidity = Object.values(state['payload'][e.group]).map(
       item => item.valid
     )
     state['payload'].valid = !groupValidity.includes(false)
+    console.log('state.payload.valid: ', state.payload.valid)
   }
 
   async function pbFetch(collection) {
@@ -396,6 +406,7 @@
     if (drawerContext.value == 'new-cycle') submitCycle()
     if (drawerContext.value == 'csv-upload') submitCsv()
     if (drawerContext.value == 'new-record') submitRecord()
+    if (drawerContext.value == 'new-ranges-profile') submitRangesProfile()
     router.push({ hash: '' })
   }
 
@@ -550,6 +561,23 @@
     } else {
       global.toast('error', 'Only Aroya CSVs are supported at this time')
     }
+  }
+
+  function submitRangesProfile() {
+    const payload = {
+      name: state.payload.ranges.profile_name.value,
+      facility: pb.api.authStore.model.facility,
+      ranges: JSON.stringify(state.payload.ranges.default),
+    }
+    pb.post('ranges', payload).then(res => {
+      console.log('✅ Added ranges profile', res)
+      global.toast(
+        'default',
+        'New preset has been created. Adjust the scales to update the ranges.',
+        7000
+      )
+      // global.updateCache('ranges_profiles', res)
+    })
   }
 
   function submitSensor() {
@@ -1305,6 +1333,25 @@
         />
       </form>
 
+      <!-- NEW RANGES PROFILE -->
+
+      <form
+        v-if="drawerContext == 'new-ranges-profile'"
+        class="flex flex-col p-8"
+      >
+        <Input
+          type="text"
+          v-model="state.payload.ranges.profile_name.value"
+          group="ranges"
+          name="profile_name"
+          id="profile_name"
+          label="Name"
+          class="w-full"
+          rules="required"
+          @validation="handleValidation"
+        />
+      </form>
+
       <!-- DRAWER FOOTER -->
 
       <div
@@ -1318,6 +1365,7 @@
           Cancel
         </label>
         <DrawerToggle
+          :disabled="!state.payload.valid"
           class="btn-primary"
           @click="handleSubmit"
           :for="drawerContext"

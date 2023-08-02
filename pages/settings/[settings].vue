@@ -7,6 +7,23 @@
   const route = useRoute()
   const router = useRouter()
 
+  const settingsContext = computed(() => route.path.split('/')[2])
+
+  const activeRangesProfile = computed({
+    get: () => {
+      console.log('getting active ranges profile...')
+      return global.getActiveRangesProfile
+    },
+    set: val => {
+      console.log('setting active ranges profile...')
+      global.setActiveRangesProfile(val)
+      global.toast(
+        'default',
+        `Updated ranges preset to "${utils.unslugify(val)}"`
+      )
+    },
+  })
+
   const state = reactive({
     loading: true,
     facility: '',
@@ -25,6 +42,7 @@
     data: {
       sensors: [],
       cultivars: [],
+      ranges: null,
     },
     settings: {
       account: {
@@ -131,7 +149,8 @@
     console.log('fetching data...')
     state.data.sensors = await pbFetch('sensors')
     state.data.cultivars = await pbFetch('cultivars')
-    console.log(state.data.sensors)
+    state.data.ranges = await pbFetch('ranges')
+    console.log(state.data.ranges)
   }
 
   function pbFetch(collection, options) {
@@ -144,12 +163,10 @@
   }
 
   onBeforeMount(async () => {
-    console.log('settings created')
     state.loading = true
   })
 
   onMounted(async () => {
-    console.log('settings mounted')
     fetchData()
     state.loading = false
     state.facility = await getFacilityName()
@@ -168,8 +185,6 @@
         })
     }
   })
-
-  const settingsContext = computed(() => route.path.split('/')[2])
 
   function edit(context) {
     console.log('editing: ', context)
@@ -236,7 +251,7 @@
 <template>
   <div class="w-full h-screen flex flex-col">
     <!-- HEADER -->
-    <div class="flex justify-start items-center gap-6 p-8 pb-0 pl-10">
+    <div class="flex justify-between items-center gap-6 pt-8 pr-24 pb-0 pl-10">
       <h1 class="text-3xl">
         <!-- <span class="text-base-content/30">Settings</span> -->
         <!-- <span class="text-base-300 mx-4">/</span> -->
@@ -244,6 +259,28 @@
           {{ utils.capitalize(route.path.split('/')[2]) }}
         </span>
       </h1>
+      <div v-if="settingsContext == 'ranges'" class="w-full flex justify-end">
+        <Input
+          type="select"
+          :nolabel="true"
+          placeholder="default"
+          v-model="activeRangesProfile"
+          class="min-w-[150px]"
+        >
+          <option
+            v-for="(item, itemIndex) in state.data.ranges"
+            :key="itemIndex"
+            :value="utils.slugify(item.name)"
+          >
+            {{ item.name }}
+          </option>
+        </Input>
+        <DrawerToggle
+          for="new-ranges-profile"
+          icon="plus"
+          class="bg-black !w-fit !px-4 absolute top-8 right-8"
+        />
+      </div>
     </div>
     <div class="w-full h-full !pt-0 flex justify-center items-center">
       <!-- ACCOUNT SETTINGS -->
@@ -346,7 +383,7 @@
           icon="plus"
           for="new-cultivar"
           label="Add cultivars"
-          class="btn-outline !w-fit !px-4 absolute top-6 right-8"
+          class="btn-outline !w-fit !px-4 absolute top-8 right-8"
         />
       </div>
       <!-- SENSOR SETTINGS -->

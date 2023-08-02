@@ -277,7 +277,8 @@
   <!-- Select -->
   <div
     v-if="props.type == 'select'"
-    class="flex flex-col items-start gap-2 mt-3"
+    class="flex flex-col items-start gap-2"
+    :class="!props.nolabel ? 'mt-3' : ''"
   >
     <label
       v-show="!props.nolabel"

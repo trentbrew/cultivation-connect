@@ -45,21 +45,17 @@
     role="menuitem"
     :aria-expanded="props.expanded"
     class="group flex flex-col"
+    :class="state.expanded ? 'bg-base-200/20' : 'hover:bg-base-200/20'"
   >
     <button
       @click="toggle"
       :aria-controls="itemId"
       class="text-left rounded p-4"
     >
-      <div
-        class="flex w-full items-center justify-between"
-        :class="
-          state.expanded
-            ? 'text-base-content'
-            : 'group-hover:text-base-content/40'
-        "
-      >
-        <span>{{ props.title }}</span>
+      <div class="flex w-full items-center justify-between">
+        <span class="duration-150">
+          {{ props.title }}
+        </span>
         <Icon
           class="duration-300"
           :class="state.expanded && 'rotate-180'"

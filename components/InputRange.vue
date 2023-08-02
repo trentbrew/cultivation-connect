@@ -18,7 +18,6 @@
   })
 
   onMounted(() => {
-    console.log('props.data', props.data)
     state.min_value =
       props.data.unit == '%' ? props.data.min * 100 : props.data.min
     state.max_value =
@@ -31,32 +30,15 @@
       props.data.unit == '%' ? props.data.abs_min * 100 : props.data.abs_min
     state.abs_max_value =
       props.data.unit == '%' ? props.data.abs_max * 100 : props.data.abs_max
-
-    console.log('state: ', state)
   })
-
-  watch(
-    () => state,
-    () => {
-      // emit('update:modelValue', {
-      //   min: state.min_value,
-      //   max: state.max_value,
-      //   rel_min: state.rel_min_value,
-      //   rel_max: state.rel_max_value,
-      //   abs_min: state.abs_min_value,
-      //   abs_max: state.abs_max_value,
-      // })
-    },
-    { deep: true }
-  )
 
   const min = computed({
     get: () => {
-      var val = parseInt(state.min_value)
+      var val = Number(state.min_value)
       return val
     },
     set: val => {
-      val = parseInt(val)
+      val = Number(val)
       if (val < state.rel_min_value) state.rel_min_value = val
       if (val > state.max_value) state.max_value = val
       if (val > state.rel_max_value) state.rel_max_value = val
@@ -66,11 +48,11 @@
 
   const max = computed({
     get: () => {
-      var val = parseInt(state.max_value)
+      var val = Number(state.max_value)
       return val
     },
     set: val => {
-      val = parseInt(val)
+      val = Number(val)
       if (val < state.min_value) state.min_value = val
       if (val < state.rel_min_value) state.rel_min_value = val
       if (val > state.rel_max_value) state.rel_max_value = val
@@ -80,11 +62,11 @@
 
   const rel_min = computed({
     get: () => {
-      var val = parseInt(state.rel_min_value)
+      var val = Number(state.rel_min_value)
       return val
     },
     set: val => {
-      val = parseInt(val)
+      val = Number(val)
       if (val > state.min_value) state.min_value = val
       if (val > state.max_value) state.max_value = val
       if (val > state.rel_max_value) state.rel_max_value = val
@@ -94,11 +76,11 @@
 
   const rel_max = computed({
     get: () => {
-      var val = parseInt(state.rel_max_value)
+      var val = Number(state.rel_max_value)
       return val
     },
     set: val => {
-      val = parseInt(val)
+      val = Number(val)
       if (val < state.max_value) state.max_value = val
       if (val < state.min_value) state.min_value = val
       if (val < state.rel_min_value) state.rel_min_value = val
@@ -107,16 +89,14 @@
   })
 
   function getWidth(context) {
-    const range = Math.abs(state.abs_max_value - state.abs_min_value)
-    // console.log('range: ', range)
-    const values = {
-      a: rel_min.value / range,
-      b: min.value / range,
-      c: max.value / range,
-      d: rel_max.value / range,
-    }
-    // console.log('values: ', values)
+    const range = Math.abs(state.abs_max_value) - state.abs_min_value
+    const a = (rel_min.value - state.abs_min_value) / range
+    const b = (min.value - state.abs_min_value) / range
+    const c = (max.value - state.abs_min_value) / range
+    const d = (rel_max.value - state.abs_min_value) / range
+    const values = { a, b, c, d }
     const w = values[context] * 100
+    console.log(values)
     return `width: ${100 - w}%`
   }
 </script>
@@ -173,49 +153,81 @@
         </div>
       </div>
       <div class="w-full flex justify-center">
-        <div class="flex gap-2 justify-center w-[600px]">
-          <input
-            class="px-1 input input-sm bg-base-100 font-normal w-full border-2 border-red-500"
-            type="number"
-            v-model="state.abs_min_value"
-          />
-          <input
-            class="px-1 input input-sm bg-base-100 font-normal w-full border-2 border-yellow-500"
-            type="number"
-            :min="state.abs_min_value"
-            :max="state.abs_max_value"
-            v-model="rel_min"
-          />
-          <input
-            class="px-1 input input-sm bg-base-100 font-normal w-full border-2 border-green-500"
-            type="number"
-            :min="state.abs_min_value"
-            :max="state.abs_max_value"
-            v-model="min"
-          />
-          <input
-            class="px-1 input input-sm bg-base-100 font-normal w-full border-2 border-green-500"
-            type="number"
-            :min="state.abs_min_value"
-            :max="state.abs_max_value"
-            v-model="max"
-          />
-          <input
-            class="px-1 input input-sm bg-base-100 font-normal w-full border-2 border-yellow-500"
-            type="number"
-            :min="state.abs_min_value"
-            :max="state.abs_max_value"
-            v-model="rel_max"
-          />
-          <input
-            class="px-1 input input-sm bg-base-100 font-normal w-full border-2 border-red-500"
-            type="number"
-            v-model="state.abs_max_value"
-          />
-          <div></div>
-          <div></div>
-          <button class="btn btn-sm btn-outline">Reset</button>
-          <button class="btn btn-sm bg-black">Save</button>
+        <div class="flex gap-2 justify-center">
+          <label class="input-group w-full">
+            <input
+              class="w-[80px] input input-sm bg-base-100 font-normal border-2 border-red-500"
+              type="number"
+              v-model="state.abs_min_value"
+              :step="props.data.step"
+            />
+            <span class="text-xs bg-base-200 px-[12px]">
+              {{ props.data.unit }}
+            </span>
+          </label>
+          <label class="input-group w-full">
+            <input
+              class="w-[80px] input input-sm bg-base-100 font-normal border-2 border-yellow-500"
+              type="number"
+              :min="state.abs_min_value"
+              :max="state.abs_max_value"
+              v-model="rel_min"
+              :step="props.data.step"
+            />
+            <span class="text-xs bg-base-200 px-[12px]">
+              {{ props.data.unit }}
+            </span>
+          </label>
+          <label class="input-group w-full">
+            <input
+              class="w-[80px] input input-sm bg-base-100 font-normal border-2 border-green-500"
+              type="number"
+              :min="state.abs_min_value"
+              :max="state.abs_max_value"
+              v-model="min"
+              :step="props.data.step"
+            />
+            <span class="text-xs bg-base-200 px-[12px]">
+              {{ props.data.unit }}
+            </span>
+          </label>
+          <label class="input-group w-full">
+            <input
+              class="w-[80px] input input-sm bg-base-100 font-normal border-2 border-green-500"
+              type="number"
+              :min="state.abs_min_value"
+              :max="state.abs_max_value"
+              v-model="max"
+              :step="props.data.step"
+            />
+            <span class="text-xs bg-base-200 px-[12px]">
+              {{ props.data.unit }}
+            </span>
+          </label>
+          <label class="input-group w-full">
+            <input
+              class="w-[80px] input input-sm bg-base-100 font-normal border-2 border-yellow-500"
+              type="number"
+              :min="state.abs_min_value"
+              :max="state.abs_max_value"
+              v-model="rel_max"
+              :step="props.data.step"
+            />
+            <span class="text-xs bg-base-200 px-[12px]">
+              {{ props.data.unit }}
+            </span>
+          </label>
+          <label class="input-group w-full">
+            <input
+              class="w-[80px] input input-sm bg-base-100 font-normal border-2 border-red-500"
+              type="number"
+              v-model="state.abs_max_value"
+              :step="props.data.step"
+            />
+            <span class="text-xs bg-base-200 px-[12px]">
+              {{ props.data.unit }}
+            </span>
+          </label>
         </div>
       </div>
     </div>
@@ -224,7 +236,7 @@
 
 <style scoped>
   .range-slider {
-    width: 80%;
+    width: 88%;
     margin: auto;
     text-align: center;
     position: relative;

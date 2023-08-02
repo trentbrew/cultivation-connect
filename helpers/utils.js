@@ -68,6 +68,24 @@ const utils = {
   // This function capitalizes the first letter of a string
 
   capitalize: str => str.charAt(0).toUpperCase() + str.slice(1),
+
+  // This function takes a string and returns a slug (e.g. "Hello World" => "hello-world")
+
+  slugify: str => {
+    return str
+      .toLowerCase()
+      .replace(/ /g, '-')
+      .replace(/[^\w-]+/g, '')
+  },
+
+  // This function does the opposite of slugify (e.g. "hello-world" => "Hello World")
+
+  unslugify: str => {
+    return str
+      .split('-')
+      .map(word => utils.capitalize(word))
+      .join(' ')
+  },
 }
 
 export default utils

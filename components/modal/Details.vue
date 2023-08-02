@@ -90,6 +90,8 @@
     state.min = Math.min(...values)
     state.max = Math.max(...values)
 
+    console.log('record', record)
+
     let series = records.map(record => {
       if (record.data[state.context]) {
         return [record.date_recorded, record.data[state.context]]

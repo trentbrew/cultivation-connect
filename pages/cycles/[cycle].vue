@@ -151,11 +151,9 @@
   })
 
   onMounted(async () => {
-    console.clear()
     router.push({ hash: '' })
     state.collectionsActive = global.getCollectionsActive
     await initCycle()
-    console.log('latest_record', state.cycle.latest_record)
   })
 
   const collectionsActive = computed(() => global.getCollectionsActive)
@@ -267,7 +265,6 @@
         const latest_record = await pb.get('records', {
           id: cycle.latest_record,
         })
-        console.log('latest_record', latest_record)
         state.cycle.overview.latest = formatDateTime(
           latest_record?.date_recorded
         )
