@@ -200,6 +200,6 @@
 
   #nav-items .router-link-active,
   #nav-items .router-link-exact-active {
-    @apply text-primary;
+    @apply text-black;
   }
 </style>

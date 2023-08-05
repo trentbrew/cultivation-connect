@@ -15,11 +15,14 @@
     rel_max_value: 0,
     abs_min_value: 0,
     abs_max_value: 0,
+    margin: 0,
   })
 
   onMounted(() => {
     state.margin =
-      props.data.unit == '%' ? props.data.margin * 100 : props.data.margin
+      props.data.unit == '%'
+        ? props.data.margin * 100
+        : props.data.min - props.data.rel_min
 
     state.min_value =
       props.data.unit == '%' ? props.data.min * 100 : props.data.min
@@ -36,10 +39,67 @@
     state.abs_min_value = props.data.unit == '%' ? 0 : props.data.abs_min
 
     state.abs_max_value = props.data.unit == '%' ? 100 : props.data.abs_max
-    ;[Object.entries(props.data)].forEach(item => {
-      console.log(item[0][1], state)
-    })
   })
+
+  function syncMargins() {
+    const overflow_l = state.rel_min_value < state.abs_min_value
+    const overflow_r = state.rel_max_value > state.abs_max_value
+    if (overflow_l || overflow_r) {
+      state.rel_min_value = overflow_l
+        ? state.abs_min_value
+        : state.rel_min_value
+      state.rel_max_value = overflow_r
+        ? state.abs_max_value
+        : state.rel_max_value
+    } else {
+      if (state.margin < 0) {
+        state.min_value = state.rel_min_value - state.margin
+        state.max_value = state.rel_max_value + state.margin
+      } else {
+        state.rel_min_value = state.min_value - state.margin
+        state.rel_max_value = state.max_value + state.margin
+      }
+    }
+  }
+
+  watch(
+    () => state.rel_min_value,
+    val => {
+      state.margin = state.min_value - val
+      syncMargins()
+    }
+  )
+
+  watch(
+    () => state.min_value,
+    val => {
+      syncMargins()
+      state.margin = val - state.rel_min_value
+    }
+  )
+
+  watch(
+    () => state.max_value,
+    val => {
+      syncMargins()
+      state.margin = state.rel_max_value - val
+    }
+  )
+
+  watch(
+    () => state.rel_max_value,
+    val => {
+      state.margin = val - state.max_value
+      syncMargins()
+    }
+  )
+
+  watch(
+    () => state.margin,
+    val => {
+      console.log('margin', val)
+    }
+  )
 
   const min = computed({
     get: () => {
@@ -48,9 +108,9 @@
     },
     set: val => {
       val = Number(val)
-      if (val < state.rel_min_value) state.rel_min_value = val
-      if (val > state.max_value) state.max_value = val
-      if (val > state.rel_max_value) state.rel_max_value = val
+      if (val < state.rel_min_value) state.rel_min_value = val // rel_min collision 🟡
+      if (val > state.max_value) state.max_value = val // max collision 🟢
+      if (val > state.rel_max_value) state.rel_max_value = val // rel_max collision 🟡
       state.min_value = val
     },
   })
@@ -62,9 +122,9 @@
     },
     set: val => {
       val = Number(val)
-      if (val < state.min_value) state.min_value = val
-      if (val < state.rel_min_value) state.rel_min_value = val
-      if (val > state.rel_max_value) state.rel_max_value = val
+      if (val < state.rel_min_value) state.rel_min_value = val // rel_min collision 🟡
+      if (val < state.min_value) state.min_value = val // min collision 🟢
+      if (val > state.rel_max_value) state.rel_max_value = val // rel_max collision 🟡
       state.max_value = val
     },
   })
@@ -76,11 +136,10 @@
     },
     set: val => {
       val = Number(val)
-      if (val > state.min_value) state.min_value = val
-      if (val > state.max_value) state.max_value = val
-      if (val > state.rel_max_value) state.rel_max_value = val
+      if (val > state.min_value) state.min_value = val // min collision 🟢
+      if (val > state.max_value) state.max_value = val // max collision 🟢
+      if (val > state.rel_max_value) state.rel_max_value = val // rel_max collision 🟡
       state.rel_min_value = val
-      // state.rel_max_value = state.max_value + state.margin
     },
   })
 
@@ -91,11 +150,10 @@
     },
     set: val => {
       val = Number(val)
-      if (val < state.max_value) state.max_value = val
-      if (val < state.min_value) state.min_value = val
-      if (val < state.rel_min_value) state.rel_min_value = val
+      if (val < state.rel_min_value) state.rel_min_value = val // rel_min collision 🟡
+      if (val < state.min_value) state.min_value = val // min collision 🟢
+      if (val < state.max_value) state.max_value = val // max collision 🟢
       state.rel_max_value = val
-      // state.rel_min_value = state.min_value - state.margin
     },
   })
 
