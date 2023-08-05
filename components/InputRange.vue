@@ -1,5 +1,5 @@
 <script setup>
-  const emit = defineEmits(['update:modelValue'])
+  const emit = defineEmits(['update:modelValue', 'submit', 'reset'])
 
   const props = defineProps({
     modelValue: {
@@ -80,10 +80,10 @@
           state.abs_max_value > props.data.relative_max
             ? state.abs_max_value
             : props.data.relative_max,
-        min: min.value,
-        median: (min.value + max.value) / 2,
-        max: max.value,
-        margin: state.margin,
+        min: [min.value],
+        median: [(min.value + max.value) / 2],
+        max: [max.value],
+        margin: [state.margin],
         unit: props.data.unit,
         step: props.data.step,
       })
@@ -341,8 +341,15 @@
         </div>
       </div>
       <div class="flex gap-2">
-        <button class="btn btn-sm btn-outline flex gap-4">Reset</button>
-        <button class="btn btn-sm bg-black flex gap-4">Save</button>
+        <button
+          @click="$emit('reset')"
+          class="btn btn-sm btn-outline flex gap-4"
+        >
+          Reset
+        </button>
+        <button @click="$emit('submit')" class="btn btn-sm bg-black flex gap-4">
+          Save
+        </button>
       </div>
     </div>
   </div>

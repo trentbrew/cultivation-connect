@@ -87,10 +87,14 @@ const utils = {
       .join(' ')
   },
 
-  // This function takes JSON and returns a fixed JSON string
+  // This function updates a specified object inside of an array based on the object's id
 
-  fixJsonString: str => {
-    return str.replace(/'/g, '"').replace(/(\w+):/g, '"$1":')
+  patchJson: (json, payload) => {
+    const index = json.findIndex(item => item.name === payload.name)
+    console.log('index: ', index)
+    const result = [...json.slice(0, index), json, ...json.slice(index + 1)]
+    console.log('result:', result)
+    return result
   },
 }
 

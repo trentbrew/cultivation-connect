@@ -24,6 +24,7 @@
   })
 
   const state = reactive({
+    resetting: false,
     loading: true,
     facility: '',
     avatar_url: '',
@@ -184,7 +185,6 @@
 
   onMounted(async () => {
     await fetchData()
-    // console.log(activeRanges.value)
     state.loading = false
     state.facility = await getFacilityName()
     state.avatarUrl = await pb.getAvatarUrl()
@@ -246,6 +246,22 @@
   function handleCancel() {
     state.payload.username.editing = false
     state.payload.email.editing = false
+  }
+
+  function submitRange() {
+    const payload = utils.patchJson(
+      activeRanges.value,
+      state.payload.range.value
+    )
+    console.log('final payload: ', JSON.stringify(payload))
+  }
+
+  function handleRangeReset() {
+    console.log('resetting range')
+    state.resetting = true
+    setTimeout(() => {
+      state.resetting = false
+    }, 50)
   }
 </script>
 
@@ -433,7 +449,10 @@
               class="font-bold"
             >
               <InputRange
+                v-if="!state.resetting"
                 v-model="state.payload.range.value"
+                @submit="submitRange"
+                @reset="handleRangeReset"
                 :data="{
                   name: field.name,
                   title: field.title,
