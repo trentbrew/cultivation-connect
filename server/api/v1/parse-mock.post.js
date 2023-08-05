@@ -25,7 +25,7 @@ function parse(csv) {
     .map(line => line.trim())
     .slice(4, 25) // TODO: open the floodgates
   const headers = lines[0].split(',').map(header => header_map[header])
-  lines.forEach(datum => {
+  lines.slice(1).forEach(datum => {
     let data = {}
     const values = datum.split(',')
     values.forEach((value, index) => {

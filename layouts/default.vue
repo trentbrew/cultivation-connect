@@ -54,13 +54,13 @@
       >
         <LayoutCollections />
       </div>
-      <main class="duration-300 w-full h-screen bg-base-100 overflow-hidden">
+      <main class="duration-300 w-full h-screen bg-base-100 overflow-auto">
         <NuxtPage />
-        <div
+        <!-- <div
           class="w-full h-full flex justify-center items-center bg-base-200/10"
         >
           <Loading size="64" />
-        </div>
+        </div> -->
       </main>
     </div>
     <div class="drawer-side">

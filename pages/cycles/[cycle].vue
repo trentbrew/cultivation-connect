@@ -351,7 +351,18 @@
         if (!recordsPayload[entry.timestamp]) {
           recordsPayload[entry.timestamp] = {}
         }
-        recordsPayload[entry.timestamp][entry.name] = entry.value
+        recordsPayload[entry.timestamp] = {
+          ...entry,
+          start_date: state.cycle.start_date,
+          zone: `zone${state.cycle.zoneIndex}`,
+          growth_stage: state.cycle.growth_stage,
+          cultivar: state.cycle.cultivar,
+          room: state.cycle.room,
+          plants: state.cycle.plants,
+          substrate: state.cycle.substrate,
+          nutrients_type: state.cycle.nutrients_type,
+          root_zone_style: state.cycle.root_zone_style,
+        }
       })
       state.relevantData = Object.keys(recordsPayload).map(key => {
         return {
@@ -359,6 +370,7 @@
           data: recordsPayload[key],
         }
       })
+      console.log('relevant data: ', state.relevantData)
       const headers = Object.keys(report.data[0])
       const missing_headers = total_headers.filter(
         item => !headers.includes(item)
@@ -669,7 +681,7 @@
                       {{
                         state.relevantData?.length > 50
                           ? 50
-                          : state.relevantData?.length - 1
+                          : state.relevantData?.length
                       }}
                     </b>
                     out of
