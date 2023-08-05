@@ -37,6 +37,10 @@
         editing: false,
         value: '',
       },
+      range: {
+        editing: false,
+        value: null,
+      },
     },
     data: {
       sensors: [],
@@ -144,6 +148,14 @@
     },
   })
 
+  watch(
+    () => state.payload.range.value,
+    val => {
+      console.clear()
+      console.log(console.table(val))
+    }
+  )
+
   const activeRanges = computed(() => {
     const data = state.data.ranges?.find(
       r => r.name == global.getActiveRangesProfile
@@ -172,7 +184,7 @@
 
   onMounted(async () => {
     await fetchData()
-    console.log(activeRanges.value)
+    // console.log(activeRanges.value)
     state.loading = false
     state.facility = await getFacilityName()
     state.avatarUrl = await pb.getAvatarUrl()
@@ -421,10 +433,14 @@
               class="font-bold"
             >
               <InputRange
+                v-model="state.payload.range.value"
                 :data="{
                   name: field.name,
+                  title: field.title,
                   unit: field.unit,
                   step: field.step,
+                  relative_min: field.relative_min,
+                  relative_max: field.relative_max,
                   margin: field.margin[0],
                   abs_min: field.relative_min,
                   rel_min: field.min[0] - field.margin[0],

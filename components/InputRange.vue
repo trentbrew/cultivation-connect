@@ -1,7 +1,11 @@
 <script setup>
-  // const emit = defineEmits(['update:modelValue'])
+  const emit = defineEmits(['update:modelValue'])
 
   const props = defineProps({
+    modelValue: {
+      type: Object,
+      required: true,
+    },
     data: {
       type: Object,
       required: true,
@@ -63,6 +67,31 @@
   }
 
   watch(
+    () => state,
+    () => {
+      emit('update:modelValue', {
+        name: props.data.name,
+        title: props.data.title,
+        relative_min:
+          state.abs_min_value < props.data.relative_min
+            ? state.abs_min_value
+            : props.data.relative_min,
+        relative_max:
+          state.abs_max_value > props.data.relative_max
+            ? state.abs_max_value
+            : props.data.relative_max,
+        min: min.value,
+        median: (min.value + max.value) / 2,
+        max: max.value,
+        margin: state.margin,
+        unit: props.data.unit,
+        step: props.data.step,
+      })
+    },
+    { deep: true }
+  )
+
+  watch(
     () => state.rel_min_value,
     val => {
       state.margin = state.min_value - val
@@ -94,12 +123,12 @@
     }
   )
 
-  watch(
-    () => state.margin,
-    val => {
-      console.log('margin', val)
-    }
-  )
+  // watch(
+  //   () => state.margin,
+  //   val => {
+  //     console.log('margin', val)
+  //   }
+  // )
 
   const min = computed({
     get: () => {
