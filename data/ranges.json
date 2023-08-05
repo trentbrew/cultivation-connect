@@ -56,7 +56,7 @@
     "median": [33.5],
     "max": [46],
     "margin": [26],
-    "unit": "mol/m²", // TODO: check with Matt
+    "unit": "mol/m²",
     "step": 1
   },
   {
@@ -178,17 +178,5 @@
     "margin": [0.3],
     "unit": "pH",
     "step": 0.01
-  },
-  {
-    "name": "yield",
-    "title": "Yield",
-    "relative_min": 0,
-    "relative_max": 1000,
-    "min": [60],
-    "median": [999],
-    "max": [1000],
-    "margin": [20],
-    "unit": "g/sqft",
-    "step": 1
   }
 ]

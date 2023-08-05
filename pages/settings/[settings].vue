@@ -42,7 +42,6 @@
       sensors: [],
       cultivars: [],
       ranges: null,
-      activeRanges: null,
     },
     settings: {
       account: {
@@ -149,8 +148,6 @@
     const data = state.data.ranges?.find(
       r => r.name == global.getActiveRangesProfile
     ).data
-    console.log('data: ', data)
-    console.log('fixed data: ', utils.fixJsonString(data))
     return data
   })
 
@@ -174,9 +171,8 @@
   })
 
   onMounted(async () => {
-    console.clear()
     await fetchData()
-    console.log('activeRanges.value: ', activeRanges.value)
+    console.log(activeRanges.value)
     state.loading = false
     state.facility = await getFacilityName()
     state.avatarUrl = await pb.getAvatarUrl()
@@ -235,22 +231,6 @@
     state.payload.email.editing = false
   }
 
-  // async function update(id, payload) {
-  //   const category = categories.find(c => c.name == settingsContext.value)
-  //   if (category?.name != 'ranges') {
-  //     await pb.update(category.collection, id, payload)
-  //   } else {
-  //     // TODO: update ranges.js
-  //     console.log('handling local range update...')
-  //   }
-  //   refresh()
-  //   global.toast(
-  //     'primary',
-  //     `${utils.capitalize(category.name)} data has been updated`
-  //   )
-  //   state.payload.account[Object.entries(payload)[0][0]].editing = false
-  // }
-
   function handleCancel() {
     state.payload.username.editing = false
     state.payload.email.editing = false
@@ -264,8 +244,6 @@
       class="flex justify-between items-center gap-6 pt-8 pr-[88px] pb-0 pl-10"
     >
       <h1 class="text-3xl">
-        <!-- <span class="text-base-content/30">Settings</span> -->
-        <!-- <span class="text-base-300 mx-4">/</span> -->
         <span class="font-normal">
           {{ utils.capitalize(route.path.split('/')[2]) }}
         </span>
@@ -437,7 +415,7 @@
         >
           <Accordion>
             <AccordionItem
-              v-for="(field, fieldIndex) in state.data.activeRanges"
+              v-for="(field, fieldIndex) in activeRanges"
               :key="fieldIndex"
               :title="field.title"
               class="font-bold"

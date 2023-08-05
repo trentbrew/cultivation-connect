@@ -90,9 +90,7 @@ const utils = {
   // This function takes JSON and returns a fixed JSON string
 
   fixJsonString: str => {
-    const fixedStr = str.replace(/'/g, '"').replace(/(\w+):/g, '"$1":')
-    console.log('fixedStr', fixedStr)
-    return JSON.parse(fixedStr)
+    return str.replace(/'/g, '"').replace(/(\w+):/g, '"$1":')
   },
 }
 
