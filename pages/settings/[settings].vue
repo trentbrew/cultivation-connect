@@ -269,12 +269,13 @@
   }
 
   function handleRangeReset() {
-    console.log('resetting range')
-    state.resetting = true
-    setTimeout(() => {
-      // ╮(￣ω￣;)╭
-      state.resetting = false
-    }, 50)
+    // TODO: do this the right way
+    // console.log('resetting range')
+    // state.resetting = true
+    // setTimeout(() => {
+    //   // ╮(￣ω￣;)╭
+    //   state.resetting = false
+    // }, 500)
   }
 </script>
 

@@ -498,19 +498,24 @@
   }
 
   async function submitCsv() {
-    // handle readfile on the server
-
+    const origin = state.cycle.csv.origin.value
+    console.log('origin: ', origin)
     const file = state.cycle.csv.files[0]
     const blob = new Blob([file], { type: 'text/csv' })
 
-    if (state.cycle.csv.origin.value == 'aroya') {
+    if (['aroya', 'mock'].includes(origin)) {
       global.beginCsvImport()
 
       const formData = new FormData()
       formData.append('file', blob)
 
+      const paths = {
+        aroya: '/api/v1/parse-aroya',
+        mock: '/api/v1/parse-mock',
+      }
+
       try {
-        const response = await fetch('/api/v1/parse-csv', {
+        const response = await fetch(paths[origin], {
           method: 'POST',
           body: formData,
         })
@@ -527,7 +532,6 @@
           }
 
           const parsedData = JSON.parse(parsed)
-
           console.log('parsedData: ', parsedData)
 
           if (parsedData.report) {
@@ -541,12 +545,6 @@
               global.cancelCsvUpload()
             }
           }, 10000)
-
-          // setTimeout(() => {
-          //   global.completeCsvImport(parsedData.report)
-          // }, 5000)
-
-          // TODO: wait until the user has reviewed the data & approves before posting to the db
         } else {
           console.log('yikes...', response)
           global.toast('error', 'Error uploading CSV')
@@ -558,7 +556,10 @@
         global.cancelCsvUpload()
       }
     } else {
-      global.toast('error', 'Only Aroya CSVs are supported at this time')
+      global.toast(
+        'error',
+        'Only Aroya CSVs and Official Mock Datasets are supported at this time'
+      )
     }
   }
 
@@ -1143,8 +1144,11 @@
             @validation="handleCsvValidation"
             class="w-full"
           >
-            <option value="spreadsheet">Spreadsheet (Manual logging)</option>
+            <option value="mock">Cultivation Connect Example Dataset</option>
             <option value="aroya">Aroya (Automatic logging)</option>
+            <option value="spreadsheet">
+              Custom Spreadsheet (Manually logged)
+            </option>
             <option value="other">Other</option>
           </Input>
           <Input
@@ -1364,7 +1368,7 @@
           Cancel
         </label>
         <DrawerToggle
-          :disabled="!state.payload.valid"
+          :disabled="!valid"
           class="btn-primary"
           @click="handleSubmit"
           :for="drawerContext"
