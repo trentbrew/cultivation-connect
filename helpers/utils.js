@@ -91,10 +91,14 @@ const utils = {
 
   patchJson: (json, payload) => {
     const index = json.findIndex(item => item.name === payload.name)
-    console.log('index: ', index)
-    const result = [...json.slice(0, index), json, ...json.slice(index + 1)]
-    console.log('result:', result)
-    return result
+    let arr = json
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].name === payload.name) {
+        console.log('arr[i]: ', arr[i])
+        arr[i] = payload
+      }
+    }
+    return arr
   },
 }
 

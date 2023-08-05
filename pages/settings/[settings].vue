@@ -47,6 +47,7 @@
       sensors: [],
       cultivars: [],
       ranges: null,
+      relevantRanges: [],
     },
     settings: {
       account: {
@@ -185,6 +186,11 @@
 
   onMounted(async () => {
     await fetchData()
+    // console.log('activeRanges.value: ', activeRanges.value)
+    state.data.relevantRanges = state.data.ranges.find(
+      r => r.name == global.getActiveRangesProfile
+    )
+    // console.log('state.data.ranges: ', state.data.relevantRanges)
     state.loading = false
     state.facility = await getFacilityName()
     state.avatarUrl = await pb.getAvatarUrl()
@@ -249,17 +255,24 @@
   }
 
   function submitRange() {
-    const payload = utils.patchJson(
-      activeRanges.value,
-      state.payload.range.value
-    )
-    console.log('final payload: ', JSON.stringify(payload))
+    let payload = utils.patchJson(activeRanges.value, state.payload.range.value)
+    pb.update('ranges', state.data.relevantRanges.id, {
+      data: JSON.stringify(payload),
+    })
+      .then(res => {
+        global.toast('primary', 'Range updated successfully')
+      })
+      .catch(err => {
+        console.log('error updating range: ', err)
+        global.toast('error', 'Error updating range')
+      })
   }
 
   function handleRangeReset() {
     console.log('resetting range')
     state.resetting = true
     setTimeout(() => {
+      // ╮(￣ω￣;)╭
       state.resetting = false
     }, 50)
   }

@@ -74,16 +74,24 @@
         title: props.data.title,
         relative_min:
           state.abs_min_value < props.data.relative_min
-            ? state.abs_min_value
+            ? props.data.unit == '%'
+              ? state.abs_min_value / 100
+              : state.abs_min_value
             : props.data.relative_min,
         relative_max:
           state.abs_max_value > props.data.relative_max
-            ? state.abs_max_value
+            ? props.data.unit == '%'
+              ? state.abs_max_value / 100
+              : state.abs_max_value
             : props.data.relative_max,
-        min: [min.value],
-        median: [(min.value + max.value) / 2],
-        max: [max.value],
-        margin: [state.margin],
+        min: [props.data.unit == '%' ? min.value / 100 : min.value],
+        median: [
+          props.data.unit == '%'
+            ? (min.value + max.value) / 200
+            : (min.value + max.value) / 2,
+        ],
+        max: [props.data.unit == '%' ? max.value / 100 : max.value],
+        margin: [props.data.unit == '%' ? state.margin / 100 : state.margin],
         unit: props.data.unit,
         step: props.data.step,
       })
