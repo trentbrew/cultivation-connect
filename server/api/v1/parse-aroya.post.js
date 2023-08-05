@@ -82,7 +82,7 @@ function parse(csv) {
   }
 
   const report = data => {
-    const result = []
+    let result = []
     const uniqueZones = [...new Set(Array.from(zones))]
     uniqueZones.forEach((z, i) => {
       const start_date = data
@@ -96,6 +96,7 @@ function parse(csv) {
         growth_stage: g,
         entries: e,
         data: data.filter(entry => entry.zone === z),
+        origin: 'aroya',
       })
     })
     return result

@@ -1,5 +1,4 @@
 const header_map = {
-  // ['Timestamp', 'Temperature', 'Air Humidity', 'Solar', 'VPD', 'DLI', 'CO2', 'PORE EC', 'Day Time PORE EC', 'Day Time Soil Moisture', 'Day Time Dry Break', 'Night Time PORE EC', 'Night Time Soil Moisture', 'Night Time Dry Back', 'Grow Medium Temp', 'pH']
   Timestamp: 'timestamp',
   Temperature: 'air_temp',
   'Air Humidity': 'air_humidity',
@@ -18,14 +17,15 @@ const header_map = {
   pH: 'ph',
 }
 
+let entries = []
+
 function parse(csv) {
   const lines = csv
     .split('\n')
     .map(line => line.trim())
     .slice(4, 25) // TODO: open the floodgates
   const headers = lines[0].split(',').map(header => header_map[header])
-  let entries = []
-  lines.splice(0).forEach(datum => {
+  lines.forEach(datum => {
     let data = {}
     const values = datum.split(',')
     values.forEach((value, index) => {
@@ -33,7 +33,25 @@ function parse(csv) {
     })
     entries.push(data)
   })
-  return entries
+
+  const report = data => {
+    return {
+      start_date: data.timestamp,
+      zone: '',
+      growth_stage: '',
+      entries: data.length,
+      data,
+      origin: 'mock',
+    }
+  }
+
+  const payload = {
+    entry_count: entries.length,
+    report: report(entries),
+    data: entries,
+  }
+
+  return payload
 }
 
 export default defineEventHandler(async event => {

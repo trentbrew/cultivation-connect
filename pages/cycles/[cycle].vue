@@ -307,38 +307,70 @@
     ]
     const report = state.csvStatus.report
 
-    let recordsPayload = {}
+    // AROYA REPORT
 
-    report
-      .filter(
-        item => Number(item.zone.substring(4)) === state.cycle.zoneIndex
-      )[0]
-      .data.forEach(entry => {
+    if (report.origin == 'aroya') {
+      console.log('aroya report: ', report)
+      let recordsPayload = {}
+      report
+        .filter(
+          item => Number(item.zone.substring(4)) === state.cycle.zoneIndex
+        )[0]
+        .data.forEach(entry => {
+          if (!recordsPayload[entry.timestamp]) {
+            recordsPayload[entry.timestamp] = {}
+          }
+          recordsPayload[entry.timestamp][entry.name] = entry.value
+        })
+
+      state.relevantData = Object.keys(recordsPayload).map(key => {
+        return {
+          timestamp: key,
+          data: recordsPayload[key],
+        }
+      })
+      const headers = Object.keys(report[0])
+      const missing_headers = total_headers.filter(
+        item => !headers.includes(item)
+      )
+      total_headers.forEach(item => {
+        if (missing_headers.includes(item)) {
+          report.forEach(row => {
+            row[item] = '---'
+          })
+        }
+      })
+    }
+
+    // MOCK REPORT
+
+    if (report.origin == 'mock') {
+      console.log('mock report: ', report)
+      let recordsPayload = {}
+      report.data.forEach(entry => {
         if (!recordsPayload[entry.timestamp]) {
           recordsPayload[entry.timestamp] = {}
         }
         recordsPayload[entry.timestamp][entry.name] = entry.value
       })
-
-    state.relevantData = Object.keys(recordsPayload).map(key => {
-      return {
-        timestamp: key,
-        data: recordsPayload[key],
-      }
-    })
-
-    const headers = Object.keys(report[0])
-    const missing_headers = total_headers.filter(
-      item => !headers.includes(item)
-    )
-
-    total_headers.forEach(item => {
-      if (missing_headers.includes(item)) {
-        report.forEach(row => {
-          row[item] = '---'
-        })
-      }
-    })
+      state.relevantData = Object.keys(recordsPayload).map(key => {
+        return {
+          timestamp: key,
+          data: recordsPayload[key],
+        }
+      })
+      const headers = Object.keys(report.data[0])
+      const missing_headers = total_headers.filter(
+        item => !headers.includes(item)
+      )
+      total_headers.forEach(item => {
+        if (missing_headers.includes(item)) {
+          report.data.forEach(row => {
+            row[item] = '---'
+          })
+        }
+      })
+    }
   }
 
   const csvIsValid = computed(() => {
