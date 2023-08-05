@@ -12,7 +12,6 @@
       sensors: null,
       cultivars: null,
       cycles: null,
-      records: null,
     },
   })
 

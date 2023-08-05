@@ -5,7 +5,6 @@
   const pb = usePocketbase()
   const global = useGlobalStore()
   const route = useRoute()
-  const router = useRouter()
 
   const settingsContext = computed(() => route.path.split('/')[2])
 
@@ -43,6 +42,7 @@
       sensors: [],
       cultivars: [],
       ranges: null,
+      activeRanges: null,
     },
     settings: {
       account: {
@@ -145,12 +145,19 @@
     },
   })
 
+  const activeRanges = computed(() => {
+    const data = state.data.ranges?.find(
+      r => r.name == global.getActiveRangesProfile
+    ).data
+    console.log('data: ', data)
+    console.log('fixed data: ', utils.fixJsonString(data))
+    return data
+  })
+
   async function fetchData() {
-    console.log('fetching data...')
     state.data.sensors = await pbFetch('sensors')
     state.data.cultivars = await pbFetch('cultivars')
     state.data.ranges = await pbFetch('ranges')
-    console.log(state.data.ranges)
   }
 
   function pbFetch(collection, options) {
@@ -167,7 +174,9 @@
   })
 
   onMounted(async () => {
-    fetchData()
+    console.clear()
+    await fetchData()
+    console.log('activeRanges.value: ', activeRanges.value)
     state.loading = false
     state.facility = await getFacilityName()
     state.avatarUrl = await pb.getAvatarUrl()
@@ -428,13 +437,7 @@
         >
           <Accordion>
             <AccordionItem
-              v-for="(field, fieldIndex) in ranges
-                .sort((a, b) => {
-                  if (a.title < b.title) return -1
-                  if (a.title > b.title) return 1
-                  return 0
-                })
-                .filter(field => field.name != 'yield')"
+              v-for="(field, fieldIndex) in state.data.activeRanges"
               :key="fieldIndex"
               :title="field.title"
               class="font-bold"

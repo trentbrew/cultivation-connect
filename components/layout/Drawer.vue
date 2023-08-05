@@ -208,6 +208,7 @@
       cycles: [],
       rooms: [],
       zones: [],
+      ranges: [],
     },
     context: {
       cultivar: null,
@@ -216,7 +217,7 @@
   })
 
   onMounted(async () => {
-    fetchData()
+    await fetchData()
   })
 
   const valid = computed(() => {
@@ -330,7 +331,6 @@
   )
 
   async function fetchData() {
-    state.cycle
     state.data.cultivars = await pbFetch('cultivars')
     state.data.sensors = await pbFetch('sensors')
     state.data.rooms = await pbFetch('rooms')
@@ -361,7 +361,6 @@
 
   function handleValidation(e) {
     state['payload'][e.group][e.id].valid = e.valid
-    // console.log(`state['payload']['${e.group}']['${e.id}'].valid: `, e.valid)
     const groupValidity = Object.values(state['payload'][e.group]).map(
       item => item.valid
     )
@@ -572,11 +571,11 @@
     pb.post('ranges', payload).then(res => {
       console.log('✅ Added ranges profile', res)
       global.toast(
-        'default',
+        'primary',
         'New preset has been created. Adjust the scales to update the ranges.',
         7000
       )
-      // global.updateCache('ranges_profiles', res)
+      global.updateCache('ranges_profiles', res)
     })
   }
 

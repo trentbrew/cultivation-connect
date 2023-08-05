@@ -113,8 +113,8 @@
 </script>
 
 <template>
-  <div class="w-full h-[140px] flex flex-col justify-center items-center">
-    <div class="flex flex-col gap-12 w-full">
+  <div class="w-full h-[300px] flex flex-col justify-center items-center">
+    <div class="flex flex-col gap-12 w-full items-center">
       <div class="range-slider">
         <input
           id="input3"
@@ -252,6 +252,10 @@
             </span>
           </label>
         </div>
+      </div>
+      <div class="flex gap-2">
+        <button class="btn btn-sm btn-outline flex gap-4">Reset</button>
+        <button class="btn btn-sm bg-black flex gap-4">Save</button>
       </div>
     </div>
   </div>

@@ -7,8 +7,6 @@
   })
 
   const images = {
-    growth:
-      'https://cultivationconnect.fly.dev/api/files/dsgp80sss2cymxu/xldvs19b2ve3rmg/growth_uGK2pz7EBq.gif',
     dandelion:
       'https://cultivationconnect.fly.dev/api/files/dsgp80sss2cymxu/eklda8zjnp34dgq/dandelion_RCEhPhOzd0.gif',
     cycles:
@@ -16,7 +14,8 @@
     records:
       'https://cultivationconnect.fly.dev/api/files/dsgp80sss2cymxu/udrtfkvs8nlb691/static_records_xhGAfA1iv5.webp',
     data: 'https://cultivationconnect.fly.dev/api/files/dsgp80sss2cymxu/ljtug7x87rixmvo/datatable_7Yf1hCCV2K.gif',
-    grow: 'https://cultivationconnect.fly.dev/api/files/dsgp80sss2cymxu/ewpximjizqf5n3e/grow_jZc9gFF3Jo.gif',
+    growth:
+      'https://cultivationconnect.fly.dev/api/files/dsgp80sss2cymxu/xldvs19b2ve3rmg/growth_nf9lF9Sor9.gif',
   }
 </script>
 

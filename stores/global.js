@@ -16,6 +16,7 @@ export const useGlobalStore = defineStore('global', {
       sensors: [],
       cultivars: [],
       notifications: [],
+      range_profiles: [],
     },
     csv: {
       done: false,

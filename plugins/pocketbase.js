@@ -99,7 +99,7 @@ const pb = {
     const model = pocketbase.authStore.model
     const record = await pocketbase.collection('users').getOne(model.id)
     if (model.avatar) return await pocketbase.getFileUrl(record, model.avatar)
-    return 'https://cultivationconnect.fly.dev/api/files/dsgp80sss2cymxu/y7512eb8ebogvhq/avatar_fskQo9FywP.png'
+    return 'https://cultivationconnect.fly.dev/api/files/dsgp80sss2cymxu/y7512eb8ebogvhq/avatar_ELxy8OLn4K.png'
   },
 }
 
