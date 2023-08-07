@@ -172,21 +172,21 @@
           class="w-full h-full hover"
         >
           <th class="font-normal">{{ index + 1 }}</th>
-          <label
-            class="bg-blue-500 !rounded-none"
-            for="drawer"
-            @click="handleDrawerToggle"
+          <td
+            v-for="(datum, datumIndex) in Object.entries(item)"
+            :key="datumIndex"
+            class="h-full w-full !rounded-none"
+            @click="handleDrawerToggle(item)"
+            :class="datum[1] === '---' ? '' : ''"
           >
-            <td
-              v-for="(datum, datumIndex) in Object.entries(item)"
-              :key="datumIndex"
-              class="h-full cursor-pointer !rounded-none"
-              @click="handleDrawerToggle(item)"
-              :class="datum[1] === '---' ? '' : ''"
+            <label
+              class="!rounded-none w-full h-full cursor-pointer"
+              for="drawer"
+              @click="handleDrawerToggle"
             >
               {{ datum[1] }}
-            </td>
-          </label>
+            </label>
+          </td>
         </tr>
       </tbody>
     </table>

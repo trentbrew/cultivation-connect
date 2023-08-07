@@ -1,5 +1,8 @@
 <script setup>
   import * as echarts from 'echarts'
+
+  // 🐢
+
   const global = useGlobalStore()
 
   const collectionsState = computed(() => global.getCollectionsState)
