@@ -63,6 +63,7 @@
     const records = await pb.get('records', {
       filter: `cycle = "${route.params.cycle}" && facility.id = "${pb.api.authStore.model.facility}"`,
     })
+    console.log('records', records)
     state.records = records.sort((a, b) => {
       return new Date(a.date_recorded) - new Date(b.date_recorded)
     })
@@ -89,8 +90,6 @@
       values.reduce((a, b) => Number(a) + Number(b), 0) / values.length
     state.min = Math.min(...values)
     state.max = Math.max(...values)
-
-    console.log('record', record)
 
     let series = records.map(record => {
       if (record.data[state.context]) {

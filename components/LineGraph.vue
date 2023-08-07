@@ -27,7 +27,9 @@
   const series = props.series[0].map(item => [item[0], item[1]])
 
   const dateList = series.map(item => item[0])
-  const valueList = series.map(item => item[1])
+  const valueList = series.map(item =>
+    range.value.unit == '%' ? item[1] * 100 : item[1]
+  )
 
   let myChart
 

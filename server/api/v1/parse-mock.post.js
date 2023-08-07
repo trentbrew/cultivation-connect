@@ -23,7 +23,7 @@ function parse(csv) {
   const lines = csv
     .split('\n')
     .map(line => line.trim())
-    .slice(4, 25) // TODO: open the floodgates
+    .slice(4, 105) // TODO: limit to 100 entries
   const headers = lines[0].split(',').map(header => header_map[header])
   lines.slice(1).forEach(datum => {
     let data = {}
