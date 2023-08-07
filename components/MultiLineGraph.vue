@@ -22,138 +22,83 @@
           smooth: true,
           name: 'Air Temperature',
           type: 'line',
-          stack: 'Total',
-          data: [120, 132, 101, 134, 90, 230, 210],
+         
+          data: [120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210],
         },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'Air Humidity',
-          type: 'line',
-          stack: 'Total',
-          data: [220, 182, 191, 234, 290, 330, 310],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'Solar PPFD',
-          type: 'line',
-          stack: 'Total',
-          data: [150, 232, 201, 154, 190, 330, 410],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'VPD',
-          type: 'line',
-          stack: 'Total',
-          data: [320, 332, 301, 334, 390, 330, 320],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'DLI',
-          type: 'line',
-          stack: 'Total',
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'CO2',
-          type: 'line',
-          stack: 'Total',
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'Pore EC',
-          type: 'line',
-          stack: 'Total',
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'Substrate Moisture',
-          type: 'line',
-          stack: 'Total',
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'Dry Back',
-          type: 'line',
-          stack: 'Total',
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'Substrate Temperature',
-          type: 'line',
-          stack: 'Total',
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'PH',
-          type: 'line',
-          stack: 'Total',
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-        },
+      
+      
       ],
     },
   })
+  // Function to format timestamps
+ function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    const options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    return date.toLocaleString('en-US', options);
+  }
+  // Function to generate time stamps for each data point
+  function generateTimestamps(dataLength) {
+    const now = Date.now(); // Use the current date as the starting point
+    const timestamps = [];
+    const timeIncrement = 8 * 60 * 60 * 1000; 
+
+    // Loop through the number of data points and add the formatted time to each timestamp
+    for (let i = 0; i < dataLength; i++) {
+      const timestamp = now - (dataLength - i - 1) * timeIncrement;
+      timestamps.push(formatTimestamp(timestamp));
+    }
+
+    return timestamps;
+  }
+  
+
 
   const target = ref(null)
 
   const series = props.series.map(item => item)
 
   let myChart
+
+ 
+  const last24Hours = ref(false);
+  const last7Days = ref(false);
+ 
+function filterDataByTimestamp(data, days) {
+    const now = new Date().getTime();
+    if (days === '24h') {
+      return data.slice(-6); // Show last 24 hours (6 data points)
+    } else if (days === '7d') {
+      // Show data points from the last 7 days
+      const oneDay = 24 * 60 * 60 * 1000;
+      const oneWeekAgo = now - 7 * oneDay;
+      const filteredData = data.filter((point) => {
+        const timestamp = new Date(point[0]).getTime();
+        return timestamp >= oneWeekAgo;
+      });
+
+      // If there are not enough data points for the last 7 days, return all data
+      if (filteredData.length < 7) {
+        return data;
+      }
+
+      return filteredData;
+    } else {
+      return data; // Show all data points
+    }
+  }
+
+  const filteredSeries = computed(() => {
+    return series.map(item => {
+      return {
+        ...item,
+        data: last24Hours.value
+          ? filterDataByTimestamp(item.data, '24h')
+          : last7Days.value
+          ? filterDataByTimestamp(item.data, '7d')
+          : item.data,
+      };
+    });
+  });
 
   let options = {
     title: {
@@ -189,9 +134,11 @@
       },
     },
     xAxis: {
-      type: 'time',
+      type: 'category',
+      data: generateTimestamps(series[0].data.length),
       boundaryGap: false,
     },
+    
     yAxis: [
       {
         type: 'value',
@@ -282,8 +229,9 @@
         show: false,
       },
     ],
-    series,
+   series: filteredSeries.value
   }
+  
 
   function initChart() {
     myChart = echarts.init(target.value)
@@ -296,7 +244,15 @@
       myChart.resize()
     })
   })
-
+ // Function to update the chart options and redraw it
+  function updateChart() {
+    options.series = filteredSeries.value;
+    myChart.setOption(options);
+  }
+   
+  watch([last24Hours, last7Days], () => {
+    updateChart();
+  });
   watch(
     () => props.series,
     () => initChart()
@@ -306,10 +262,18 @@
     () => collectionsState.value,
     () => myChart.resize()
   )
+  
 </script>
 
 <template>
+ <div>
+      
+      <button @click="last24Hours = true; last7Days = false;">Last 24 Hours</button>
+      <button @click="last24Hours = false; last7Days = true;">Last 7 Days</button>
+      <button @click="last24Hours = false; last7Days = false;">Full View</button>
+    </div>
   <div id="multi-line-graph" ref="target"></div>
+  
 </template>
 
 <style scoped>
