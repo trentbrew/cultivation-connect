@@ -1,5 +1,6 @@
 <script setup>
   const global = useGlobalStore()
+  const router = useRouter()
 
   const props = defineProps({
     slotted: {
@@ -29,6 +30,7 @@
   })
 
   function handleDrawerToggle() {
+    router.push({ hash: `#${props.for}` })
     global.setDrawerContext(props.for)
     global.setCurrentItem(props.item) // for editing
   }

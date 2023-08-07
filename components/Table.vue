@@ -7,6 +7,10 @@
       type: Boolean,
       default: false,
     },
+    for: {
+      type: String,
+      required: true,
+    },
     missing: {
       type: Array,
       default: () => [],
@@ -126,8 +130,11 @@
     Array.from(props.data).map(item => keys.value.map(key => item[key]))
   )
 
-  function handleDrawerToggle(index) {
-    router.push({ hash: '#edit-data', params: { index } })
+  function handleDrawerToggle(item) {
+    console.log('hadling drawer toggle: ', item)
+    router.push({ hash: `#${props.for}` })
+    global.setDrawerContext(props.for)
+    // global.setCurrentItem(item) // for editing
   }
 </script>
 
@@ -150,7 +157,7 @@
           class="cursor-pointer !duration-150"
           :class="props.hoverable ? 'hover' : ''"
         >
-          <th class="font-normal">{{ itemIndex }}</th>
+          <th class="font-normal">{{ itemIndex + 1 }}</th>
           <td
             v-for="(datum, datumIndex) in Object.entries(item)"
             :key="datumIndex"
@@ -165,18 +172,21 @@
           class="w-full h-full hover"
         >
           <th class="font-normal">{{ index + 1 }}</th>
-          <td
-            v-for="(datum, datumIndex) in Object.entries(item)"
-            :key="datumIndex"
-            class="h-full"
-            :class="datum[1] === '---' ? '' : ''"
+          <label
+            class="bg-blue-500 !rounded-none"
+            for="drawer"
+            @click="handleDrawerToggle"
           >
-            {{ datum[1] }}
-            <!-- <div v-if="datum[1] !== '---'">{{ datum[1] }}</div>
-            <div v-else class="h-full flex items-center">
-              <Input type="text" :nolabel="true" class="-mt-3" />
-            </div> -->
-          </td>
+            <td
+              v-for="(datum, datumIndex) in Object.entries(item)"
+              :key="datumIndex"
+              class="h-full cursor-pointer !rounded-none"
+              @click="handleDrawerToggle(item)"
+              :class="datum[1] === '---' ? '' : ''"
+            >
+              {{ datum[1] }}
+            </td>
+          </label>
         </tr>
       </tbody>
     </table>

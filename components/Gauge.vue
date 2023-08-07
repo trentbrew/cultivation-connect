@@ -115,10 +115,20 @@
 
     series.data[0].value = props.value
     series.splitNumber = 10
-    series.axisLabel.formatter = v => (v % 1 == 0 ? v : v.toFixed(2))
+    series.axisLabel.formatter = v =>
+      v % 1 == 0
+        ? context?.unit == '%'
+          ? v * 100
+          : v
+        : context?.unit == '%'
+        ? (v * 100).toFixed(1)
+        : v.toFixed(2)
     series.min = context?.relative_min
     series.max = context?.relative_max
-    series.detail.formatter = value => value + context?.unit
+    series.detail.formatter = value =>
+      context?.unit == '%'
+        ? (value * 100).toFixed(1) + context?.unit
+        : value + context?.unit
 
     if (context?.median < 1 && context?.median > 0) {
       series.axisLine.lineStyle.color = [

@@ -161,7 +161,7 @@
                               state.range?.unit == '%'
                                 ? Number.isInteger(state.avg * 100)
                                   ? state.avg * 100
-                                  : (state.avg * 100).toFixed(2)
+                                  : (state.avg * 100).toFixed(1)
                                 : Number.isInteger(state.avg)
                                 ? state.avg
                                 : state.avg.toFixed(2)

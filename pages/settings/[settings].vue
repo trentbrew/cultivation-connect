@@ -151,6 +151,13 @@
   })
 
   watch(
+    () => route.hash,
+    val => {
+      if (!val) handleReset()
+    }
+  )
+
+  watch(
     () => state.payload.range.value,
     val => {
       console.clear()
@@ -186,11 +193,9 @@
 
   onMounted(async () => {
     await fetchData()
-    // console.log('activeRanges.value: ', activeRanges.value)
     state.data.relevantRanges = state.data.ranges.find(
       r => r.name == global.getActiveRangesProfile
     )
-    // console.log('state.data.ranges: ', state.data.relevantRanges)
     state.loading = false
     state.facility = await getFacilityName()
     state.avatarUrl = await pb.getAvatarUrl()
@@ -268,14 +273,13 @@
       })
   }
 
-  function handleRangeReset() {
-    // TODO: do this the right way
-    // console.log('resetting range')
-    // state.resetting = true
-    // setTimeout(() => {
-    //   // ╮(￣ω￣;)╭
-    //   state.resetting = false
-    // }, 500)
+  function handleReset() {
+    state.resetting = true
+    console.log('refetching data...')
+    fetchData().then(() => {
+      console.log('done fetching. resetting...')
+      state.resetting = false
+    })
   }
 </script>
 
@@ -393,11 +397,20 @@
         class="w-full flex flex-col justify-between items-end h-full p-8 bg-base-200/10 z-50"
       >
         <Table
-          class="w-full rounded-b-none"
+          v-if="!state.resetting"
+          drawer
+          for="edit-cultivar"
+          class="w-full h-full"
           :placeholder-columns="['name', 'phenotype', 'genetic acquisition']"
           :data="state.data.cultivars"
           :class="state.data.cultivars.length == 0 ? 'border-none' : ''"
         />
+        <div
+          v-else
+          class="rounded-[8px] w-full h-full flex justify-center items-center"
+        >
+          <Loading size="48" />
+        </div>
         <div
           v-if="state.data.sensors.length == 0"
           class="bg-base-100 border border-base-300 w-full h-60 flex justify-center items-center rounded-b"
@@ -423,11 +436,20 @@
         class="w-full flex flex-col justify-start items-end h-full p-8 bg-base-200/10 z-50"
       >
         <Table
-          class="w-full rounded-b-none"
+          v-if="!state.resetting"
+          class="w-full h-full"
+          drawer
+          for="edit-sensor"
           :placeholder-columns="['brand', 'type', 'model', 'serial number']"
           :data="state.data.sensors"
           :class="state.data.sensors.length == 0 ? 'border-none' : ''"
         />
+        <div
+          v-else
+          class="rounded-[8px] w-full h-full flex justify-center items-center"
+        >
+          <Loading size="48" />
+        </div>
         <div
           v-if="state.data.sensors.length == 0"
           class="bg-base-100 border border-base-300 w-full h-60 flex justify-center items-center rounded-b"

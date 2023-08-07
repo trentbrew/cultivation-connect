@@ -88,19 +88,19 @@
       },
       cultivar: {
         name: {
-          value: null,
+          value: '',
           valid: false,
         },
         phenotype: {
-          value: null,
+          value: '',
           valid: false,
         },
         acquisition: {
-          value: null,
+          value: '',
           valid: false,
         },
         notes: {
-          value: null,
+          value: '',
           valid: true,
         },
       },
@@ -364,6 +364,8 @@
     const groupValidity = Object.values(state['payload'][e.group]).map(
       item => item.valid
     )
+    console.log('groupValidity: ', groupValidity)
+    console.log('state.payload: ', state.payload)
     state['payload'].valid = !groupValidity.includes(false)
     console.log('state.payload.valid: ', state.payload.valid)
   }
@@ -604,7 +606,7 @@
     })
     clearForm('cultivar')
     pb.post('cultivars', payload).then(res => {
-      global.toast('default', 'Successfully added cultivar')
+      global.toast('primary', 'Successfully added cultivar')
       global.updateCache('cultivars', res)
     })
   }
@@ -619,7 +621,7 @@
     })
     clearForm('cultivar')
     pb.update('cultivars', state.context.cultivar.id, payload).then(res => {
-      global.toast('default', 'Successfully updated cultivar')
+      global.toast('primary', 'Successfully updated cultivar')
       fetchData()
     })
   }
@@ -647,7 +649,7 @@
     pb.post('cycles', payload)
       .then(res => {
         console.log('✅ Added cycle', res)
-        global.toast('default', 'Your new cycle has been created! 🙌')
+        global.toast('primary', 'Your new cycle has been created! 🙌', 2000)
         router.push(`/cycles/${res.id}`)
       })
       .catch(err => {

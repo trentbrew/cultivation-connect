@@ -143,7 +143,7 @@
               state.range.unit == '%'
                 ? Number.isInteger(props.value * 100)
                   ? props.value * 100
-                  : (props.value * 100).toFixed(2)
+                  : (props.value * 100).toFixed(1)
                 : props.value
             }}
           </span>

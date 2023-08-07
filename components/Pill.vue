@@ -79,7 +79,7 @@
     <span v-show="!props.disabled" class="text-xs font-medium">
       {{
         `${(state.change.value * (state.range?.unit == '%' ? 100 : 1)).toFixed(
-          Number.isInteger(state.change.value) ? '0' : '2'
+          Number.isInteger(state.change.value) ? '0' : '1'
         )} ${state.range?.unit}`
       }}
     </span>
