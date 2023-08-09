@@ -5,6 +5,7 @@
 
   const state = reactive({
     loading: false,
+    selectedRoom: '1dv29bxk3nwecla',
     data: {
       facility: null,
       rooms: null,
@@ -12,6 +13,7 @@
       sensors: null,
       cultivars: null,
       cycles: null,
+      series: [],
     },
   })
 
@@ -37,8 +39,9 @@
     state.data.sensors = await pbFetch('sensors')
     state.data.cultivars = await pbFetch('cultivars')
     state.data.cycles = await pbFetch('cycles')
+    state.data.records = await pbFetch('records')
     state.loading = false
-    console.log('state.data: ', state.data)
+    getCompundSeries()
   })
 
   const greet = computed(() => {
@@ -49,6 +52,150 @@
     else if (hour < 18) return `Good afternoon, ${name}!`
     else return `Good evening, ${name}!`
   })
+
+  function prettifyDate(dateString) {
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZoneName: 'short',
+    }
+
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', options)
+  }
+
+  async function getCompundSeries() {
+    // step0: get all active cycles
+
+    const cycleRooms = state.data.cycles
+      .filter(cycle => cycle.active)
+      .map(cycle => cycle.room)
+
+    // console.log('cycle rooms: ', cycleRooms)
+
+    // step1: get all unique rooms for the active cycles
+
+    const uniqueCycleRooms = [...new Set(cycleRooms)]
+
+    // console.log('unique cycle rooms: ', uniqueCycleRooms)
+
+    // step2: get all records belonging to the unique rooms
+
+    const records = state.data.records
+
+    let uniqueCycleRoomRecords = uniqueCycleRooms.map(room => {
+      return records.filter(record => record.room == room)
+    })
+
+    // console.log('unique cycle room records: ', uniqueCycleRoomRecords)
+
+    // step3: get all unique dates from the records for each room
+
+    const uniqueDates = uniqueCycleRoomRecords.map(room => {
+      return [...new Set(room.map(record => record.date_recorded))]
+    })
+
+    // console.log('unique dates: ', uniqueDates)
+
+    // step4: get all data entries belonging to each timestamp
+
+    const recordsPerTimestamp = uniqueCycleRoomRecords.map(room => {
+      return room.map(record => {
+        return {
+          date_recorded: record.date_recorded,
+          data: record.data,
+          room: record.room,
+        }
+      })
+    })
+
+    // console.log('records per timestamp: ', recordsPerTimestamp)
+
+    // step5: instantiate series paayload
+
+    const relevantRecords = recordsPerTimestamp.filter(
+      room => room[0].room == state.selectedRoom
+    )[0]
+
+    // console.log('relevant records: ', relevantRecords)
+
+    let series = {
+      dateList: [],
+      valueList: {
+        air_humidity: [],
+        air_temp: [],
+        co2: [],
+        day_time_dry_back: [],
+        day_time_pore_ec: [],
+        day_time_soil_moisture: [],
+        dli: [],
+        grow_medium_temp: [],
+        night_time_dry_back: [],
+        night_time_pore_ec: [],
+        night_time_soil_moisture: [],
+        ph: [],
+        pore_ec: [],
+        solar: [],
+        vpd: [],
+      },
+    }
+
+    series.dateList = relevantRecords.map(record =>
+      prettifyDate(record.date_recorded)
+    )
+
+    series.valueList.air_humidity = relevantRecords.map((record, recordIndex) =>
+      Number(record.data.air_humidity ?? 0)
+    )
+    series.valueList.air_temp = relevantRecords.map((record, recordIndex) =>
+      Number(record.data.air_temp ?? 0)
+    )
+    series.valueList.co2 = relevantRecords.map((record, recordIndex) =>
+      Number(record.data.co2 ?? 0)
+    )
+    series.valueList.day_time_dry_back = relevantRecords.map(
+      (record, recordIndex) => Number(record.data.day_time_dry_back ?? 0)
+    )
+    series.valueList.day_time_pore_ec = relevantRecords.map(
+      (record, recordIndex) => Number(record.data.day_time_pore_ec ?? 0)
+    )
+    series.valueList.day_time_soil_moisture = relevantRecords.map(
+      (record, recordIndex) => Number(record.data.day_time_soil_moisture ?? 0)
+    )
+    series.valueList.dli = relevantRecords.map((record, recordIndex) =>
+      Number(record.data.dli ?? 0)
+    )
+    series.valueList.grow_medium_temp = relevantRecords.map(
+      (record, recordIndex) => Number(record.data.grow_medium_temp ?? 0)
+    )
+    series.valueList.night_time_dry_back = relevantRecords.map(
+      (record, recordIndex) => Number(record.data.night_time_dry_back ?? 0)
+    )
+    series.valueList.night_time_pore_ec = relevantRecords.map(
+      (record, recordIndex) => Number(record.data.night_time_pore_ec ?? 0)
+    )
+    series.valueList.night_time_soil_moisture = relevantRecords.map(
+      (record, recordIndex) => Number(record.data.night_time_soil_moisture ?? 0)
+    )
+    series.valueList.ph = relevantRecords.map((record, recordIndex) =>
+      Number(record.data.ph ?? 0)
+    )
+    series.valueList.pore_ec = relevantRecords.map((record, recordIndex) =>
+      Number(record.data.pore_ec ?? 0)
+    )
+    series.valueList.solar = relevantRecords.map((record, recordIndex) =>
+      Number(record.data.solar ?? 0)
+    )
+    series.valueList.vpd = relevantRecords.map((record, recordIndex) =>
+      Number(record.data.vpd ?? 0)
+    )
+
+    state.series = series
+  }
 </script>
 
 <template>
@@ -66,10 +213,6 @@
               {{ state.data.facility?.company_name }}
             </h1>
           </div>
-          <!-- <button class="btn btn-outline gap-3">
-            <Icon name="edit" />
-            <span>Edit facility details</span>
-          </button> -->
         </div>
 
         <header class="p-4">
@@ -112,30 +255,11 @@
 
         <div class="w-full h-full p-4 pt-0">
           <div class="w-full h-full gap-4 flex flex-col">
-            <!-- CYCLE CONDITIONS -->
             <div
               class="w-full h-full rounded-[8px] p-4 border-[1px] border-base-300"
             >
-              <MultiLineGraph />
+              <MultiLineGraph :series="state.series" />
             </div>
-            <!-- ROOMS & ZONES -->
-            <!-- <div class="flex gap-4 h-full">
-              <div
-                class="w-full h-96 border-[1px] border-base-300 rounded-[8px] p-4 bg-base-100"
-              ></div>
-              <div
-                class="w-full h-96 border-[1px] border-base-300 rounded-[8px] p-4 bg-base-100"
-              ></div>
-            </div> -->
-            <!-- CULTIVARS & SENSORS -->
-            <!-- <div class="flex gap-4 h-full">
-              <div
-                class="w-full h-96 border-[1px] border-base-300 rounded-[8px] p-4 bg-base-100"
-              ></div>
-              <div
-                class="w-full h-96 border-[1px] border-base-300 rounded-[8px] p-4 bg-base-100"
-              ></div>
-            </div> -->
           </div>
         </div>
       </div>

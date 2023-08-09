@@ -1,300 +1,198 @@
 <script setup>
   import * as echarts from 'echarts'
+
+  const route = useRoute()
   const global = useGlobalStore()
 
   const collectionsState = computed(() => global.getCollectionsState)
 
+  const target = ref(null)
+
   const props = defineProps({
-    title: {
-      type: String,
-      required: false,
-      default: 'Grow Conditions',
-    },
     series: {
       type: [Array, Object],
-      default: () => [
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'Air Temperature',
-          type: 'line',
-          stack: 'Total',
-          data: [120, 132, 101, 134, 90, 230, 210],
+      default: () => ({
+        dateList: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        valueList: {
+          email: [120, 132, 101, 134, 90, 230, 210],
+          unionAds: [220, 182, 191, 234, 290, 330, 310],
+          videoAds: [150, 232, 201, 154, 190, 330, 410],
+          direct: [320, 332, 301, 334, 390, 330, 320],
+          searchEngine: [820, 932, 901, 934, 1290, 1330, 1320],
         },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'Air Humidity',
-          type: 'line',
-          stack: 'Total',
-          data: [220, 182, 191, 234, 290, 330, 310],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'Solar PPFD',
-          type: 'line',
-          stack: 'Total',
-          data: [150, 232, 201, 154, 190, 330, 410],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'VPD',
-          type: 'line',
-          stack: 'Total',
-          data: [320, 332, 301, 334, 390, 330, 320],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'DLI',
-          type: 'line',
-          stack: 'Total',
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'CO2',
-          type: 'line',
-          stack: 'Total',
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'Pore EC',
-          type: 'line',
-          stack: 'Total',
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'Substrate Moisture',
-          type: 'line',
-          stack: 'Total',
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'Dry Back',
-          type: 'line',
-          stack: 'Total',
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'Substrate Temperature',
-          type: 'line',
-          stack: 'Total',
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-        },
-        {
-          lineStyle: {
-            normal: {
-              width: 3,
-            },
-          },
-          smooth: true,
-          name: 'PH',
-          type: 'line',
-          stack: 'Total',
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-        },
-      ],
+      }),
     },
   })
 
-  const target = ref(null)
+  const titles = [
+    'Air Humidity',
+    'Air Temp',
+    'CO2',
+    'Day Time Dry Back',
+    'Day Time Pore EC',
+    'Day Time Soil Moisture',
+    'DLI',
+    'Grow Medium Temp',
+    'Night Time Dry Back',
+    'Night Time Pore EC',
+    'Night Time Soil Moisture',
+    'pH',
+    'Pore EC',
+    'Solar',
+    'VPD',
+  ]
 
-  const series = props.series.map(item => item)
+  const series = props.series.valueList
+  const dateList = props.series.dateList
+
+  console.log('dateList', dateList)
+  console.log('series', series)
 
   let myChart
 
+  onMounted(() => {
+    console.log('mounted multi-line-chart')
+  })
+
   let options = {
     title: {
-      text: props.title,
+      text: 'Grow Conditions',
     },
     tooltip: {
       trigger: 'axis',
     },
     legend: {
-      data: [
-        'Air Temperature',
-        'Air Humidity',
-        'Solar PPFD',
-        'VPD',
-        'DLI',
-        'CO2',
-        'Pore EC',
-        'Substrate Moisture',
-        'Dry Back',
-        'Substrate Temperature',
-        'PH',
-      ],
+      data: titles,
     },
     grid: {
-      left: '2%',
-      right: '2%',
-      bottom: '4%',
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
       containLabel: true,
     },
     toolbox: {
+      show: true,
       feature: {
+        dataZoom: {
+          yAxisIndex: 'none',
+        },
+        dataView: { readOnly: false },
+        restore: {},
         saveAsImage: {},
       },
     },
     xAxis: {
-      type: 'time',
+      type: 'category',
       boundaryGap: false,
+      data: dateList,
     },
-    yAxis: [
+    yAxis: {
+      type: 'value',
+    },
+    series: [
       {
-        type: 'value',
-        name: 'Air Temperature',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
-        axisLabel: {
-          formatter: '{value} °F',
-        },
-        show: false,
+        name: titles[0],
+        type: 'line',
+        stack: 'Total',
+        data: series.air_humidity,
       },
       {
-        type: 'value',
-        name: 'Air Humidity',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
-        axisLabel: {
-          formatter: '{value} %',
-        },
-        show: false,
+        name: titles[1],
+        type: 'line',
+        stack: 'Total',
+        data: series.air_temp,
       },
       {
-        type: 'value',
-        name: 'Solar PPFD',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
-        axisLabel: {
-          formatter: '{value} umol/m2/s',
-        },
-        show: false,
+        name: titles[2],
+        type: 'line',
+        stack: 'Total',
+        data: series.co2,
       },
       {
-        type: 'value',
-        name: 'VPD',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
-        axisLabel: {
-          formatter: '{value} kPa',
-        },
-        show: false,
+        name: titles[3],
+        type: 'line',
+        stack: 'Total',
+        data: series.day_time_dry_back,
       },
       {
-        type: 'value',
-        name: 'DLI',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
-        axisLabel: {
-          formatter: '{value} mol/m2/d',
-        },
-        show: false,
+        name: titles[4],
+        type: 'line',
+        stack: 'Total',
+        data: series.day_time_pore_ec,
       },
       {
-        type: 'value',
-        name: 'CO2',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
-        axisLabel: {
-          formatter: '{value} ppm',
-        },
-        show: false,
+        name: titles[5],
+        type: 'line',
+        stack: 'Total',
+        data: series.day_time_soil_moisture,
       },
       {
-        type: 'value',
-        name: 'Pore EC',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
-        axisLabel: {
-          formatter: '{value} mS/cm',
-        },
-        show: false,
+        name: titles[6],
+        type: 'line',
+        stack: 'Total',
+        data: series.dli,
       },
       {
-        type: 'value',
-        name: 'Substrate Moisture, Dry Back, Substrate Temperature, PH',
-        // min: 0,
-        // max: 100,
-        // interval: 20,
-        axisLabel: {
-          formatter: '{value} %, %, °F, pH',
-        },
-        show: false,
+        name: titles[7],
+        type: 'line',
+        stack: 'Total',
+        data: series.grow_medium_temp,
+      },
+      {
+        name: titles[8],
+        type: 'line',
+        stack: 'Total',
+        data: series.night_time_dry_back,
+      },
+      {
+        name: titles[9],
+        type: 'line',
+        stack: 'Total',
+        data: series.night_time_pore_ec,
+      },
+      {
+        name: titles[10],
+        type: 'line',
+        stack: 'Total',
+        data: series.night_time_soil_moisture,
+      },
+      {
+        name: titles[11],
+        type: 'line',
+        stack: 'Total',
+        data: series.ph,
+      },
+      {
+        name: titles[12],
+        type: 'line',
+        stack: 'Total',
+        data: series.pore_ec,
+      },
+      {
+        name: titles[13],
+        type: 'line',
+        stack: 'Total',
+        data: series.solar,
+      },
+      {
+        name: titles[14],
+        type: 'line',
+        stack: 'Total',
+        data: series.vpd,
       },
     ],
-    series,
   }
 
   function initChart() {
-    myChart = echarts.init(target.value)
     myChart.setOption(options)
   }
 
   onMounted(async () => {
-    initChart()
+    myChart = echarts.init(target.value)
     window.addEventListener('resize', () => {
       myChart.resize()
     })
+    initChart()
   })
 
   watch(
