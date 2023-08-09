@@ -44,9 +44,25 @@
 
   const series = props.series.valueList
   const dateList = props.series.dateList
-
-  console.log('dateList', dateList)
   console.log('series', series)
+  console.log('dateList', dateList)
+
+  const originalSeries = series
+
+  // Object.entries(series).forEach(h => {
+  //   series[h[0]] = normalize(h[1])
+  // })
+
+  // NORMALIZE DATA
+  function normalize(s) {
+    let seriesData = s
+    console.log('normalizing data', seriesData)
+    const max = Math.max(...seriesData)
+    const min = Math.min(...seriesData)
+    const range = max - min
+    const normalized = seriesData.map(item => (item - min) / range)
+    return normalized
+  }
 
   let myChart
 
@@ -76,9 +92,6 @@
         dataZoom: {
           yAxisIndex: 'none',
         },
-        // dataView: { readOnly: false },
-        // restore: {},
-        // saveAsImage: {},
       },
     },
     xAxis: {

@@ -5,7 +5,7 @@
 
   const state = reactive({
     loading: false,
-    selectedRoom: '1dv29bxk3nwecla',
+    selectedRoom: 'rupkybclrltrbo4',
     data: {
       facility: null,
       rooms: null,
