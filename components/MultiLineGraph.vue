@@ -25,17 +25,17 @@
   })
 
   const titles = [
-    'Air Humidity',
+    'Humidity',
     'Air Temp',
     'CO2',
-    'Day Time Dry Back',
-    'Day Time Pore EC',
-    'Day Time Soil Moisture',
+    'Dry Back 🌤️',
+    'EC 🌤️',
+    'Soil Moist',
     'DLI',
-    'Grow Medium Temp',
-    'Night Time Dry Back',
-    'Night Time Pore EC',
-    'Night Time Soil Moisture',
+    'Soil Temp',
+    'Dry Back 🌙',
+    'EC 🌙',
+    'Soil Moist 🌙',
     'pH',
     'Pore EC',
     'Solar',
@@ -56,7 +56,7 @@
 
   let options = {
     title: {
-      text: 'Grow Conditions',
+      text: '',
     },
     tooltip: {
       trigger: 'axis',
@@ -73,12 +73,12 @@
     toolbox: {
       show: true,
       feature: {
-        dataZoom: {
-          yAxisIndex: 'none',
-        },
-        dataView: { readOnly: false },
-        restore: {},
-        saveAsImage: {},
+        // dataZoom: {
+        //   yAxisIndex: 'none',
+        // },
+        // dataView: { readOnly: false },
+        // restore: {},
+        // saveAsImage: {},
       },
     },
     xAxis: {
@@ -86,98 +86,118 @@
       boundaryGap: false,
       data: dateList,
     },
-    yAxis: {
-      type: 'value',
-    },
+    yAxis: [
+      {
+        data: [],
+        axisLine: {
+          show: false,
+        },
+      },
+    ],
     series: [
       {
         name: titles[0],
         type: 'line',
         stack: 'Total',
+        smooth: true,
         data: series.air_humidity,
       },
       {
         name: titles[1],
         type: 'line',
         stack: 'Total',
+        smooth: true,
         data: series.air_temp,
       },
       {
         name: titles[2],
         type: 'line',
         stack: 'Total',
+        smooth: true,
         data: series.co2,
       },
       {
         name: titles[3],
         type: 'line',
         stack: 'Total',
+        smooth: true,
         data: series.day_time_dry_back,
       },
       {
         name: titles[4],
         type: 'line',
         stack: 'Total',
+        smooth: true,
         data: series.day_time_pore_ec,
       },
       {
         name: titles[5],
         type: 'line',
         stack: 'Total',
+        smooth: true,
         data: series.day_time_soil_moisture,
       },
       {
         name: titles[6],
         type: 'line',
         stack: 'Total',
+        smooth: true,
         data: series.dli,
       },
       {
         name: titles[7],
         type: 'line',
         stack: 'Total',
+        smooth: true,
         data: series.grow_medium_temp,
       },
       {
         name: titles[8],
         type: 'line',
         stack: 'Total',
+        smooth: true,
         data: series.night_time_dry_back,
       },
       {
         name: titles[9],
         type: 'line',
         stack: 'Total',
+        smooth: true,
         data: series.night_time_pore_ec,
       },
       {
         name: titles[10],
         type: 'line',
         stack: 'Total',
+        smooth: true,
         data: series.night_time_soil_moisture,
       },
       {
         name: titles[11],
         type: 'line',
         stack: 'Total',
+        smooth: true,
         data: series.ph,
       },
       {
         name: titles[12],
         type: 'line',
         stack: 'Total',
+        smooth: true,
         data: series.pore_ec,
       },
       {
         name: titles[13],
         type: 'line',
         stack: 'Total',
+        smooth: true,
         data: series.solar,
       },
       {
         name: titles[14],
         type: 'line',
         stack: 'Total',
+        smooth: true,
         data: series.vpd,
       },
     ],
