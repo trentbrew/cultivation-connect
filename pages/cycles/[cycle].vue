@@ -475,8 +475,8 @@
     setTimeout(() => {
       let latest = ''
       try {
-        state.relevantData.slice(0, 10).forEach(async (entry, entryIndex) => {
-          // console.log(`\nsubmitting entry #${entryIndex}...`)
+        state.relevantData.forEach(async (entry, entryIndex) => {
+          console.log(`\nsubmitting entry #${entryIndex}...`)
           await submitRecord(entry)
         })
         global.toast(

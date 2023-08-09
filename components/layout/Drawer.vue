@@ -6,6 +6,8 @@
   const route = useRoute()
   const router = useRouter()
 
+  const override = true
+
   const state = reactive({
     cycle: {
       id: null,
@@ -83,7 +85,7 @@
         },
         data_logging_frequency: {
           value: null,
-          valid: false,
+          valid: true,
         },
       },
       cultivar: {
@@ -364,10 +366,11 @@
     const groupValidity = Object.values(state['payload'][e.group]).map(
       item => item.valid
     )
+
     console.log('groupValidity: ', groupValidity)
     console.log('state.payload: ', state.payload)
+
     state['payload'].valid = !groupValidity.includes(false)
-    console.log('state.payload.valid: ', state.payload.valid)
   }
 
   async function pbFetch(collection) {
@@ -813,8 +816,6 @@
           id="data_logging_frequency"
           name="data_logging_frequency"
           label="Data logging frequency"
-          rules="required"
-          @validation="handleValidation"
           class="w-full"
         >
           <option value="hourly">Hourly</option>
@@ -1148,9 +1149,9 @@
           >
             <option value="mock">Cultivation Connect Example Dataset</option>
             <option value="aroya">Aroya (Automatic logging)</option>
-            <option value="spreadsheet">
+            <!-- <option value="spreadsheet">
               Custom Spreadsheet (Manually logged)
-            </option>
+            </option> -->
             <option value="other">Other</option>
           </Input>
           <Input
@@ -1370,7 +1371,7 @@
           Cancel
         </label>
         <DrawerToggle
-          :disabled="!valid"
+          :disabled="!valid && !override"
           class="btn-primary"
           @click="handleSubmit"
           :for="drawerContext"

@@ -73,9 +73,9 @@
     toolbox: {
       show: true,
       feature: {
-        // dataZoom: {
-        //   yAxisIndex: 'none',
-        // },
+        dataZoom: {
+          yAxisIndex: 'none',
+        },
         // dataView: { readOnly: false },
         // restore: {},
         // saveAsImage: {},

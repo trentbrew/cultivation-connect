@@ -20,15 +20,26 @@
   const collectionsState = computed(() => global.getCollectionsState)
   const range = computed(() => global.getRange(props.context))
 
-  const rMin = range.value.min[0]
-  const rMax = range.value.max[0]
-  const rMar = range.value.margin[0]
+  const rMin =
+    range.value.unit == '%' || range.value.unit == 'kPa'
+      ? range.value.min[0] * 100
+      : range.value.min[0]
+  const rMax =
+    range.value.unit == '%' || range.value.unit == 'kPa'
+      ? range.value.max[0] * 100
+      : range.value.max[0]
+  const rMar =
+    range.value.unit == '%' || range.value.unit == 'kPa'
+      ? range.value.margin[0] * 100
+      : range.value.margin[0]
 
   const series = props.series[0].map(item => [item[0], item[1]])
 
   const dateList = series.map(item => item[0])
   const valueList = series.map(item =>
-    range.value.unit == '%' ? item[1] * 100 : item[1]
+    range.value.unit == '%' || range.value.unit == 'kPa'
+      ? item[1] * 100
+      : item[1]
   )
 
   let myChart
@@ -81,7 +92,11 @@
       showContent: true,
       formatter: params => {
         return (
-          params[0].name + '<br/>' + params[0].value + ' ' + range.value.unit
+          params[0].name +
+          '<br/>' +
+          params[0].value.toFixed(1) +
+          ' ' +
+          range.value.unit
         )
       },
     },
