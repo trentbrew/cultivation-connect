@@ -47,11 +47,17 @@
   console.log('series', series)
   console.log('dateList', dateList)
 
+  function getTotalHours(dates) {}
+
   const originalSeries = series
 
   // Object.entries(series).forEach((h, i) => {
   //   series[h[0]] = normalize(h[1])
   // })
+
+  dateList.forEach((d, i) => {
+    dateList[i] = prettifyDate(d)
+  })
 
   // NORMALIZE DATA
   function normalize(s) {
@@ -62,6 +68,21 @@
     const range = max - min
     const normalized = seriesData.map(item => (item - min) / range)
     return normalized
+  }
+
+  function prettifyDate(dateString) {
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZoneName: 'short',
+    }
+
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', options)
   }
 
   let myChart
@@ -87,7 +108,7 @@
       mouseWheelZoom: true,
       bottom: 36,
       height: 24,
-      // width: '60%',
+      width: '63%',
 
       // textStyle: {
       //   color: '#333',
@@ -237,15 +258,15 @@
 
   function initChart() {
     myChart.setOption(options)
+    myChart.dispatchAction({
+      type: 'dataZoom',
+      start: 90,
+      end: 100,
+    })
   }
 
   onMounted(async () => {
     myChart = echarts.init(target.value)
-    // mychart.dispatchAction({
-    //   type: 'dataZoom',
-    //   start: 90,
-    //   end: 100,
-    // })
     window.addEventListener('resize', () => {
       myChart.resize()
     })
@@ -261,10 +282,40 @@
     () => collectionsState.value,
     () => myChart.resize()
   )
+
+  function handleZoom(value) {
+    const now = new Date()
+    const hour = now.getHours()
+    console.log('hour', hour)
+    myChart.dispatchAction({
+      type: 'dataZoom',
+      start: 100 - value,
+      end: 100,
+    })
+  }
 </script>
 
 <template>
   <div id="multi-line-graph" ref="target"></div>
+  <div class="absolute flex translate-y-[-72px] translate-x-[24px]">
+    <div class="flex gap-4">
+      <button @click="handleZoom(20)" class="btn btn-outline gap-3">
+        <span>24 hour</span>
+      </button>
+      <button @click="handleZoom(40)" class="btn btn-outline gap-3">
+        <span>3 day</span>
+      </button>
+      <button @click="handleZoom(80)" class="btn btn-outline gap-3">
+        <span>7 day</span>
+      </button>
+      <button @click="handleZoom(100)" class="btn btn-outline gap-3">
+        <span>30 day</span>
+      </button>
+      <button @click="handleZoom(100)" class="btn btn-outline gap-3">
+        <span>All time</span>
+      </button>
+    </div>
+  </div>
 </template>
 
 <style scoped>

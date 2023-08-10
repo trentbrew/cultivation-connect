@@ -53,21 +53,6 @@
     else return `Good evening, ${name}!`
   })
 
-  function prettifyDate(dateString) {
-    const options = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      timeZoneName: 'short',
-    }
-
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', options)
-  }
-
   async function getCompundSeries() {
     // step0: get all active cycles
 
@@ -144,9 +129,7 @@
       },
     }
 
-    series.dateList = relevantRecords.map(record =>
-      prettifyDate(record.date_recorded)
-    )
+    series.dateList = relevantRecords.map(record => record.date_recorded).sort()
 
     series.valueList.air_humidity = relevantRecords.map((record, recordIndex) =>
       Number(record.data.air_humidity ?? 0)
@@ -206,7 +189,7 @@
         id="content"
         class="flex flex-col flex-grow w-full"
       >
-        <div class="w-full flex justify-between items-start p-8">
+        <div class="w-full flex justify-between items-center p-8 pr-4">
           <div>
             <span class="text-lg">{{ greet }}</span>
             <h1 class="text-5xl mt-4">
@@ -215,9 +198,9 @@
           </div>
         </div>
 
-        <header class="p-4">
+        <header class="p-4 pb-0">
           <div
-            class="stats stats-horizontal rounded w-full border border-base-300"
+            class="stats stats-horizontal h-36 rounded w-full border border-base-300"
           >
             <div class="stat">
               <div class="stat-title">Yield</div>
@@ -250,10 +233,16 @@
                 {{ 0 }}
               </div>
             </div>
+            <div class="stat">
+              <div class="stat-title">Insights</div>
+              <div class="stat-value">
+                {{ 0 }}
+              </div>
+            </div>
           </div>
         </header>
 
-        <div class="w-full h-full p-4 pt-0">
+        <div class="w-full h-full p-4">
           <div class="w-full h-full gap-4 flex flex-col">
             <div
               class="w-full h-full rounded-[8px] p-4 border-[1px] border-base-300"
