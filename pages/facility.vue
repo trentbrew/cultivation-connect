@@ -200,7 +200,7 @@
 
         <header class="p-4 pb-0">
           <div
-            class="stats stats-horizontal h-36 rounded w-full border border-base-300"
+            class="stats stats-horizontal rounded w-full border border-base-300"
           >
             <div class="stat">
               <div class="stat-title">Yield</div>
@@ -216,7 +216,19 @@
               </div>
             </div>
             <div class="stat">
+              <div class="stat-title">Insights</div>
+              <div class="stat-value">
+                {{ 0 }}
+              </div>
+            </div>
+            <div class="stat">
               <div class="stat-title">Active cycles</div>
+              <div class="stat-value">
+                {{ state.data.cycles?.filter(item => item.active).length }}
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-title"></div>
               <div class="stat-value">
                 {{ state.data.cycles?.filter(item => item.active).length }}
               </div>
@@ -229,12 +241,6 @@
             </div>
             <div class="stat">
               <div class="stat-title">Dire conditions</div>
-              <div class="stat-value">
-                {{ 0 }}
-              </div>
-            </div>
-            <div class="stat">
-              <div class="stat-title">Insights</div>
               <div class="stat-value">
                 {{ 0 }}
               </div>
