@@ -209,31 +209,51 @@
                 <span class="text-sm">g/sqft</span>
               </div>
             </div>
-            <div class="stat">
-              <div class="stat-title">Cycles</div>
+            <nuxt-link to="/cycles">
+              <div class="stat">
+                <div class="stat-title">Cycles</div>
+                <div class="stat-value">
+                  {{ state.data.cycles?.length }}
+                </div>
+              </div>
+            </nuxt-link>
+            <nuxt-link to="/cycles">
+              <div class="stat">
+                <div class="stat-title">Active cycles</div>
+                <div class="stat-value">
+                  {{ state.data.cycles?.filter(item => item.active).length }}
+                </div>
+              </div>
+            </nuxt-link>
+            <nuxt-link to="/settings/cultivars">
+              <div class="stat">
+                <div class="stat-title">Cultivars</div>
+                <div class="stat-value">
+                  {{ state.data.cultivars?.length }}
+                </div>
+              </div>
+            </nuxt-link>
+            <nuxt-link to="/settings/sensors">
+              <div class="stat">
+                <div class="stat-title">Sensors</div>
+                <div class="stat-value">
+                  {{ state.data.sensors?.length }}
+                </div>
+              </div>
+            </nuxt-link>
+            <div class="stat pointer-events-none">
+              <div class="stat-title">Rooms</div>
               <div class="stat-value">
-                {{ state.data.cycles?.length }}
+                {{ state.data.rooms?.length }}
               </div>
             </div>
-            <div class="stat">
-              <div class="stat-title">Insights</div>
+            <div class="stat pointer-events-none">
+              <div class="stat-title">Zones</div>
               <div class="stat-value">
-                {{ 0 }}
+                {{ state.data.zones?.length }}
               </div>
             </div>
-            <div class="stat">
-              <div class="stat-title">Active cycles</div>
-              <div class="stat-value">
-                {{ state.data.cycles?.filter(item => item.active).length }}
-              </div>
-            </div>
-            <div class="stat">
-              <div class="stat-title"></div>
-              <div class="stat-value">
-                {{ state.data.cycles?.filter(item => item.active).length }}
-              </div>
-            </div>
-            <div class="stat">
+            <!-- <div class="stat">
               <div class="stat-title">Vital conditions</div>
               <div class="stat-value">
                 {{ 0 }}
@@ -244,7 +264,7 @@
               <div class="stat-value">
                 {{ 0 }}
               </div>
-            </div>
+            </div> -->
           </div>
         </header>
 
@@ -302,3 +322,9 @@
     </div>
   </AuthRouteGuard>
 </template>
+
+<style>
+  .stat {
+    @apply hover:bg-base-200 duration-200;
+  }
+</style>

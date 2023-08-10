@@ -87,6 +87,8 @@
     const yellow = (v > max || v < min) && !red
     const green = v <= max && v >= min
 
+    // TODO: tell PocketBase what condition this card is in
+
     state.style = props.disabled
       ? styles[3]
       : green

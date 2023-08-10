@@ -144,7 +144,7 @@
         {
           title: 'Yield',
           name: 'yield',
-          value: -1, // placeholder: 60
+          value: -999, // placeholder: 60
         },
       ],
     },
