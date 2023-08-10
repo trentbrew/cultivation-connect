@@ -17,6 +17,7 @@ export const useGlobalStore = defineStore('global', {
       cultivars: [],
       notifications: [],
       range_profiles: [],
+      relevantRecords: null,
     },
     csv: {
       done: false,
@@ -81,6 +82,7 @@ export const useGlobalStore = defineStore('global', {
     },
   }),
   getters: {
+    getRelevantRecords: state => state.cache.relevantRecords,
     // ------------ RANGES ------------
     getActiveRangesProfile: state => state.settings.ranges.activeProfile,
     getRange: state => name =>
@@ -106,6 +108,9 @@ export const useGlobalStore = defineStore('global', {
     getAvatarUrl: state => state.cache.avatar,
   },
   actions: {
+    setRelevantRecords(records) {
+      this.cache.relevantRecords = records
+    },
     // ------------ RANGES ------------
     updateRange(profile, name, payload) {},
     setActiveRangesProfile(profile) {

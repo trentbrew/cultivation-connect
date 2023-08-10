@@ -6,15 +6,39 @@
 
   const state = reactive({
     help: false,
-    data: null,
+    data: {
+      records: null,
+      cycle: null,
+    },
   })
 
   async function fetchCycle() {
     const cycle = await pb.get('cycles', {
       id: route.params.cycle,
     })
-    state.data = cycle
-    console.log('cycle', cycle)
+    state.data.cycle = cycle
+  }
+
+  async function fetchRecords() {
+    state.data.records = await pbFetch('records', {
+      filter: `cycle.id = "${state.data.cycle.id}"`,
+    })
+    console.log('state.data.records', state.data.records)
+  }
+
+  function pbFetch(collection, options) {
+    let data
+    if (!options) {
+      data = pb.get(collection, {
+        filter: `facility.id = "${pb.api.authStore.model.facility}"`,
+      })
+    } else {
+      data = pb.get(collection, {
+        ...options,
+        filter: `facility.id = "${pb.api.authStore.model.facility}"`,
+      })
+    }
+    return data
   }
 
   function handleHelp() {
@@ -25,14 +49,20 @@
     router.push({ hash: '' })
   }
 
-  onMounted(() => {
-    if (route.hash === '#records') fetchCycle()
+  onMounted(async () => {
+    if (route.hash === '#records') {
+      await fetchCycle()
+      await fetchRecords()
+    }
   })
 
   watch(
     () => route.hash,
-    newHash => {
-      if (newHash === '#records') fetchCycle()
+    async newHash => {
+      if (newHash === '#records') {
+        await fetchCycle()
+        await fetchRecords()
+      }
     }
   )
 </script>
@@ -42,8 +72,8 @@
     <input type="checkbox" id="cycle-records" class="modal-toggle" />
     <label for="cycle-records" class="modal">
       <label for="" class="p-0 m-0">
-        <div class="modal-box !border-base-200">
-          <div class="w-[83vw] h-[79vh] flex justify-center items-center">
+        <div class="modal-box bg-base-200 !border-base-200 p-24 px-4 pb-4">
+          <div class="w-[70vw] h-[70vh] flex justify-center items-center">
             <div
               class="flex flex-col justify-center items-center"
               v-if="!state.data?.records"
@@ -93,8 +123,14 @@
                 </label>
               </div>
             </div>
+            <div class="max-w-full max-h-full overflow-auto" v-else>
+              <Table
+                class="border-none rounded-[16px]"
+                :data="state.data.records"
+              />
+            </div>
           </div>
-          <div class="modal-action absolute top-0 right-6">
+          <div class="modal-action fixed top-0 right-6">
             <label
               @click="router.push({ hash: '' })"
               for="cycle-records"

@@ -1,4 +1,6 @@
 <script setup>
+  import utils from '@/helpers/utils'
+
   const global = useGlobalStore()
   const route = useRoute()
   const router = useRouter()
@@ -97,11 +99,13 @@
       }
     })
 
+    console.log('series', series)
+
     if (series.length < 2) {
       state.series = [initialize(series[0]), series[0]]
     } else {
       state.series = [
-        series.map(item => [item[0].split(' ')[0], Number(item[1])]),
+        series.map(item => [utils.prettifyDate(item[0]), Number(item[1])]),
       ]
     }
     state.latest_value = values[values.length - 1]

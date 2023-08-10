@@ -1,4 +1,5 @@
 <script setup>
+  import utils from '@/helpers/utils'
   import * as echarts from 'echarts'
 
   const route = useRoute()
@@ -56,7 +57,7 @@
   // })
 
   dateList.forEach((d, i) => {
-    dateList[i] = prettifyDate(d)
+    dateList[i] = utils.prettifyDate(d)
   })
 
   // NORMALIZE DATA
@@ -68,21 +69,6 @@
     const range = max - min
     const normalized = seriesData.map(item => (item - min) / range)
     return normalized
-  }
-
-  function prettifyDate(dateString) {
-    const options = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      timeZoneName: 'short',
-    }
-
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', options)
   }
 
   let myChart
@@ -109,7 +95,6 @@
       bottom: 36,
       height: 24,
       width: '63%',
-
       // textStyle: {
       //   color: '#333',
       // },
@@ -129,7 +114,6 @@
     toolbox: {
       show: true,
       feature: {
-        dataView: { readOnly: false },
         restore: {},
         saveAsImage: {},
       },

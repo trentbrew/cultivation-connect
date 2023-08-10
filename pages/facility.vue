@@ -33,7 +33,9 @@
     console.clear()
     const user = pb.api.authStore.model
     state.loading = true
+    console.log('user', user)
     state.data.facility = await pbFetch('facilities', { id: user.facility })
+    console.log('facility', state.data.facility)
     state.data.rooms = await pbFetch('rooms')
     state.data.zones = await pbFetch('zones')
     state.data.sensors = await pbFetch('sensors')

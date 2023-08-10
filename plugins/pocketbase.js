@@ -18,9 +18,14 @@ const pb = {
   get: (collection, params, batchSize) => {
     let record = pocketbase.collection(collection)
     if (params?.id) {
-      return record.getOne(params.id, { $autoCancel: false }).then(data => {
-        return data
-      })
+      return record
+        .getOne(params.id, { $autoCancel: false })
+        .then(data => {
+          return data
+        })
+        .catch(err => {
+          global.toast('error', 'Error fetching records')
+        })
     } else {
       return record
         .getFullList(batchSize || 200, {

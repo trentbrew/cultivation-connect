@@ -100,7 +100,7 @@
     @apply backdrop-contrast-50 !bg-base-100/50;
   }
   .modal-box {
-    @apply shadow-none border border-base-200;
+    @apply border border-base-200;
     width: auto !important;
     max-width: none !important;
     max-height: none !important;

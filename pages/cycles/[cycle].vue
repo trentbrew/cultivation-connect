@@ -371,6 +371,7 @@
         }
       })
       console.log('relevant data: ', state.relevantData)
+      global.setRelevantRecords(state.relevantData)
       const headers = Object.keys(report.data[0])
       const missing_headers = total_headers.filter(
         item => !headers.includes(item)
@@ -518,7 +519,7 @@
         </div>
       </div>
       <div id="content" class="flex flex-col flex-grow">
-        <header class="p-4 pt-0">
+        <header class="p-4 pt-0 pointer-events-none">
           <div
             class="stats stats-horizontal rounded w-full border border-base-300"
           >
