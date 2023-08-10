@@ -14,6 +14,7 @@
       id: route.params.cycle,
     })
     state.data = cycle
+    console.log('cycle', cycle)
   }
 
   function handleHelp() {
@@ -48,10 +49,10 @@
               v-if="!state.data?.records"
             >
               <!-- <WIP img="records" class="invert scale-[1.6] mb-8" /> -->
-              <WIP
+              <!-- <WIP
                 img="records"
                 class="brightness-[0.915] w-[100px] mb-12 invert"
-              />
+              /> -->
               <span
                 class="mt-12 max-w-2xl text-center"
                 :class="state.help && '!mt-18 opacity-40'"

@@ -262,6 +262,44 @@
             </div>
           </div>
         </div>
+
+        <!-- <header class="p-4 pt-0">
+          <div
+            class="stats stats-horizontal rounded w-full border border-base-300 bg-base-100"
+          >
+            <div class="stat">
+              <div class="stat-title">Yield</div>
+              <div class="stat-value">
+                {{ 0 }}
+                <span class="text-sm">g/sqft</span>
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-title">Cycles</div>
+              <div class="stat-value">
+                {{ state.data.cycles?.length }}
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-title">Active cycles</div>
+              <div class="stat-value">
+                {{ state.data.cycles?.filter(item => item.active).length }}
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-title">Vital conditions</div>
+              <div class="stat-value">
+                {{ 0 }}
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-title">Dire conditions</div>
+              <div class="stat-value">
+                {{ 0 }}
+              </div>
+            </div>
+          </div>
+        </header> -->
       </div>
       <div v-else class="w-full h-full flex justify-center items-center">
         <Loading size="60" />

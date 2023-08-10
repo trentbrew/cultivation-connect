@@ -37,8 +37,8 @@
     'EC 🌙',
     'Soil Moist 🌙',
     'pH',
-    'Pore EC',
-    'Solar',
+    'EC',
+    'kPa',
     'VPD',
   ]
 
@@ -49,7 +49,7 @@
 
   const originalSeries = series
 
-  // Object.entries(series).forEach(h => {
+  // Object.entries(series).forEach((h, i) => {
   //   series[h[0]] = normalize(h[1])
   // })
 
@@ -72,7 +72,26 @@
 
   let options = {
     title: {
-      text: '',
+      text: 'Grow Conditions',
+    },
+    dataZoom: {
+      type: 'slider',
+      backgroundColor: '#dddddd',
+      fillerColor: '#00000006',
+      // handleColor: '#000000',
+      // handleIcon: 'path://M 0 0 m -8 0 a 8 8 0 1 0 16 0 a 8 8 0 1 0 -16 0',
+      handleSize: '150%',
+      borderColor: '#BEBABA00',
+      brushSelect: false,
+      showDetail: true,
+      mouseWheelZoom: true,
+      bottom: 36,
+      height: 24,
+      // width: '60%',
+
+      // textStyle: {
+      //   color: '#333',
+      // },
     },
     tooltip: {
       trigger: 'axis',
@@ -83,15 +102,15 @@
     grid: {
       left: '3%',
       right: '4%',
-      bottom: '3%',
+      bottom: '18%',
       containLabel: true,
     },
     toolbox: {
       show: true,
       feature: {
-        dataZoom: {
-          yAxisIndex: 'none',
-        },
+        dataView: { readOnly: false },
+        restore: {},
+        saveAsImage: {},
       },
     },
     xAxis: {
@@ -111,105 +130,105 @@
       {
         name: titles[0],
         type: 'line',
-        stack: 'Total',
+        stack: false,
         smooth: true,
         data: series.air_humidity,
       },
       {
         name: titles[1],
         type: 'line',
-        stack: 'Total',
+        stack: false,
         smooth: true,
         data: series.air_temp,
       },
       {
         name: titles[2],
         type: 'line',
-        stack: 'Total',
+        stack: false,
         smooth: true,
         data: series.co2,
       },
       {
         name: titles[3],
         type: 'line',
-        stack: 'Total',
+        stack: false,
         smooth: true,
         data: series.day_time_dry_back,
       },
       {
         name: titles[4],
         type: 'line',
-        stack: 'Total',
+        stack: false,
         smooth: true,
         data: series.day_time_pore_ec,
       },
       {
         name: titles[5],
         type: 'line',
-        stack: 'Total',
+        stack: false,
         smooth: true,
         data: series.day_time_soil_moisture,
       },
       {
         name: titles[6],
         type: 'line',
-        stack: 'Total',
+        stack: false,
         smooth: true,
         data: series.dli,
       },
       {
         name: titles[7],
         type: 'line',
-        stack: 'Total',
+        stack: false,
         smooth: true,
         data: series.grow_medium_temp,
       },
       {
         name: titles[8],
         type: 'line',
-        stack: 'Total',
+        stack: false,
         smooth: true,
         data: series.night_time_dry_back,
       },
       {
         name: titles[9],
         type: 'line',
-        stack: 'Total',
+        stack: false,
         smooth: true,
         data: series.night_time_pore_ec,
       },
       {
         name: titles[10],
         type: 'line',
-        stack: 'Total',
+        stack: false,
         smooth: true,
         data: series.night_time_soil_moisture,
       },
       {
         name: titles[11],
         type: 'line',
-        stack: 'Total',
+        stack: false,
         smooth: true,
         data: series.ph,
       },
       {
         name: titles[12],
         type: 'line',
-        stack: 'Total',
+        stack: false,
         smooth: true,
         data: series.pore_ec,
       },
       {
         name: titles[13],
         type: 'line',
-        stack: 'Total',
+        stack: false,
         smooth: true,
         data: series.solar,
       },
       {
         name: titles[14],
         type: 'line',
-        stack: 'Total',
+        stack: false,
         smooth: true,
         data: series.vpd,
       },
@@ -222,6 +241,11 @@
 
   onMounted(async () => {
     myChart = echarts.init(target.value)
+    // mychart.dispatchAction({
+    //   type: 'dataZoom',
+    //   start: 90,
+    //   end: 100,
+    // })
     window.addEventListener('resize', () => {
       myChart.resize()
     })
