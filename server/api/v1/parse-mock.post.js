@@ -24,7 +24,7 @@ function parse(csv) {
   const lines = csv
     .split('\n')
     .map(line => line.trim())
-    .slice(4, 6335) // TODO: LEAVE THE SLICE
+    .slice(4, 1005) // TODO: LEAVE THE SLICE
   const headers = lines[0].split(',').map(header => header_map[header])
   console.log('headers', headers)
   lines.slice(1).forEach(datum => {
