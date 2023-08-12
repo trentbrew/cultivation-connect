@@ -367,9 +367,6 @@
       item => item.valid
     )
 
-    console.log('groupValidity: ', groupValidity)
-    console.log('state.payload: ', state.payload)
-
     state['payload'].valid = !groupValidity.includes(false)
   }
 
@@ -504,7 +501,6 @@
 
   async function submitCsv() {
     const origin = state.cycle.csv.origin.value
-    console.log('origin: ', origin)
     const file = state.cycle.csv.files[0]
     const blob = new Blob([file], { type: 'text/csv' })
 
@@ -618,7 +614,6 @@
     let payload = {}
     Object.keys(state.patch.cultivar).forEach(key => {
       if (state.patch.cultivar[key]) {
-        console.log(state.patch.cultivar[key])
         payload[key] = state.patch.cultivar[key]
       }
     })
@@ -667,7 +662,6 @@
       facility: pb.api.authStore.model.facility,
     }
     pb.post('rooms', payload).then(res => {
-      console.log('✅ Added room', res)
       global.toast('primary', `New room was successfully added!`)
       fetchData()
     })
@@ -678,7 +672,6 @@
       const zones = await pb.get('zones', {
         filter: `room = "${state.payload.cycle.room.value}"`,
       })
-      console.log('zones: ', zones)
       return zones.length + 1
     }
     let payload = {
@@ -687,9 +680,7 @@
       room: state.payload.cycle.room.value,
       facility: pb.api.authStore.model.facility,
     }
-    console.log('posting zone...', payload)
     pb.post('zones', payload).then(res => {
-      console.log('✅ Added zone', res)
       global.toast('primary', 'New zone was successfully added!')
       fetchData()
     })

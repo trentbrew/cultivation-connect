@@ -105,4 +105,7 @@
     max-width: none !important;
     max-height: none !important;
   }
+  .alert {
+    border-radius: 8px !important;
+  }
 </style>

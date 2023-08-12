@@ -20,17 +20,20 @@ const header_map = {
 let entries = []
 
 function parse(csv) {
+  console.log('parsing csv')
   const lines = csv
     .split('\n')
     .map(line => line.trim())
     .slice(4) // TODO: LEAVE THE SLICE
   const headers = lines[0].split(',').map(header => header_map[header])
+  console.log('headers', headers)
   lines.slice(1).forEach(datum => {
     let data = {}
     const values = datum.split(',')
     values.forEach((value, index) => {
       data[headers[index]] = value
     })
+    console.log('data', data)
     entries.push(data)
   })
 
@@ -45,11 +48,15 @@ function parse(csv) {
     }
   }
 
+  console.log('report', report(entries))
+
   const payload = {
     entry_count: entries.length,
     report: report(entries),
     data: entries,
   }
+
+  console.log('payload', payload)
 
   return payload
 }

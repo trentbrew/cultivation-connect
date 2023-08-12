@@ -92,9 +92,9 @@
       brushSelect: false,
       showDetail: true,
       mouseWheelZoom: true,
-      bottom: 36,
+      bottom: 20,
       height: 24,
-      width: '63%',
+      width: '60%',
       // textStyle: {
       //   color: '#333',
       // },
@@ -281,21 +281,21 @@
 
 <template>
   <div id="multi-line-graph" ref="target"></div>
-  <div class="absolute flex translate-y-[-72px] translate-x-[24px]">
+  <div class="absolute flex translate-y-[-50px] translate-x-[24px]">
     <div class="flex gap-4">
-      <button @click="handleZoom(20)" class="btn btn-outline gap-3">
+      <button @click="handleZoom(20)" class="btn btn-outline gap-3 btn-sm">
         <span>24 hour</span>
       </button>
-      <button @click="handleZoom(40)" class="btn btn-outline gap-3">
+      <button @click="handleZoom(40)" class="btn btn-outline gap-3 btn-sm">
         <span>3 day</span>
       </button>
-      <button @click="handleZoom(80)" class="btn btn-outline gap-3">
+      <button @click="handleZoom(80)" class="btn btn-outline gap-3 btn-sm">
         <span>7 day</span>
       </button>
-      <button @click="handleZoom(100)" class="btn btn-outline gap-3">
+      <button @click="handleZoom(100)" class="btn btn-outline gap-3 btn-sm">
         <span>30 day</span>
       </button>
-      <button @click="handleZoom(100)" class="btn btn-outline gap-3">
+      <button @click="handleZoom(100)" class="btn btn-outline gap-3 btn-sm">
         <span>All time</span>
       </button>
     </div>
