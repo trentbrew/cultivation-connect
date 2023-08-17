@@ -143,6 +143,7 @@
           },
         ],
       },
+      customRanges: null,
       ranges: {
         collection: 'ranges',
         payload: null,
@@ -175,7 +176,8 @@
   async function fetchData() {
     state.data.sensors = await pbFetch('sensors')
     state.data.cultivars = await pbFetch('cultivars')
-    state.data.ranges = await pbFetch('ranges')
+    state.data.ranges = await pb.get('ranges', 'ngau7xawawidwjb')
+    state.data.customRanges = await pbFetch('ranges')
   }
 
   function pbFetch(collection, options) {
