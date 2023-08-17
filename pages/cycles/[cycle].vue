@@ -473,7 +473,7 @@
 
   async function handleBatchEntryPost() {
     state.postingEntries = true
-    setTimeout(() => {
+    setTimeout(async () => {
       let latest = ''
       try {
         state.relevantData.forEach(async (entry, entryIndex) => {
@@ -484,6 +484,9 @@
           'primary',
           `Successfully submitted ${state.relevantData?.length} entries 🎉`
         )
+        await pb.update('cycles', state.cycle.id, {
+          active: true,
+        })
         setTimeout(() => {
           location.reload()
         }, 1000)
